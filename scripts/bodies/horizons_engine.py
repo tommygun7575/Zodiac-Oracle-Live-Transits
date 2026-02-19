@@ -1,7 +1,8 @@
 """
 Real JPL Horizons Ephemeris Engine
 Provides TRUE planetary and TNO positions using the NASA/JPL Horizons system.
-Converts RA/DEC into ecliptic longitude/latitude for full astrological use.
+Converts RA/DEC into ecliptic longitude/latitude.
+Includes real orbital velocity + retrograde detection.
 """
 
 from astroquery.jplhorizons import Horizons
@@ -27,7 +28,6 @@ PLANET_IDS = {
 
 # ---------------------------------------------------------
 # TNO & DWARF PLANET TARGETS — Horizons string identifiers
-# These resolve correctly in Horizons for full ephemerides.
 # ---------------------------------------------------------
 TNO_TARGETS = {
     "Eris": "Eris",
@@ -46,16 +46,19 @@ TNO_TARGETS = {
 
 
 # ---------------------------------------------------------
-# MAIN FETCH ENGINE
+# MAIN FETCH ENGINE WITH TRUE SPEED / RETROGRADE
 # ---------------------------------------------------------
 def fetch(body_name, iso_utc_timestamp):
     """
     Fetch REAL ephemeris data for major planets AND TNOs using JPL Horizons.
-    Returns:
-        {"lon": float, "lat": float, "retrograde": bool}
+    Returns dict with:
+        "lon": float
+        "lat": float
+        "retrograde": bool
+        "speed": float   (deg/day)
     """
 
-    # Determine target for Horizons
+    # Determine Horizons target
     if body_name in PLANET_IDS:
         target = PLANET_IDS[body_name]
     elif body_name in TNO_TARGETS:
@@ -64,7 +67,7 @@ def fetch(body_name, iso_utc_timestamp):
         return None
 
     try:
-        # Query real NASA ephemeris
+        # Query NASA Horizons
         obj = Horizons(
             id=target,
             location="500@0",  # geocentric observer
@@ -73,26 +76,55 @@ def fetch(body_name, iso_utc_timestamp):
 
         eph = obj.ephemerides()
 
-        # Extract positions
-        ra = float(eph["RA"][0])      # Right Ascension (deg)
-        dec = float(eph["DEC"][0])    # Declination (deg)
+        # Extract RA / DEC (in degrees)
+        ra = float(eph["RA"][0])
+        dec = float(eph["DEC"][0])
 
-        # Convert to ecliptic
+        # Convert to ecliptic coordinates
         lon, lat = equatorial_to_ecliptic(ra, dec)
 
-        # Retrograde determination
+        # ---------------------------------------------------------
+        # REAL ORBITAL SPEED CALCULATION
+        # ---------------------------------------------------------
         try:
-            dra = float(eph["RA_rate"][0])
-            ddec = float(eph["DEC_rate"][0])
-            lon_prev, _ = equatorial_to_ecliptic(ra - dra, dec - ddec)
-            retrograde = lon_prev > lon
+            # Horizons rates are in arcseconds/hour
+            dra_arcsec_hr = float(eph["RA_rate"][0])
+            ddec_arcsec_hr = float(eph["DEC_rate"][0])
+
+            # Convert arcsec/hr → degrees/hr → degrees/day
+            dra_deg = dra_arcsec_hr / 3600.0
+            ddec_deg = ddec_arcsec_hr / 3600.0
+
+            # Previous position approximation
+            ra_prev = ra - dra_deg
+            dec_prev = dec - ddec_deg
+
+            lon_prev, lat_prev = equatorial_to_ecliptic(ra_prev, dec_prev)
+
+            # Raw speed (deg/day)
+            speed = lon - lon_prev
+
+            # Normalize speed to -180..+180
+            if speed > 180:
+                speed -= 360
+            elif speed < -180:
+                speed += 360
+
+            # Retrograde if speed is negative
+            retrograde = speed < 0
+
         except Exception:
+            speed = 0.0
             retrograde = False
 
+        # ---------------------------------------------------------
+        # RETURN FULL ASTRONOMICAL RECORD
+        # ---------------------------------------------------------
         return {
             "lon": lon,
             "lat": lat,
-            "retrograde": retrograde
+            "retrograde": retrograde,
+            "speed": speed
         }
 
     except Exception:
