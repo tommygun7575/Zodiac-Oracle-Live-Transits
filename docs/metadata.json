@@ -1,1 +1,7 @@
-
+{
+  "name": "Zodiac Oracle Live Transits",
+  "version": "0.1.0",
+  "schema": "transit-schema.json",
+  "description": "Live and weekly planetary ephemeris feeds",
+  "generated_at": "2026-02-19T00:00:00Z"
+}
