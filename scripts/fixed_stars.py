@@ -4,7 +4,6 @@ Returns ecliptic longitudes for major fixed stars used in overlays.
 Values are approximate but stable for astrological processing.
 """
 
-# Fixed star longitudes (approx, J2000)
 FIXED_STARS = {
     "Regulus":      149.83,
     "Spica":        203.84,
@@ -28,6 +27,12 @@ FIXED_STARS = {
 
 def get_fixed_star_positions():
     """
-    Returns a dict of fixed star to ecliptic longitude (degrees).
+    Returns list of dictionaries with star name + longitude.
     """
-    return FIXED_STARS.copy()
+    stars = []
+    for name, lon in FIXED_STARS.items():
+        stars.append({
+            "name": name,
+            "longitude": float(lon)
+        })
+    return stars
