@@ -1,7 +1,6 @@
 """
 Real JPL Horizons Ephemeris Engine
 Provides TRUE planetary and TNO positions using the NASA/JPL Horizons system.
-Converts RA/DEC into ecliptic longitude/latitude.
 Includes real orbital velocity + retrograde detection.
 """
 
@@ -9,9 +8,6 @@ from astroquery.jplhorizons import Horizons
 from scripts.utils.coord import equatorial_to_ecliptic
 
 
-# ---------------------------------------------------------
-# NAIF MAJOR-BODY IDs (planets + Moon + Pluto)
-# ---------------------------------------------------------
 PLANET_IDS = {
     "Sun": 10,
     "Moon": 301,
@@ -25,10 +21,6 @@ PLANET_IDS = {
     "Pluto": 999,
 }
 
-
-# ---------------------------------------------------------
-# TNO & DWARF PLANET TARGETS — Horizons string identifiers
-# ---------------------------------------------------------
 TNO_TARGETS = {
     "Eris": "Eris",
     "Haumea": "Haumea",
@@ -45,20 +37,17 @@ TNO_TARGETS = {
 }
 
 
-# ---------------------------------------------------------
-# MAIN FETCH ENGINE WITH TRUE SPEED / RETROGRADE
-# ---------------------------------------------------------
 def fetch(body_name, iso_utc_timestamp):
     """
-    Fetch REAL ephemeris data for major planets AND TNOs using JPL Horizons.
-    Returns dict with:
-        "lon": float
-        "lat": float
-        "retrograde": bool
-        "speed": float   (deg/day)
+    Returns:
+        {
+            "lon": float,
+            "lat": float,
+            "retrograde": bool,
+            "speed": float
+        }
     """
 
-    # Determine Horizons target
     if body_name in PLANET_IDS:
         target = PLANET_IDS[body_name]
     elif body_name in TNO_TARGETS:
@@ -67,59 +56,46 @@ def fetch(body_name, iso_utc_timestamp):
         return None
 
     try:
-        # Query NASA Horizons
         obj = Horizons(
             id=target,
-            location="500@0",  # geocentric observer
-            epochs=iso_utc_timestamp
+            location="500@0",
+            epochs=iso_utc_timestamp,
+            quantities="1,2"     # <-- REQUIRED to get RA_rate and DEC_rate
         )
 
         eph = obj.ephemerides()
 
-        # Extract RA / DEC (in degrees)
         ra = float(eph["RA"][0])
         dec = float(eph["DEC"][0])
 
-        # Convert to ecliptic coordinates
         lon, lat = equatorial_to_ecliptic(ra, dec)
 
-        # ---------------------------------------------------------
-        # REAL ORBITAL SPEED CALCULATION
-        # ---------------------------------------------------------
+        # -----------------------------------------------------
+        # TRUE SPEED CALCULATION
+        # -----------------------------------------------------
         try:
-            # Horizons rates are in arcseconds/hour
-            dra_arcsec_hr = float(eph["RA_rate"][0])
-            ddec_arcsec_hr = float(eph["DEC_rate"][0])
+            # arcsec/hour → degrees/day
+            dra = float(eph["RA_rate"][0]) / 3600.0
+            ddec = float(eph["DEC_rate"][0]) / 3600.0
 
-            # Convert arcsec/hr → degrees/hr → degrees/day
-            dra_deg = dra_arcsec_hr / 3600.0
-            ddec_deg = ddec_arcsec_hr / 3600.0
-
-            # Previous position approximation
-            ra_prev = ra - dra_deg
-            dec_prev = dec - ddec_deg
+            ra_prev = ra - dra
+            dec_prev = dec - ddec
 
             lon_prev, lat_prev = equatorial_to_ecliptic(ra_prev, dec_prev)
 
-            # Raw speed (deg/day)
             speed = lon - lon_prev
 
-            # Normalize speed to -180..+180
             if speed > 180:
                 speed -= 360
             elif speed < -180:
                 speed += 360
 
-            # Retrograde if speed is negative
             retrograde = speed < 0
 
         except Exception:
             speed = 0.0
             retrograde = False
 
-        # ---------------------------------------------------------
-        # RETURN FULL ASTRONOMICAL RECORD
-        # ---------------------------------------------------------
         return {
             "lon": lon,
             "lat": lat,
