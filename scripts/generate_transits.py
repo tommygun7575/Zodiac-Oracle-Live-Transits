@@ -13,11 +13,27 @@ from scripts.bodies.swiss_engine import fetch as fetch_swiss
 
 from scripts.utils.zodiac import zodiac_sign, degree_in_sign
 from scripts.utils.harmonics import harmonics
+
+# House system engine (Whole Sign + Placidus support)
+from scripts.utils.houses import (
+    julian_date_from_iso,
+    compute_ascendant,
+    whole_sign_cusps,
+    whole_sign_house
+)
+
 from scripts.fixed_stars import get_fixed_star_positions
 
 
+# ---------------------------------------------------------------
+# GLOBAL LOCATION FOR FEED — Greenwich Observatory (Prime Meridian)
+# ---------------------------------------------------------------
+OBSERVER_LAT = 51.4769     # degrees North
+OBSERVER_LON = 0.0000      # degrees East
+
+
 # --------------------------------------------------------------------
-# BODIES LIST — These will be expanded in Phase 2 Step 3 for real TNOs
+# BODIES LIST — Planets + Asteroids + TNOs
 # --------------------------------------------------------------------
 BODIES = [
     "Sun", "Moon", "Mercury", "Venus", "Mars",
@@ -38,11 +54,11 @@ def fetch_body_data(body, timestamp):
     # Primary: JPL Horizons (real precision)
     data = fetch_horizons(body, timestamp)
 
-    # Secondary fallback: Miriade (TNOs/asteroids not in Horizons)
+    # Secondary: Miriade for bodies Horizons cannot resolve
     if data is None:
         data = fetch_miriade(body, timestamp)
 
-    # Final fallback: Swiss stub (never harms CI)
+    # Final fallback: Swiss stub
     if data is None:
         data = fetch_swiss(body, timestamp)
 
@@ -50,9 +66,17 @@ def fetch_body_data(body, timestamp):
 
 
 # --------------------------------------------------------------------
-# COMPUTE TRANSITS FOR ONE TIMESTAMP
+# COMPUTE TRANSITS FOR ONE TIMESTAMP (WITH HOUSES)
 # --------------------------------------------------------------------
 def compute_transits(ts):
+    jd = julian_date_from_iso(ts)
+
+    # Compute Ascendant for Greenwich-based feed
+    asc_lon = compute_ascendant(jd, OBSERVER_LAT, OBSERVER_LON)
+
+    # Whole Sign cusps for global feed
+    cusps = whole_sign_cusps(asc_lon)
+
     result = {}
 
     for body in BODIES:
@@ -66,8 +90,10 @@ def compute_transits(ts):
 
         sign = zodiac_sign(lon)
         deg = degree_in_sign(lon)
-
         harm = harmonics(lon)
+
+        # Whole Sign house assignment
+        house = whole_sign_house(lon, asc_lon)
 
         result[body] = {
             "lon": lon,
@@ -75,11 +101,11 @@ def compute_transits(ts):
             "retrograde": retrograde,
             "sign": sign,
             "deg": deg,
-            "house": None,         # House engine comes in Phase 2 Step 4
+            "house": house,
             "harmonics": harm
         }
 
-    # Merge fixed stars
+    # Merge fixed stars (also assigned whole sign houses)
     for star in get_fixed_star_positions():
         lon = star["longitude"]
         result[star["name"]] = {
@@ -88,7 +114,7 @@ def compute_transits(ts):
             "retrograde": False,
             "sign": zodiac_sign(lon),
             "deg": degree_in_sign(lon),
-            "house": None,
+            "house": whole_sign_house(lon, asc_lon),
             "harmonics": harmonics(lon)
         }
 
@@ -119,20 +145,17 @@ def generate_all_feeds():
         ],
 
         "feed_daily.json": [
-            {"timestamp": t.isoformat() + "Z",
-             "transits": compute_transits(t.isoformat() + "Z")}
+            {"timestamp": t.isoformat() + "Z", "transits": compute_transits(t.isoformat() + "Z")}
             for t in ts_list
         ],
 
         "feed_week.json": [
-            {"timestamp": t.isoformat() + "Z",
-             "transits": compute_transits(t.isoformat() + "Z")}
+            {"timestamp": t.isoformat() + "Z", "transits": compute_transits(t.isoformat() + "Z")}
             for t in ts_list
         ],
 
         "feed_weekly.json": [
-            {"timestamp": t.isoformat() + "Z",
-             "transits": compute_transits(t.isoformat() + "Z")}
+            {"timestamp": t.isoformat() + "Z", "transits": compute_transits(t.isoformat() + "Z")}
             for t in ts_list
         ],
     }
