@@ -22,7 +22,11 @@ from scripts.utils.houses import (
     whole_sign_house
 )
 
+# Aspect engine (Phase 3 Step 1)
+from scripts.utils.aspects import detect_aspects
+
 from scripts.fixed_stars import get_fixed_star_positions
+
 
 
 # ---------------------------------------------------------------
@@ -60,7 +64,7 @@ def fetch_body_data(body, ts):
 
 
 # ---------------------------------------------------------------
-# COMPUTE TRANSITS FOR A TIMESTAMP
+# COMPUTE TRANSITS FOR A TIMESTAMP  (Phase 3-ready)
 # ---------------------------------------------------------------
 def compute_transits(ts):
     jd = julian_date_from_iso(ts)
@@ -69,7 +73,10 @@ def compute_transits(ts):
     asc_lon = compute_ascendant(jd, OBSERVER_LAT, OBSERVER_LON)
     cusps = whole_sign_cusps(asc_lon)
 
-    result = {}
+    # -----------------------------
+    # POSITION MAP (Phase 2 output)
+    # -----------------------------
+    positions = {}
 
     for body in BODIES:
         ephem = fetch_body_data(body, ts)
@@ -81,27 +88,23 @@ def compute_transits(ts):
         retrograde = ephem.get("retrograde", False)
         speed = ephem.get("speed", 0.0)
 
-        sign = zodiac_sign(lon)
-        deg = degree_in_sign(lon)
-        harm = harmonics(lon)
-
-        house = whole_sign_house(lon, asc_lon)
-
-        result[body] = {
+        positions[body] = {
             "lon": lon,
             "lat": lat,
             "retrograde": retrograde,
             "speed": speed,
-            "sign": sign,
-            "deg": deg,
-            "house": house,
-            "harmonics": harm
+            "sign": zodiac_sign(lon),
+            "deg": degree_in_sign(lon),
+            "house": whole_sign_house(lon, asc_lon),
+            "harmonics": harmonics(lon)
         }
 
-    # Fixed stars
+    # -----------------------------
+    # FIXED STARS
+    # -----------------------------
     for star in get_fixed_star_positions():
         lon = star["longitude"]
-        result[star["name"]] = {
+        positions[star["name"]] = {
             "lon": lon,
             "lat": 0.0,
             "retrograde": False,
@@ -112,7 +115,15 @@ def compute_transits(ts):
             "harmonics": harmonics(lon)
         }
 
-    return result
+    # -----------------------------
+    # PHASE 3 STEP 1 — ASPECT ENGINE
+    # -----------------------------
+    aspects = detect_aspects(positions)
+
+    return {
+        "positions": positions,
+        "aspects": aspects
+    }
 
 
 # ---------------------------------------------------------------
@@ -137,16 +148,22 @@ def generate_all_feeds():
         "feed_now.json": [
             {"timestamp": ts_now, "transits": compute_transits(ts_now)}
         ],
+
         "feed_daily.json": [
-            {"timestamp": t.isoformat() + "Z", "transits": compute_transits(t.isoformat() + "Z")}
+            {"timestamp": t.isoformat() + "Z",
+             "transits": compute_transits(t.isoformat() + "Z")}
             for t in ts_list
         ],
+
         "feed_week.json": [
-            {"timestamp": t.isoformat() + "Z", "transits": compute_transits(t.isoformat() + "Z")}
+            {"timestamp": t.isoformat() + "Z",
+             "transits": compute_transits(t.isoformat() + "Z")}
             for t in ts_list
         ],
+
         "feed_weekly.json": [
-            {"timestamp": t.isoformat() + "Z", "transits": compute_transits(t.isoformat() + "Z")}
+            {"timestamp": t.isoformat() + "Z",
+             "transits": compute_transits(t.isoformat() + "Z")}
             for t in ts_list
         ]
     }
