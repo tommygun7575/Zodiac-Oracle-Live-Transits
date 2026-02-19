@@ -1,1 +1,11 @@
-
+{
+  "datetime": "2026-02-19T00:00:00Z",
+  "planets": [
+    {"name": "Sun", "position": "27° Aquarius", "sign": "Aquarius", "degree": 327, "retrograde": false},
+    {"name": "Moon", "position": "10° Aries", "sign": "Aries", "degree": 10, "retrograde": false}
+  ],
+  "positions": [
+    {"planet": "Sun", "lat": 0.0, "long": 327.0, "houses": [11]},
+    {"planet": "Moon", "lat": 5.1, "long": 10.0, "houses": [1]}
+  ]
+}
