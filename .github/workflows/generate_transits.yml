@@ -1,9 +1,9 @@
 name: Generate Transit Feeds
 
 on:
-  workflow_dispatch:      # manual trigger
+  workflow_dispatch:        # manual run
   schedule:
-    - cron: "0 3 * * *"   # run every day at 03:00 UTC
+    - cron: "0 3 * * *"     # runs daily at 03:00 UTC
 
 jobs:
   build:
@@ -22,9 +22,16 @@ jobs:
         run: |
           pip install swisseph astroquery requests python-dateutil
 
+      - name: Fix Python path for scripts package
+        run: |
+          echo "PYTHONPATH=${{ github.workspace }}" >> $GITHUB_ENV
+        # This makes "scripts" importable everywhere
+
       - name: Run transit generator
         run: |
           python3 scripts/generate_transits.py
+        env:
+          PYTHONPATH: ${{ github.workspace }}
 
       - name: Commit updated feeds
         run: |
@@ -33,4 +40,3 @@ jobs:
           git add docs/*.json
           git commit -m "Update transit feeds" || echo "No changes to commit"
           git push
-
