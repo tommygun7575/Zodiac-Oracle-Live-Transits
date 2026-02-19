@@ -1,44 +1,68 @@
-import warnings
+"""
+Real JPL Horizons Ephemeris Engine
+Returns TRUE planetary positions with correct RA/DEC
+and converts them into ecliptic coordinates.
+"""
+
 from astroquery.jplhorizons import Horizons
 from scripts.utils.coord import equatorial_to_ecliptic
 
-# Extend as needed for asteroids/TNOs (or pass name as-is)
+# ID numbers for planets for Horizons API
 PLANET_IDS = {
-    "Sun": 10, "Mercury": 199, "Venus": 299, "Earth": 399, "Moon": 301,
-    "Mars": 499, "Jupiter": 599, "Saturn": 699, "Uranus": 799,
-    "Neptune": 899, "Pluto": 999, "Ceres": 1, "Pallas": 2, "Juno": 3, "Vesta": 4,
-    "Chiron": "2060", "Eris": "136199", "Sedna": "90377", "Haumea": "136108", "Makemake": "136472",
-    # Add more as used in your body list
+    "Sun": 10,
+    "Moon": 301,
+    "Mercury": 199,
+    "Venus": 299,
+    "Mars": 499,
+    "Jupiter": 599,
+    "Saturn": 699,
+    "Uranus": 799,
+    "Neptune": 899,
+    "Pluto": 999,
 }
 
 def fetch(body_name, iso_utc_timestamp):
-    obj_id = PLANET_IDS.get(body_name, body_name)
-    try:
-        with warnings.catch_warnings():
-            warnings.simplefilter("ignore")
-            obj = Horizons(id=obj_id, location="500@0", epochs=iso_utc_timestamp, id_type='majorbody')
-            eph = obj.ephemerides()
-        if eph.empty or len(eph) == 0:
-            return None
+    """
+    Fetch REAL planetary positions from JPL Horizons.
+    """
 
-        lon = float(eph["EclLon"][0])
-        lat = float(eph["EclLat"][0])
-        # Try retrograde from rate in longitude
+    if body_name not in PLANET_IDS:
+        return None
+
+    obj_id = PLANET_IDS[body_name]
+
+    # Query JPL Horizons
+    try:
+        obj = Horizons(
+            id=obj_id,
+            location="500@0",      # geocentric
+            epochs=iso_utc_timestamp
+        )
+
+        eph = obj.ephemerides()
+
+        # RA / DEC (true center)
+        ra = float(eph["RA"][0])          # degrees
+        dec = float(eph["DEC"][0])        # degrees
+
+        # Convert RA/DEC → ecliptic lon/lat
+        lon, lat = equatorial_to_ecliptic(ra, dec)
+
+        # Compute retrograde from delta-longitude
         try:
-            retrograde = float(eph["RA_rate"][0]) < 0
+            lon_prev, _ = equatorial_to_ecliptic(
+                float(eph["RA_rate"][0] * -1 + ra),
+                float(eph["DEC_rate"][0] * -1 + dec)
+            )
+            retrograde = lon_prev > lon
         except Exception:
             retrograde = False
-        return {"lon": lon, "lat": lat, "retrograde": retrograde}
-    except Exception:
-        # Fallback: try vectors/RADEC and convert
-        try:
-            obj = Horizons(id=obj_id, location="500@0", epochs=iso_utc_timestamp, id_type='majorbody')
-            vec = obj.vectors()
-            ra = float(vec["RA"][0])
-            dec = float(vec["DEC"][0])
-            lon, lat = equatorial_to_ecliptic(ra, dec)
-            return {"lon": lon, "lat": lat, "retrograde": False}
-        except Exception:
-            return None# Horizons Ephemeris Client
 
-# TODO: Client implementation for Horizons ephemeris.
+        return {
+            "lon": lon,
+            "lat": lat,
+            "retrograde": retrograde
+        }
+
+    except Exception as e:
+        return None
