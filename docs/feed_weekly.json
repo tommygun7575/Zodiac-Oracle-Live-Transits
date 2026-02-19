@@ -1,1 +1,13 @@
-
+{
+  "week_of": "2026-02-19",
+  "events": [
+    {"date": "2026-02-19", "planet": "Mercury", "transit": "Entering 1st House"},
+    {"date": "2026-02-20", "planet": "Venus", "transit": "Trine with Jupiter"},
+    {"date": "2026-02-21", "planet": "Mars", "transit": "Conjunct with Saturn"},
+    {"date": "2026-02-22", "planet": "Jupiter", "transit": "Square with Neptune"},
+    {"date": "2026-02-23", "planet": "Saturn", "transit": "Opposing Pluto"},
+    {"date": "2026-02-24", "planet": "Uranus", "transit": "Sextile with Sun"},
+    {"date": "2026-02-25", "planet": "Neptune", "transit": "Square with Mars"},
+    {"date": "2026-02-26", "planet": "Pluto", "transit": "Trine with Venus"}
+  ]
+}
