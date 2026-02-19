@@ -1,138 +1,28 @@
 [
   {
-    "timestamp": "2026-02-19T10:30:00Z",
+    "timestamp": "2026-02-19T10:36:49Z",
     "transits": {
       "Sun": {
-        "lon": 27.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Aries",
-        "deg": 27.0,
-        "house": 5,
-        "harmonics": 27.0
-      },
-      "Moon": {
-        "lon": 153.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Virgo",
-        "deg": 3.0,
-        "house": 10,
-        "harmonics": 153.0
-      },
-      "Mercury": {
-        "lon": 81.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Gemini",
-        "deg": 21.0,
-        "house": 7,
-        "harmonics": 81.0
-      },
-      "Venus": {
-        "lon": 291.0,
+        "lon": 273.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
         "sign": "Capricorn",
-        "deg": 21.0,
+        "deg": 3.0,
         "house": 2,
-        "harmonics": 291.0
+        "harmonics": 273.0
       },
-      "Mars": {
-        "lon": 261.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Sagittarius",
-        "deg": 21.0,
-        "house": 1,
-        "harmonics": 261.0
-      },
-      "Jupiter": {
-        "lon": 307.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Aquarius",
-        "deg": 7.0,
-        "house": 3,
-        "harmonics": 307.0
-      },
-      "Saturn": {
-        "lon": 147.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Leo",
-        "deg": 27.0,
-        "house": 9,
-        "harmonics": 147.0
-      },
-      "Uranus": {
-        "lon": 229.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Scorpio",
-        "deg": 19.0,
-        "house": 12,
-        "harmonics": 229.0
-      },
-      "Neptune": {
-        "lon": 126.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Leo",
-        "deg": 6.0,
-        "house": 9,
-        "harmonics": 126.0
-      },
-      "Pluto": {
-        "lon": 27.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Aries",
-        "deg": 27.0,
-        "house": 5,
-        "harmonics": 27.0
-      },
-      "Chiron": {
-        "lon": 339.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Pisces",
-        "deg": 9.0,
-        "house": 4,
-        "harmonics": 339.0
-      },
-      "Ceres": {
-        "lon": 224.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Scorpio",
-        "deg": 14.0,
-        "house": 12,
-        "harmonics": 224.0
-      },
-      "Pallas": {
-        "lon": 161.0,
+      "Moon": {
+        "lon": 178.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
         "sign": "Virgo",
-        "deg": 11.0,
+        "deg": 28.0,
         "house": 10,
-        "harmonics": 161.0
+        "harmonics": 178.0
       },
-      "Juno": {
+      "Mercury": {
         "lon": 127.0,
         "lat": 0.0,
         "retrograde": false,
@@ -142,127 +32,107 @@
         "house": 9,
         "harmonics": 127.0
       },
-      "Vesta": {
-        "lon": 132.0,
+      "Venus": {
+        "lon": 267.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Sagittarius",
+        "deg": 27.0,
+        "house": 1,
+        "harmonics": 267.0
+      },
+      "Mars": {
+        "lon": 230.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Scorpio",
+        "deg": 20.0,
+        "house": 12,
+        "harmonics": 230.0
+      },
+      "Jupiter": {
+        "lon": 98.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Cancer",
+        "deg": 8.0,
+        "house": 8,
+        "harmonics": 98.0
+      },
+      "Saturn": {
+        "lon": 133.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
         "sign": "Leo",
-        "deg": 12.0,
+        "deg": 13.0,
         "house": 9,
-        "harmonics": 132.0
+        "harmonics": 133.0
       },
-      "Psyche": {
-        "lon": 54.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Taurus",
-        "deg": 24.0,
-        "house": 6,
-        "harmonics": 54.0
-      },
-      "Amor": {
-        "lon": 272.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Capricorn",
-        "deg": 2.0,
-        "house": 2,
-        "harmonics": 272.0
-      },
-      "Eros": {
-        "lon": 89.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Gemini",
-        "deg": 29.0,
-        "house": 7,
-        "harmonics": 89.0
-      },
-      "Astraea": {
-        "lon": 80.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Gemini",
-        "deg": 20.0,
-        "house": 7,
-        "harmonics": 80.0
-      },
-      "Sappho": {
-        "lon": 10.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Aries",
-        "deg": 10.0,
-        "house": 5,
-        "harmonics": 10.0
-      },
-      "Hygiea": {
-        "lon": 117.0,
+      "Uranus": {
+        "lon": 102.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
         "sign": "Cancer",
-        "deg": 27.0,
+        "deg": 12.0,
         "house": 8,
-        "harmonics": 117.0
+        "harmonics": 102.0
       },
-      "Karma": {
-        "lon": 83.0,
+      "Neptune": {
+        "lon": 78.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
         "sign": "Gemini",
-        "deg": 23.0,
+        "deg": 18.0,
         "house": 7,
-        "harmonics": 83.0
+        "harmonics": 78.0
       },
-      "Bacchus": {
-        "lon": 201.0,
+      "Pluto": {
+        "lon": 147.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Leo",
+        "deg": 27.0,
+        "house": 9,
+        "harmonics": 147.0
+      },
+      "Chiron": {
+        "lon": 198.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
         "sign": "Libra",
-        "deg": 21.0,
+        "deg": 18.0,
         "house": 11,
-        "harmonics": 201.0
+        "harmonics": 198.0
       },
-      "Eris": {
-        "lon": 15.0,
+      "Ceres": {
+        "lon": 260.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
-        "sign": "Aries",
-        "deg": 15.0,
-        "house": 5,
-        "harmonics": 15.0
+        "sign": "Sagittarius",
+        "deg": 20.0,
+        "house": 1,
+        "harmonics": 260.0
       },
-      "Sedna": {
-        "lon": 55.0,
+      "Pallas": {
+        "lon": 352.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
-        "sign": "Taurus",
-        "deg": 25.0,
-        "house": 6,
-        "harmonics": 55.0
+        "sign": "Pisces",
+        "deg": 22.0,
+        "house": 4,
+        "harmonics": 352.0
       },
-      "Haumea": {
-        "lon": 116.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Cancer",
-        "deg": 26.0,
-        "house": 8,
-        "harmonics": 116.0
-      },
-      "Makemake": {
+      "Juno": {
         "lon": 169.0,
         "lat": 0.0,
         "retrograde": false,
@@ -272,77 +142,87 @@
         "house": 10,
         "harmonics": 169.0
       },
-      "Quaoar": {
-        "lon": 250.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Sagittarius",
-        "deg": 10.0,
-        "house": 1,
-        "harmonics": 250.0
-      },
-      "Varuna": {
-        "lon": 5.0,
+      "Vesta": {
+        "lon": 17.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
         "sign": "Aries",
-        "deg": 5.0,
+        "deg": 17.0,
         "house": 5,
-        "harmonics": 5.0
+        "harmonics": 17.0
       },
-      "Ixion": {
-        "lon": 272.0,
+      "Psyche": {
+        "lon": 99.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
-        "sign": "Capricorn",
-        "deg": 2.0,
-        "house": 2,
-        "harmonics": 272.0
+        "sign": "Cancer",
+        "deg": 9.0,
+        "house": 8,
+        "harmonics": 99.0
       },
-      "Orcus": {
-        "lon": 247.0,
+      "Amor": {
+        "lon": 266.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
         "sign": "Sagittarius",
-        "deg": 7.0,
+        "deg": 26.0,
         "house": 1,
-        "harmonics": 247.0
+        "harmonics": 266.0
       },
-      "Salacia": {
-        "lon": 355.0,
+      "Eros": {
+        "lon": 256.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Sagittarius",
+        "deg": 16.0,
+        "house": 1,
+        "harmonics": 256.0
+      },
+      "Astraea": {
+        "lon": 166.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Virgo",
+        "deg": 16.0,
+        "house": 10,
+        "harmonics": 166.0
+      },
+      "Sappho": {
+        "lon": 55.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Taurus",
+        "deg": 25.0,
+        "house": 6,
+        "harmonics": 55.0
+      },
+      "Hygiea": {
+        "lon": 351.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
         "sign": "Pisces",
-        "deg": 25.0,
+        "deg": 21.0,
         "house": 4,
-        "harmonics": 355.0
+        "harmonics": 351.0
       },
-      "Typhon": {
-        "lon": 13.0,
+      "Karma": {
+        "lon": 88.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
-        "sign": "Aries",
-        "deg": 13.0,
-        "house": 5,
-        "harmonics": 13.0
+        "sign": "Gemini",
+        "deg": 28.0,
+        "house": 7,
+        "harmonics": 88.0
       },
-      "2002 AW197": {
-        "lon": 320.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Aquarius",
-        "deg": 20.0,
-        "house": 3,
-        "harmonics": 320.0
-      },
-      "2003 VS2": {
+      "Bacchus": {
         "lon": 257.0,
         "lat": 0.0,
         "retrograde": false,
@@ -351,6 +231,126 @@
         "deg": 17.0,
         "house": 1,
         "harmonics": 257.0
+      },
+      "Eris": {
+        "lon": 198.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Libra",
+        "deg": 18.0,
+        "house": 11,
+        "harmonics": 198.0
+      },
+      "Sedna": {
+        "lon": 98.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Cancer",
+        "deg": 8.0,
+        "house": 8,
+        "harmonics": 98.0
+      },
+      "Haumea": {
+        "lon": 274.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Capricorn",
+        "deg": 4.0,
+        "house": 2,
+        "harmonics": 274.0
+      },
+      "Makemake": {
+        "lon": 148.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Leo",
+        "deg": 28.0,
+        "house": 9,
+        "harmonics": 148.0
+      },
+      "Quaoar": {
+        "lon": 173.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Virgo",
+        "deg": 23.0,
+        "house": 10,
+        "harmonics": 173.0
+      },
+      "Varuna": {
+        "lon": 213.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Scorpio",
+        "deg": 3.0,
+        "house": 12,
+        "harmonics": 213.0
+      },
+      "Ixion": {
+        "lon": 218.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Scorpio",
+        "deg": 8.0,
+        "house": 12,
+        "harmonics": 218.0
+      },
+      "Orcus": {
+        "lon": 243.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Sagittarius",
+        "deg": 3.0,
+        "house": 1,
+        "harmonics": 243.0
+      },
+      "Salacia": {
+        "lon": 310.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Aquarius",
+        "deg": 10.0,
+        "house": 3,
+        "harmonics": 310.0
+      },
+      "Typhon": {
+        "lon": 315.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Aquarius",
+        "deg": 15.0,
+        "house": 3,
+        "harmonics": 315.0
+      },
+      "2002 AW197": {
+        "lon": 284.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Capricorn",
+        "deg": 14.0,
+        "house": 2,
+        "harmonics": 284.0
+      },
+      "2003 VS2": {
+        "lon": 160.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Virgo",
+        "deg": 10.0,
+        "house": 10,
+        "harmonics": 160.0
       },
       "Regulus": {
         "lon": 149.83,
@@ -535,139 +535,29 @@
     }
   },
   {
-    "timestamp": "2026-02-20T10:30:00Z",
+    "timestamp": "2026-02-20T10:36:49Z",
     "transits": {
       "Sun": {
-        "lon": 27.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Aries",
-        "deg": 27.0,
-        "house": 5,
-        "harmonics": 27.0
-      },
-      "Moon": {
-        "lon": 153.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Virgo",
-        "deg": 3.0,
-        "house": 10,
-        "harmonics": 153.0
-      },
-      "Mercury": {
-        "lon": 81.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Gemini",
-        "deg": 21.0,
-        "house": 7,
-        "harmonics": 81.0
-      },
-      "Venus": {
-        "lon": 291.0,
+        "lon": 273.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
         "sign": "Capricorn",
-        "deg": 21.0,
+        "deg": 3.0,
         "house": 2,
-        "harmonics": 291.0
+        "harmonics": 273.0
       },
-      "Mars": {
-        "lon": 261.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Sagittarius",
-        "deg": 21.0,
-        "house": 1,
-        "harmonics": 261.0
-      },
-      "Jupiter": {
-        "lon": 307.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Aquarius",
-        "deg": 7.0,
-        "house": 3,
-        "harmonics": 307.0
-      },
-      "Saturn": {
-        "lon": 147.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Leo",
-        "deg": 27.0,
-        "house": 9,
-        "harmonics": 147.0
-      },
-      "Uranus": {
-        "lon": 229.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Scorpio",
-        "deg": 19.0,
-        "house": 12,
-        "harmonics": 229.0
-      },
-      "Neptune": {
-        "lon": 126.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Leo",
-        "deg": 6.0,
-        "house": 9,
-        "harmonics": 126.0
-      },
-      "Pluto": {
-        "lon": 27.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Aries",
-        "deg": 27.0,
-        "house": 5,
-        "harmonics": 27.0
-      },
-      "Chiron": {
-        "lon": 339.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Pisces",
-        "deg": 9.0,
-        "house": 4,
-        "harmonics": 339.0
-      },
-      "Ceres": {
-        "lon": 224.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Scorpio",
-        "deg": 14.0,
-        "house": 12,
-        "harmonics": 224.0
-      },
-      "Pallas": {
-        "lon": 161.0,
+      "Moon": {
+        "lon": 178.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
         "sign": "Virgo",
-        "deg": 11.0,
+        "deg": 28.0,
         "house": 10,
-        "harmonics": 161.0
+        "harmonics": 178.0
       },
-      "Juno": {
+      "Mercury": {
         "lon": 127.0,
         "lat": 0.0,
         "retrograde": false,
@@ -677,127 +567,107 @@
         "house": 9,
         "harmonics": 127.0
       },
-      "Vesta": {
-        "lon": 132.0,
+      "Venus": {
+        "lon": 267.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Sagittarius",
+        "deg": 27.0,
+        "house": 1,
+        "harmonics": 267.0
+      },
+      "Mars": {
+        "lon": 230.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Scorpio",
+        "deg": 20.0,
+        "house": 12,
+        "harmonics": 230.0
+      },
+      "Jupiter": {
+        "lon": 98.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Cancer",
+        "deg": 8.0,
+        "house": 8,
+        "harmonics": 98.0
+      },
+      "Saturn": {
+        "lon": 133.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
         "sign": "Leo",
-        "deg": 12.0,
+        "deg": 13.0,
         "house": 9,
-        "harmonics": 132.0
+        "harmonics": 133.0
       },
-      "Psyche": {
-        "lon": 54.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Taurus",
-        "deg": 24.0,
-        "house": 6,
-        "harmonics": 54.0
-      },
-      "Amor": {
-        "lon": 272.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Capricorn",
-        "deg": 2.0,
-        "house": 2,
-        "harmonics": 272.0
-      },
-      "Eros": {
-        "lon": 89.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Gemini",
-        "deg": 29.0,
-        "house": 7,
-        "harmonics": 89.0
-      },
-      "Astraea": {
-        "lon": 80.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Gemini",
-        "deg": 20.0,
-        "house": 7,
-        "harmonics": 80.0
-      },
-      "Sappho": {
-        "lon": 10.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Aries",
-        "deg": 10.0,
-        "house": 5,
-        "harmonics": 10.0
-      },
-      "Hygiea": {
-        "lon": 117.0,
+      "Uranus": {
+        "lon": 102.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
         "sign": "Cancer",
-        "deg": 27.0,
+        "deg": 12.0,
         "house": 8,
-        "harmonics": 117.0
+        "harmonics": 102.0
       },
-      "Karma": {
-        "lon": 83.0,
+      "Neptune": {
+        "lon": 78.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
         "sign": "Gemini",
-        "deg": 23.0,
+        "deg": 18.0,
         "house": 7,
-        "harmonics": 83.0
+        "harmonics": 78.0
       },
-      "Bacchus": {
-        "lon": 201.0,
+      "Pluto": {
+        "lon": 147.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Leo",
+        "deg": 27.0,
+        "house": 9,
+        "harmonics": 147.0
+      },
+      "Chiron": {
+        "lon": 198.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
         "sign": "Libra",
-        "deg": 21.0,
+        "deg": 18.0,
         "house": 11,
-        "harmonics": 201.0
+        "harmonics": 198.0
       },
-      "Eris": {
-        "lon": 15.0,
+      "Ceres": {
+        "lon": 260.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
-        "sign": "Aries",
-        "deg": 15.0,
-        "house": 5,
-        "harmonics": 15.0
+        "sign": "Sagittarius",
+        "deg": 20.0,
+        "house": 1,
+        "harmonics": 260.0
       },
-      "Sedna": {
-        "lon": 55.0,
+      "Pallas": {
+        "lon": 352.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
-        "sign": "Taurus",
-        "deg": 25.0,
-        "house": 6,
-        "harmonics": 55.0
+        "sign": "Pisces",
+        "deg": 22.0,
+        "house": 4,
+        "harmonics": 352.0
       },
-      "Haumea": {
-        "lon": 116.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Cancer",
-        "deg": 26.0,
-        "house": 8,
-        "harmonics": 116.0
-      },
-      "Makemake": {
+      "Juno": {
         "lon": 169.0,
         "lat": 0.0,
         "retrograde": false,
@@ -807,77 +677,87 @@
         "house": 10,
         "harmonics": 169.0
       },
-      "Quaoar": {
-        "lon": 250.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Sagittarius",
-        "deg": 10.0,
-        "house": 1,
-        "harmonics": 250.0
-      },
-      "Varuna": {
-        "lon": 5.0,
+      "Vesta": {
+        "lon": 17.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
         "sign": "Aries",
-        "deg": 5.0,
+        "deg": 17.0,
         "house": 5,
-        "harmonics": 5.0
+        "harmonics": 17.0
       },
-      "Ixion": {
-        "lon": 272.0,
+      "Psyche": {
+        "lon": 99.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
-        "sign": "Capricorn",
-        "deg": 2.0,
-        "house": 2,
-        "harmonics": 272.0
+        "sign": "Cancer",
+        "deg": 9.0,
+        "house": 8,
+        "harmonics": 99.0
       },
-      "Orcus": {
-        "lon": 247.0,
+      "Amor": {
+        "lon": 266.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
         "sign": "Sagittarius",
-        "deg": 7.0,
+        "deg": 26.0,
         "house": 1,
-        "harmonics": 247.0
+        "harmonics": 266.0
       },
-      "Salacia": {
-        "lon": 355.0,
+      "Eros": {
+        "lon": 256.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Sagittarius",
+        "deg": 16.0,
+        "house": 1,
+        "harmonics": 256.0
+      },
+      "Astraea": {
+        "lon": 166.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Virgo",
+        "deg": 16.0,
+        "house": 10,
+        "harmonics": 166.0
+      },
+      "Sappho": {
+        "lon": 55.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Taurus",
+        "deg": 25.0,
+        "house": 6,
+        "harmonics": 55.0
+      },
+      "Hygiea": {
+        "lon": 351.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
         "sign": "Pisces",
-        "deg": 25.0,
+        "deg": 21.0,
         "house": 4,
-        "harmonics": 355.0
+        "harmonics": 351.0
       },
-      "Typhon": {
-        "lon": 13.0,
+      "Karma": {
+        "lon": 88.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
-        "sign": "Aries",
-        "deg": 13.0,
-        "house": 5,
-        "harmonics": 13.0
+        "sign": "Gemini",
+        "deg": 28.0,
+        "house": 7,
+        "harmonics": 88.0
       },
-      "2002 AW197": {
-        "lon": 320.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Aquarius",
-        "deg": 20.0,
-        "house": 3,
-        "harmonics": 320.0
-      },
-      "2003 VS2": {
+      "Bacchus": {
         "lon": 257.0,
         "lat": 0.0,
         "retrograde": false,
@@ -886,6 +766,126 @@
         "deg": 17.0,
         "house": 1,
         "harmonics": 257.0
+      },
+      "Eris": {
+        "lon": 198.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Libra",
+        "deg": 18.0,
+        "house": 11,
+        "harmonics": 198.0
+      },
+      "Sedna": {
+        "lon": 98.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Cancer",
+        "deg": 8.0,
+        "house": 8,
+        "harmonics": 98.0
+      },
+      "Haumea": {
+        "lon": 274.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Capricorn",
+        "deg": 4.0,
+        "house": 2,
+        "harmonics": 274.0
+      },
+      "Makemake": {
+        "lon": 148.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Leo",
+        "deg": 28.0,
+        "house": 9,
+        "harmonics": 148.0
+      },
+      "Quaoar": {
+        "lon": 173.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Virgo",
+        "deg": 23.0,
+        "house": 10,
+        "harmonics": 173.0
+      },
+      "Varuna": {
+        "lon": 213.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Scorpio",
+        "deg": 3.0,
+        "house": 12,
+        "harmonics": 213.0
+      },
+      "Ixion": {
+        "lon": 218.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Scorpio",
+        "deg": 8.0,
+        "house": 12,
+        "harmonics": 218.0
+      },
+      "Orcus": {
+        "lon": 243.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Sagittarius",
+        "deg": 3.0,
+        "house": 1,
+        "harmonics": 243.0
+      },
+      "Salacia": {
+        "lon": 310.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Aquarius",
+        "deg": 10.0,
+        "house": 3,
+        "harmonics": 310.0
+      },
+      "Typhon": {
+        "lon": 315.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Aquarius",
+        "deg": 15.0,
+        "house": 3,
+        "harmonics": 315.0
+      },
+      "2002 AW197": {
+        "lon": 284.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Capricorn",
+        "deg": 14.0,
+        "house": 2,
+        "harmonics": 284.0
+      },
+      "2003 VS2": {
+        "lon": 160.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Virgo",
+        "deg": 10.0,
+        "house": 10,
+        "harmonics": 160.0
       },
       "Regulus": {
         "lon": 149.83,
@@ -1070,139 +1070,29 @@
     }
   },
   {
-    "timestamp": "2026-02-21T10:30:00Z",
+    "timestamp": "2026-02-21T10:36:49Z",
     "transits": {
       "Sun": {
-        "lon": 27.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Aries",
-        "deg": 27.0,
-        "house": 5,
-        "harmonics": 27.0
-      },
-      "Moon": {
-        "lon": 153.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Virgo",
-        "deg": 3.0,
-        "house": 10,
-        "harmonics": 153.0
-      },
-      "Mercury": {
-        "lon": 81.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Gemini",
-        "deg": 21.0,
-        "house": 7,
-        "harmonics": 81.0
-      },
-      "Venus": {
-        "lon": 291.0,
+        "lon": 273.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
         "sign": "Capricorn",
-        "deg": 21.0,
+        "deg": 3.0,
         "house": 2,
-        "harmonics": 291.0
+        "harmonics": 273.0
       },
-      "Mars": {
-        "lon": 261.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Sagittarius",
-        "deg": 21.0,
-        "house": 1,
-        "harmonics": 261.0
-      },
-      "Jupiter": {
-        "lon": 307.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Aquarius",
-        "deg": 7.0,
-        "house": 3,
-        "harmonics": 307.0
-      },
-      "Saturn": {
-        "lon": 147.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Leo",
-        "deg": 27.0,
-        "house": 9,
-        "harmonics": 147.0
-      },
-      "Uranus": {
-        "lon": 229.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Scorpio",
-        "deg": 19.0,
-        "house": 12,
-        "harmonics": 229.0
-      },
-      "Neptune": {
-        "lon": 126.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Leo",
-        "deg": 6.0,
-        "house": 9,
-        "harmonics": 126.0
-      },
-      "Pluto": {
-        "lon": 27.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Aries",
-        "deg": 27.0,
-        "house": 5,
-        "harmonics": 27.0
-      },
-      "Chiron": {
-        "lon": 339.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Pisces",
-        "deg": 9.0,
-        "house": 4,
-        "harmonics": 339.0
-      },
-      "Ceres": {
-        "lon": 224.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Scorpio",
-        "deg": 14.0,
-        "house": 12,
-        "harmonics": 224.0
-      },
-      "Pallas": {
-        "lon": 161.0,
+      "Moon": {
+        "lon": 178.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
         "sign": "Virgo",
-        "deg": 11.0,
+        "deg": 28.0,
         "house": 10,
-        "harmonics": 161.0
+        "harmonics": 178.0
       },
-      "Juno": {
+      "Mercury": {
         "lon": 127.0,
         "lat": 0.0,
         "retrograde": false,
@@ -1212,127 +1102,107 @@
         "house": 9,
         "harmonics": 127.0
       },
-      "Vesta": {
-        "lon": 132.0,
+      "Venus": {
+        "lon": 267.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Sagittarius",
+        "deg": 27.0,
+        "house": 1,
+        "harmonics": 267.0
+      },
+      "Mars": {
+        "lon": 230.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Scorpio",
+        "deg": 20.0,
+        "house": 12,
+        "harmonics": 230.0
+      },
+      "Jupiter": {
+        "lon": 98.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Cancer",
+        "deg": 8.0,
+        "house": 8,
+        "harmonics": 98.0
+      },
+      "Saturn": {
+        "lon": 133.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
         "sign": "Leo",
-        "deg": 12.0,
+        "deg": 13.0,
         "house": 9,
-        "harmonics": 132.0
+        "harmonics": 133.0
       },
-      "Psyche": {
-        "lon": 54.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Taurus",
-        "deg": 24.0,
-        "house": 6,
-        "harmonics": 54.0
-      },
-      "Amor": {
-        "lon": 272.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Capricorn",
-        "deg": 2.0,
-        "house": 2,
-        "harmonics": 272.0
-      },
-      "Eros": {
-        "lon": 89.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Gemini",
-        "deg": 29.0,
-        "house": 7,
-        "harmonics": 89.0
-      },
-      "Astraea": {
-        "lon": 80.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Gemini",
-        "deg": 20.0,
-        "house": 7,
-        "harmonics": 80.0
-      },
-      "Sappho": {
-        "lon": 10.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Aries",
-        "deg": 10.0,
-        "house": 5,
-        "harmonics": 10.0
-      },
-      "Hygiea": {
-        "lon": 117.0,
+      "Uranus": {
+        "lon": 102.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
         "sign": "Cancer",
-        "deg": 27.0,
+        "deg": 12.0,
         "house": 8,
-        "harmonics": 117.0
+        "harmonics": 102.0
       },
-      "Karma": {
-        "lon": 83.0,
+      "Neptune": {
+        "lon": 78.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
         "sign": "Gemini",
-        "deg": 23.0,
+        "deg": 18.0,
         "house": 7,
-        "harmonics": 83.0
+        "harmonics": 78.0
       },
-      "Bacchus": {
-        "lon": 201.0,
+      "Pluto": {
+        "lon": 147.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Leo",
+        "deg": 27.0,
+        "house": 9,
+        "harmonics": 147.0
+      },
+      "Chiron": {
+        "lon": 198.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
         "sign": "Libra",
-        "deg": 21.0,
+        "deg": 18.0,
         "house": 11,
-        "harmonics": 201.0
+        "harmonics": 198.0
       },
-      "Eris": {
-        "lon": 15.0,
+      "Ceres": {
+        "lon": 260.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
-        "sign": "Aries",
-        "deg": 15.0,
-        "house": 5,
-        "harmonics": 15.0
+        "sign": "Sagittarius",
+        "deg": 20.0,
+        "house": 1,
+        "harmonics": 260.0
       },
-      "Sedna": {
-        "lon": 55.0,
+      "Pallas": {
+        "lon": 352.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
-        "sign": "Taurus",
-        "deg": 25.0,
-        "house": 6,
-        "harmonics": 55.0
+        "sign": "Pisces",
+        "deg": 22.0,
+        "house": 4,
+        "harmonics": 352.0
       },
-      "Haumea": {
-        "lon": 116.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Cancer",
-        "deg": 26.0,
-        "house": 8,
-        "harmonics": 116.0
-      },
-      "Makemake": {
+      "Juno": {
         "lon": 169.0,
         "lat": 0.0,
         "retrograde": false,
@@ -1342,77 +1212,87 @@
         "house": 10,
         "harmonics": 169.0
       },
-      "Quaoar": {
-        "lon": 250.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Sagittarius",
-        "deg": 10.0,
-        "house": 1,
-        "harmonics": 250.0
-      },
-      "Varuna": {
-        "lon": 5.0,
+      "Vesta": {
+        "lon": 17.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
         "sign": "Aries",
-        "deg": 5.0,
+        "deg": 17.0,
         "house": 5,
-        "harmonics": 5.0
+        "harmonics": 17.0
       },
-      "Ixion": {
-        "lon": 272.0,
+      "Psyche": {
+        "lon": 99.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
-        "sign": "Capricorn",
-        "deg": 2.0,
-        "house": 2,
-        "harmonics": 272.0
+        "sign": "Cancer",
+        "deg": 9.0,
+        "house": 8,
+        "harmonics": 99.0
       },
-      "Orcus": {
-        "lon": 247.0,
+      "Amor": {
+        "lon": 266.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
         "sign": "Sagittarius",
-        "deg": 7.0,
+        "deg": 26.0,
         "house": 1,
-        "harmonics": 247.0
+        "harmonics": 266.0
       },
-      "Salacia": {
-        "lon": 355.0,
+      "Eros": {
+        "lon": 256.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Sagittarius",
+        "deg": 16.0,
+        "house": 1,
+        "harmonics": 256.0
+      },
+      "Astraea": {
+        "lon": 166.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Virgo",
+        "deg": 16.0,
+        "house": 10,
+        "harmonics": 166.0
+      },
+      "Sappho": {
+        "lon": 55.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Taurus",
+        "deg": 25.0,
+        "house": 6,
+        "harmonics": 55.0
+      },
+      "Hygiea": {
+        "lon": 351.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
         "sign": "Pisces",
-        "deg": 25.0,
+        "deg": 21.0,
         "house": 4,
-        "harmonics": 355.0
+        "harmonics": 351.0
       },
-      "Typhon": {
-        "lon": 13.0,
+      "Karma": {
+        "lon": 88.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
-        "sign": "Aries",
-        "deg": 13.0,
-        "house": 5,
-        "harmonics": 13.0
+        "sign": "Gemini",
+        "deg": 28.0,
+        "house": 7,
+        "harmonics": 88.0
       },
-      "2002 AW197": {
-        "lon": 320.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Aquarius",
-        "deg": 20.0,
-        "house": 3,
-        "harmonics": 320.0
-      },
-      "2003 VS2": {
+      "Bacchus": {
         "lon": 257.0,
         "lat": 0.0,
         "retrograde": false,
@@ -1421,6 +1301,126 @@
         "deg": 17.0,
         "house": 1,
         "harmonics": 257.0
+      },
+      "Eris": {
+        "lon": 198.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Libra",
+        "deg": 18.0,
+        "house": 11,
+        "harmonics": 198.0
+      },
+      "Sedna": {
+        "lon": 98.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Cancer",
+        "deg": 8.0,
+        "house": 8,
+        "harmonics": 98.0
+      },
+      "Haumea": {
+        "lon": 274.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Capricorn",
+        "deg": 4.0,
+        "house": 2,
+        "harmonics": 274.0
+      },
+      "Makemake": {
+        "lon": 148.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Leo",
+        "deg": 28.0,
+        "house": 9,
+        "harmonics": 148.0
+      },
+      "Quaoar": {
+        "lon": 173.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Virgo",
+        "deg": 23.0,
+        "house": 10,
+        "harmonics": 173.0
+      },
+      "Varuna": {
+        "lon": 213.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Scorpio",
+        "deg": 3.0,
+        "house": 12,
+        "harmonics": 213.0
+      },
+      "Ixion": {
+        "lon": 218.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Scorpio",
+        "deg": 8.0,
+        "house": 12,
+        "harmonics": 218.0
+      },
+      "Orcus": {
+        "lon": 243.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Sagittarius",
+        "deg": 3.0,
+        "house": 1,
+        "harmonics": 243.0
+      },
+      "Salacia": {
+        "lon": 310.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Aquarius",
+        "deg": 10.0,
+        "house": 3,
+        "harmonics": 310.0
+      },
+      "Typhon": {
+        "lon": 315.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Aquarius",
+        "deg": 15.0,
+        "house": 3,
+        "harmonics": 315.0
+      },
+      "2002 AW197": {
+        "lon": 284.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Capricorn",
+        "deg": 14.0,
+        "house": 2,
+        "harmonics": 284.0
+      },
+      "2003 VS2": {
+        "lon": 160.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Virgo",
+        "deg": 10.0,
+        "house": 10,
+        "harmonics": 160.0
       },
       "Regulus": {
         "lon": 149.83,
@@ -1605,139 +1605,29 @@
     }
   },
   {
-    "timestamp": "2026-02-22T10:30:00Z",
+    "timestamp": "2026-02-22T10:36:49Z",
     "transits": {
       "Sun": {
-        "lon": 27.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Aries",
-        "deg": 27.0,
-        "house": 5,
-        "harmonics": 27.0
-      },
-      "Moon": {
-        "lon": 153.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Virgo",
-        "deg": 3.0,
-        "house": 10,
-        "harmonics": 153.0
-      },
-      "Mercury": {
-        "lon": 81.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Gemini",
-        "deg": 21.0,
-        "house": 7,
-        "harmonics": 81.0
-      },
-      "Venus": {
-        "lon": 291.0,
+        "lon": 273.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
         "sign": "Capricorn",
-        "deg": 21.0,
+        "deg": 3.0,
         "house": 2,
-        "harmonics": 291.0
+        "harmonics": 273.0
       },
-      "Mars": {
-        "lon": 261.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Sagittarius",
-        "deg": 21.0,
-        "house": 1,
-        "harmonics": 261.0
-      },
-      "Jupiter": {
-        "lon": 307.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Aquarius",
-        "deg": 7.0,
-        "house": 3,
-        "harmonics": 307.0
-      },
-      "Saturn": {
-        "lon": 147.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Leo",
-        "deg": 27.0,
-        "house": 9,
-        "harmonics": 147.0
-      },
-      "Uranus": {
-        "lon": 229.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Scorpio",
-        "deg": 19.0,
-        "house": 12,
-        "harmonics": 229.0
-      },
-      "Neptune": {
-        "lon": 126.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Leo",
-        "deg": 6.0,
-        "house": 9,
-        "harmonics": 126.0
-      },
-      "Pluto": {
-        "lon": 27.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Aries",
-        "deg": 27.0,
-        "house": 5,
-        "harmonics": 27.0
-      },
-      "Chiron": {
-        "lon": 339.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Pisces",
-        "deg": 9.0,
-        "house": 4,
-        "harmonics": 339.0
-      },
-      "Ceres": {
-        "lon": 224.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Scorpio",
-        "deg": 14.0,
-        "house": 12,
-        "harmonics": 224.0
-      },
-      "Pallas": {
-        "lon": 161.0,
+      "Moon": {
+        "lon": 178.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
         "sign": "Virgo",
-        "deg": 11.0,
+        "deg": 28.0,
         "house": 10,
-        "harmonics": 161.0
+        "harmonics": 178.0
       },
-      "Juno": {
+      "Mercury": {
         "lon": 127.0,
         "lat": 0.0,
         "retrograde": false,
@@ -1747,127 +1637,107 @@
         "house": 9,
         "harmonics": 127.0
       },
-      "Vesta": {
-        "lon": 132.0,
+      "Venus": {
+        "lon": 267.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Sagittarius",
+        "deg": 27.0,
+        "house": 1,
+        "harmonics": 267.0
+      },
+      "Mars": {
+        "lon": 230.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Scorpio",
+        "deg": 20.0,
+        "house": 12,
+        "harmonics": 230.0
+      },
+      "Jupiter": {
+        "lon": 98.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Cancer",
+        "deg": 8.0,
+        "house": 8,
+        "harmonics": 98.0
+      },
+      "Saturn": {
+        "lon": 133.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
         "sign": "Leo",
-        "deg": 12.0,
+        "deg": 13.0,
         "house": 9,
-        "harmonics": 132.0
+        "harmonics": 133.0
       },
-      "Psyche": {
-        "lon": 54.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Taurus",
-        "deg": 24.0,
-        "house": 6,
-        "harmonics": 54.0
-      },
-      "Amor": {
-        "lon": 272.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Capricorn",
-        "deg": 2.0,
-        "house": 2,
-        "harmonics": 272.0
-      },
-      "Eros": {
-        "lon": 89.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Gemini",
-        "deg": 29.0,
-        "house": 7,
-        "harmonics": 89.0
-      },
-      "Astraea": {
-        "lon": 80.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Gemini",
-        "deg": 20.0,
-        "house": 7,
-        "harmonics": 80.0
-      },
-      "Sappho": {
-        "lon": 10.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Aries",
-        "deg": 10.0,
-        "house": 5,
-        "harmonics": 10.0
-      },
-      "Hygiea": {
-        "lon": 117.0,
+      "Uranus": {
+        "lon": 102.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
         "sign": "Cancer",
-        "deg": 27.0,
+        "deg": 12.0,
         "house": 8,
-        "harmonics": 117.0
+        "harmonics": 102.0
       },
-      "Karma": {
-        "lon": 83.0,
+      "Neptune": {
+        "lon": 78.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
         "sign": "Gemini",
-        "deg": 23.0,
+        "deg": 18.0,
         "house": 7,
-        "harmonics": 83.0
+        "harmonics": 78.0
       },
-      "Bacchus": {
-        "lon": 201.0,
+      "Pluto": {
+        "lon": 147.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Leo",
+        "deg": 27.0,
+        "house": 9,
+        "harmonics": 147.0
+      },
+      "Chiron": {
+        "lon": 198.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
         "sign": "Libra",
-        "deg": 21.0,
+        "deg": 18.0,
         "house": 11,
-        "harmonics": 201.0
+        "harmonics": 198.0
       },
-      "Eris": {
-        "lon": 15.0,
+      "Ceres": {
+        "lon": 260.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
-        "sign": "Aries",
-        "deg": 15.0,
-        "house": 5,
-        "harmonics": 15.0
+        "sign": "Sagittarius",
+        "deg": 20.0,
+        "house": 1,
+        "harmonics": 260.0
       },
-      "Sedna": {
-        "lon": 55.0,
+      "Pallas": {
+        "lon": 352.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
-        "sign": "Taurus",
-        "deg": 25.0,
-        "house": 6,
-        "harmonics": 55.0
+        "sign": "Pisces",
+        "deg": 22.0,
+        "house": 4,
+        "harmonics": 352.0
       },
-      "Haumea": {
-        "lon": 116.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Cancer",
-        "deg": 26.0,
-        "house": 8,
-        "harmonics": 116.0
-      },
-      "Makemake": {
+      "Juno": {
         "lon": 169.0,
         "lat": 0.0,
         "retrograde": false,
@@ -1877,77 +1747,87 @@
         "house": 10,
         "harmonics": 169.0
       },
-      "Quaoar": {
-        "lon": 250.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Sagittarius",
-        "deg": 10.0,
-        "house": 1,
-        "harmonics": 250.0
-      },
-      "Varuna": {
-        "lon": 5.0,
+      "Vesta": {
+        "lon": 17.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
         "sign": "Aries",
-        "deg": 5.0,
+        "deg": 17.0,
         "house": 5,
-        "harmonics": 5.0
+        "harmonics": 17.0
       },
-      "Ixion": {
-        "lon": 272.0,
+      "Psyche": {
+        "lon": 99.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
-        "sign": "Capricorn",
-        "deg": 2.0,
-        "house": 2,
-        "harmonics": 272.0
+        "sign": "Cancer",
+        "deg": 9.0,
+        "house": 8,
+        "harmonics": 99.0
       },
-      "Orcus": {
-        "lon": 247.0,
+      "Amor": {
+        "lon": 266.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
         "sign": "Sagittarius",
-        "deg": 7.0,
+        "deg": 26.0,
         "house": 1,
-        "harmonics": 247.0
+        "harmonics": 266.0
       },
-      "Salacia": {
-        "lon": 355.0,
+      "Eros": {
+        "lon": 256.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Sagittarius",
+        "deg": 16.0,
+        "house": 1,
+        "harmonics": 256.0
+      },
+      "Astraea": {
+        "lon": 166.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Virgo",
+        "deg": 16.0,
+        "house": 10,
+        "harmonics": 166.0
+      },
+      "Sappho": {
+        "lon": 55.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Taurus",
+        "deg": 25.0,
+        "house": 6,
+        "harmonics": 55.0
+      },
+      "Hygiea": {
+        "lon": 351.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
         "sign": "Pisces",
-        "deg": 25.0,
+        "deg": 21.0,
         "house": 4,
-        "harmonics": 355.0
+        "harmonics": 351.0
       },
-      "Typhon": {
-        "lon": 13.0,
+      "Karma": {
+        "lon": 88.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
-        "sign": "Aries",
-        "deg": 13.0,
-        "house": 5,
-        "harmonics": 13.0
+        "sign": "Gemini",
+        "deg": 28.0,
+        "house": 7,
+        "harmonics": 88.0
       },
-      "2002 AW197": {
-        "lon": 320.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Aquarius",
-        "deg": 20.0,
-        "house": 3,
-        "harmonics": 320.0
-      },
-      "2003 VS2": {
+      "Bacchus": {
         "lon": 257.0,
         "lat": 0.0,
         "retrograde": false,
@@ -1956,6 +1836,126 @@
         "deg": 17.0,
         "house": 1,
         "harmonics": 257.0
+      },
+      "Eris": {
+        "lon": 198.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Libra",
+        "deg": 18.0,
+        "house": 11,
+        "harmonics": 198.0
+      },
+      "Sedna": {
+        "lon": 98.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Cancer",
+        "deg": 8.0,
+        "house": 8,
+        "harmonics": 98.0
+      },
+      "Haumea": {
+        "lon": 274.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Capricorn",
+        "deg": 4.0,
+        "house": 2,
+        "harmonics": 274.0
+      },
+      "Makemake": {
+        "lon": 148.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Leo",
+        "deg": 28.0,
+        "house": 9,
+        "harmonics": 148.0
+      },
+      "Quaoar": {
+        "lon": 173.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Virgo",
+        "deg": 23.0,
+        "house": 10,
+        "harmonics": 173.0
+      },
+      "Varuna": {
+        "lon": 213.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Scorpio",
+        "deg": 3.0,
+        "house": 12,
+        "harmonics": 213.0
+      },
+      "Ixion": {
+        "lon": 218.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Scorpio",
+        "deg": 8.0,
+        "house": 12,
+        "harmonics": 218.0
+      },
+      "Orcus": {
+        "lon": 243.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Sagittarius",
+        "deg": 3.0,
+        "house": 1,
+        "harmonics": 243.0
+      },
+      "Salacia": {
+        "lon": 310.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Aquarius",
+        "deg": 10.0,
+        "house": 3,
+        "harmonics": 310.0
+      },
+      "Typhon": {
+        "lon": 315.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Aquarius",
+        "deg": 15.0,
+        "house": 3,
+        "harmonics": 315.0
+      },
+      "2002 AW197": {
+        "lon": 284.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Capricorn",
+        "deg": 14.0,
+        "house": 2,
+        "harmonics": 284.0
+      },
+      "2003 VS2": {
+        "lon": 160.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Virgo",
+        "deg": 10.0,
+        "house": 10,
+        "harmonics": 160.0
       },
       "Regulus": {
         "lon": 149.83,
@@ -2140,139 +2140,29 @@
     }
   },
   {
-    "timestamp": "2026-02-23T10:30:00Z",
+    "timestamp": "2026-02-23T10:36:49Z",
     "transits": {
       "Sun": {
-        "lon": 27.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Aries",
-        "deg": 27.0,
-        "house": 5,
-        "harmonics": 27.0
-      },
-      "Moon": {
-        "lon": 153.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Virgo",
-        "deg": 3.0,
-        "house": 10,
-        "harmonics": 153.0
-      },
-      "Mercury": {
-        "lon": 81.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Gemini",
-        "deg": 21.0,
-        "house": 7,
-        "harmonics": 81.0
-      },
-      "Venus": {
-        "lon": 291.0,
+        "lon": 273.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
         "sign": "Capricorn",
-        "deg": 21.0,
+        "deg": 3.0,
         "house": 2,
-        "harmonics": 291.0
+        "harmonics": 273.0
       },
-      "Mars": {
-        "lon": 261.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Sagittarius",
-        "deg": 21.0,
-        "house": 1,
-        "harmonics": 261.0
-      },
-      "Jupiter": {
-        "lon": 307.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Aquarius",
-        "deg": 7.0,
-        "house": 3,
-        "harmonics": 307.0
-      },
-      "Saturn": {
-        "lon": 147.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Leo",
-        "deg": 27.0,
-        "house": 9,
-        "harmonics": 147.0
-      },
-      "Uranus": {
-        "lon": 229.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Scorpio",
-        "deg": 19.0,
-        "house": 12,
-        "harmonics": 229.0
-      },
-      "Neptune": {
-        "lon": 126.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Leo",
-        "deg": 6.0,
-        "house": 9,
-        "harmonics": 126.0
-      },
-      "Pluto": {
-        "lon": 27.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Aries",
-        "deg": 27.0,
-        "house": 5,
-        "harmonics": 27.0
-      },
-      "Chiron": {
-        "lon": 339.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Pisces",
-        "deg": 9.0,
-        "house": 4,
-        "harmonics": 339.0
-      },
-      "Ceres": {
-        "lon": 224.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Scorpio",
-        "deg": 14.0,
-        "house": 12,
-        "harmonics": 224.0
-      },
-      "Pallas": {
-        "lon": 161.0,
+      "Moon": {
+        "lon": 178.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
         "sign": "Virgo",
-        "deg": 11.0,
+        "deg": 28.0,
         "house": 10,
-        "harmonics": 161.0
+        "harmonics": 178.0
       },
-      "Juno": {
+      "Mercury": {
         "lon": 127.0,
         "lat": 0.0,
         "retrograde": false,
@@ -2282,127 +2172,107 @@
         "house": 9,
         "harmonics": 127.0
       },
-      "Vesta": {
-        "lon": 132.0,
+      "Venus": {
+        "lon": 267.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Sagittarius",
+        "deg": 27.0,
+        "house": 1,
+        "harmonics": 267.0
+      },
+      "Mars": {
+        "lon": 230.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Scorpio",
+        "deg": 20.0,
+        "house": 12,
+        "harmonics": 230.0
+      },
+      "Jupiter": {
+        "lon": 98.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Cancer",
+        "deg": 8.0,
+        "house": 8,
+        "harmonics": 98.0
+      },
+      "Saturn": {
+        "lon": 133.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
         "sign": "Leo",
-        "deg": 12.0,
+        "deg": 13.0,
         "house": 9,
-        "harmonics": 132.0
+        "harmonics": 133.0
       },
-      "Psyche": {
-        "lon": 54.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Taurus",
-        "deg": 24.0,
-        "house": 6,
-        "harmonics": 54.0
-      },
-      "Amor": {
-        "lon": 272.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Capricorn",
-        "deg": 2.0,
-        "house": 2,
-        "harmonics": 272.0
-      },
-      "Eros": {
-        "lon": 89.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Gemini",
-        "deg": 29.0,
-        "house": 7,
-        "harmonics": 89.0
-      },
-      "Astraea": {
-        "lon": 80.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Gemini",
-        "deg": 20.0,
-        "house": 7,
-        "harmonics": 80.0
-      },
-      "Sappho": {
-        "lon": 10.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Aries",
-        "deg": 10.0,
-        "house": 5,
-        "harmonics": 10.0
-      },
-      "Hygiea": {
-        "lon": 117.0,
+      "Uranus": {
+        "lon": 102.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
         "sign": "Cancer",
-        "deg": 27.0,
+        "deg": 12.0,
         "house": 8,
-        "harmonics": 117.0
+        "harmonics": 102.0
       },
-      "Karma": {
-        "lon": 83.0,
+      "Neptune": {
+        "lon": 78.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
         "sign": "Gemini",
-        "deg": 23.0,
+        "deg": 18.0,
         "house": 7,
-        "harmonics": 83.0
+        "harmonics": 78.0
       },
-      "Bacchus": {
-        "lon": 201.0,
+      "Pluto": {
+        "lon": 147.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Leo",
+        "deg": 27.0,
+        "house": 9,
+        "harmonics": 147.0
+      },
+      "Chiron": {
+        "lon": 198.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
         "sign": "Libra",
-        "deg": 21.0,
+        "deg": 18.0,
         "house": 11,
-        "harmonics": 201.0
+        "harmonics": 198.0
       },
-      "Eris": {
-        "lon": 15.0,
+      "Ceres": {
+        "lon": 260.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
-        "sign": "Aries",
-        "deg": 15.0,
-        "house": 5,
-        "harmonics": 15.0
+        "sign": "Sagittarius",
+        "deg": 20.0,
+        "house": 1,
+        "harmonics": 260.0
       },
-      "Sedna": {
-        "lon": 55.0,
+      "Pallas": {
+        "lon": 352.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
-        "sign": "Taurus",
-        "deg": 25.0,
-        "house": 6,
-        "harmonics": 55.0
+        "sign": "Pisces",
+        "deg": 22.0,
+        "house": 4,
+        "harmonics": 352.0
       },
-      "Haumea": {
-        "lon": 116.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Cancer",
-        "deg": 26.0,
-        "house": 8,
-        "harmonics": 116.0
-      },
-      "Makemake": {
+      "Juno": {
         "lon": 169.0,
         "lat": 0.0,
         "retrograde": false,
@@ -2412,77 +2282,87 @@
         "house": 10,
         "harmonics": 169.0
       },
-      "Quaoar": {
-        "lon": 250.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Sagittarius",
-        "deg": 10.0,
-        "house": 1,
-        "harmonics": 250.0
-      },
-      "Varuna": {
-        "lon": 5.0,
+      "Vesta": {
+        "lon": 17.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
         "sign": "Aries",
-        "deg": 5.0,
+        "deg": 17.0,
         "house": 5,
-        "harmonics": 5.0
+        "harmonics": 17.0
       },
-      "Ixion": {
-        "lon": 272.0,
+      "Psyche": {
+        "lon": 99.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
-        "sign": "Capricorn",
-        "deg": 2.0,
-        "house": 2,
-        "harmonics": 272.0
+        "sign": "Cancer",
+        "deg": 9.0,
+        "house": 8,
+        "harmonics": 99.0
       },
-      "Orcus": {
-        "lon": 247.0,
+      "Amor": {
+        "lon": 266.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
         "sign": "Sagittarius",
-        "deg": 7.0,
+        "deg": 26.0,
         "house": 1,
-        "harmonics": 247.0
+        "harmonics": 266.0
       },
-      "Salacia": {
-        "lon": 355.0,
+      "Eros": {
+        "lon": 256.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Sagittarius",
+        "deg": 16.0,
+        "house": 1,
+        "harmonics": 256.0
+      },
+      "Astraea": {
+        "lon": 166.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Virgo",
+        "deg": 16.0,
+        "house": 10,
+        "harmonics": 166.0
+      },
+      "Sappho": {
+        "lon": 55.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Taurus",
+        "deg": 25.0,
+        "house": 6,
+        "harmonics": 55.0
+      },
+      "Hygiea": {
+        "lon": 351.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
         "sign": "Pisces",
-        "deg": 25.0,
+        "deg": 21.0,
         "house": 4,
-        "harmonics": 355.0
+        "harmonics": 351.0
       },
-      "Typhon": {
-        "lon": 13.0,
+      "Karma": {
+        "lon": 88.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
-        "sign": "Aries",
-        "deg": 13.0,
-        "house": 5,
-        "harmonics": 13.0
+        "sign": "Gemini",
+        "deg": 28.0,
+        "house": 7,
+        "harmonics": 88.0
       },
-      "2002 AW197": {
-        "lon": 320.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Aquarius",
-        "deg": 20.0,
-        "house": 3,
-        "harmonics": 320.0
-      },
-      "2003 VS2": {
+      "Bacchus": {
         "lon": 257.0,
         "lat": 0.0,
         "retrograde": false,
@@ -2491,6 +2371,126 @@
         "deg": 17.0,
         "house": 1,
         "harmonics": 257.0
+      },
+      "Eris": {
+        "lon": 198.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Libra",
+        "deg": 18.0,
+        "house": 11,
+        "harmonics": 198.0
+      },
+      "Sedna": {
+        "lon": 98.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Cancer",
+        "deg": 8.0,
+        "house": 8,
+        "harmonics": 98.0
+      },
+      "Haumea": {
+        "lon": 274.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Capricorn",
+        "deg": 4.0,
+        "house": 2,
+        "harmonics": 274.0
+      },
+      "Makemake": {
+        "lon": 148.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Leo",
+        "deg": 28.0,
+        "house": 9,
+        "harmonics": 148.0
+      },
+      "Quaoar": {
+        "lon": 173.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Virgo",
+        "deg": 23.0,
+        "house": 10,
+        "harmonics": 173.0
+      },
+      "Varuna": {
+        "lon": 213.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Scorpio",
+        "deg": 3.0,
+        "house": 12,
+        "harmonics": 213.0
+      },
+      "Ixion": {
+        "lon": 218.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Scorpio",
+        "deg": 8.0,
+        "house": 12,
+        "harmonics": 218.0
+      },
+      "Orcus": {
+        "lon": 243.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Sagittarius",
+        "deg": 3.0,
+        "house": 1,
+        "harmonics": 243.0
+      },
+      "Salacia": {
+        "lon": 310.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Aquarius",
+        "deg": 10.0,
+        "house": 3,
+        "harmonics": 310.0
+      },
+      "Typhon": {
+        "lon": 315.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Aquarius",
+        "deg": 15.0,
+        "house": 3,
+        "harmonics": 315.0
+      },
+      "2002 AW197": {
+        "lon": 284.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Capricorn",
+        "deg": 14.0,
+        "house": 2,
+        "harmonics": 284.0
+      },
+      "2003 VS2": {
+        "lon": 160.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Virgo",
+        "deg": 10.0,
+        "house": 10,
+        "harmonics": 160.0
       },
       "Regulus": {
         "lon": 149.83,
@@ -2675,139 +2675,29 @@
     }
   },
   {
-    "timestamp": "2026-02-24T10:30:00Z",
+    "timestamp": "2026-02-24T10:36:49Z",
     "transits": {
       "Sun": {
-        "lon": 27.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Aries",
-        "deg": 27.0,
-        "house": 5,
-        "harmonics": 27.0
-      },
-      "Moon": {
-        "lon": 153.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Virgo",
-        "deg": 3.0,
-        "house": 10,
-        "harmonics": 153.0
-      },
-      "Mercury": {
-        "lon": 81.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Gemini",
-        "deg": 21.0,
-        "house": 7,
-        "harmonics": 81.0
-      },
-      "Venus": {
-        "lon": 291.0,
+        "lon": 273.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
         "sign": "Capricorn",
-        "deg": 21.0,
+        "deg": 3.0,
         "house": 2,
-        "harmonics": 291.0
+        "harmonics": 273.0
       },
-      "Mars": {
-        "lon": 261.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Sagittarius",
-        "deg": 21.0,
-        "house": 1,
-        "harmonics": 261.0
-      },
-      "Jupiter": {
-        "lon": 307.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Aquarius",
-        "deg": 7.0,
-        "house": 3,
-        "harmonics": 307.0
-      },
-      "Saturn": {
-        "lon": 147.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Leo",
-        "deg": 27.0,
-        "house": 9,
-        "harmonics": 147.0
-      },
-      "Uranus": {
-        "lon": 229.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Scorpio",
-        "deg": 19.0,
-        "house": 12,
-        "harmonics": 229.0
-      },
-      "Neptune": {
-        "lon": 126.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Leo",
-        "deg": 6.0,
-        "house": 9,
-        "harmonics": 126.0
-      },
-      "Pluto": {
-        "lon": 27.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Aries",
-        "deg": 27.0,
-        "house": 5,
-        "harmonics": 27.0
-      },
-      "Chiron": {
-        "lon": 339.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Pisces",
-        "deg": 9.0,
-        "house": 4,
-        "harmonics": 339.0
-      },
-      "Ceres": {
-        "lon": 224.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Scorpio",
-        "deg": 14.0,
-        "house": 12,
-        "harmonics": 224.0
-      },
-      "Pallas": {
-        "lon": 161.0,
+      "Moon": {
+        "lon": 178.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
         "sign": "Virgo",
-        "deg": 11.0,
+        "deg": 28.0,
         "house": 10,
-        "harmonics": 161.0
+        "harmonics": 178.0
       },
-      "Juno": {
+      "Mercury": {
         "lon": 127.0,
         "lat": 0.0,
         "retrograde": false,
@@ -2817,127 +2707,107 @@
         "house": 9,
         "harmonics": 127.0
       },
-      "Vesta": {
-        "lon": 132.0,
+      "Venus": {
+        "lon": 267.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Sagittarius",
+        "deg": 27.0,
+        "house": 1,
+        "harmonics": 267.0
+      },
+      "Mars": {
+        "lon": 230.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Scorpio",
+        "deg": 20.0,
+        "house": 12,
+        "harmonics": 230.0
+      },
+      "Jupiter": {
+        "lon": 98.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Cancer",
+        "deg": 8.0,
+        "house": 8,
+        "harmonics": 98.0
+      },
+      "Saturn": {
+        "lon": 133.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
         "sign": "Leo",
-        "deg": 12.0,
+        "deg": 13.0,
         "house": 9,
-        "harmonics": 132.0
+        "harmonics": 133.0
       },
-      "Psyche": {
-        "lon": 54.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Taurus",
-        "deg": 24.0,
-        "house": 6,
-        "harmonics": 54.0
-      },
-      "Amor": {
-        "lon": 272.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Capricorn",
-        "deg": 2.0,
-        "house": 2,
-        "harmonics": 272.0
-      },
-      "Eros": {
-        "lon": 89.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Gemini",
-        "deg": 29.0,
-        "house": 7,
-        "harmonics": 89.0
-      },
-      "Astraea": {
-        "lon": 80.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Gemini",
-        "deg": 20.0,
-        "house": 7,
-        "harmonics": 80.0
-      },
-      "Sappho": {
-        "lon": 10.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Aries",
-        "deg": 10.0,
-        "house": 5,
-        "harmonics": 10.0
-      },
-      "Hygiea": {
-        "lon": 117.0,
+      "Uranus": {
+        "lon": 102.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
         "sign": "Cancer",
-        "deg": 27.0,
+        "deg": 12.0,
         "house": 8,
-        "harmonics": 117.0
+        "harmonics": 102.0
       },
-      "Karma": {
-        "lon": 83.0,
+      "Neptune": {
+        "lon": 78.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
         "sign": "Gemini",
-        "deg": 23.0,
+        "deg": 18.0,
         "house": 7,
-        "harmonics": 83.0
+        "harmonics": 78.0
       },
-      "Bacchus": {
-        "lon": 201.0,
+      "Pluto": {
+        "lon": 147.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Leo",
+        "deg": 27.0,
+        "house": 9,
+        "harmonics": 147.0
+      },
+      "Chiron": {
+        "lon": 198.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
         "sign": "Libra",
-        "deg": 21.0,
+        "deg": 18.0,
         "house": 11,
-        "harmonics": 201.0
+        "harmonics": 198.0
       },
-      "Eris": {
-        "lon": 15.0,
+      "Ceres": {
+        "lon": 260.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
-        "sign": "Aries",
-        "deg": 15.0,
-        "house": 5,
-        "harmonics": 15.0
+        "sign": "Sagittarius",
+        "deg": 20.0,
+        "house": 1,
+        "harmonics": 260.0
       },
-      "Sedna": {
-        "lon": 55.0,
+      "Pallas": {
+        "lon": 352.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
-        "sign": "Taurus",
-        "deg": 25.0,
-        "house": 6,
-        "harmonics": 55.0
+        "sign": "Pisces",
+        "deg": 22.0,
+        "house": 4,
+        "harmonics": 352.0
       },
-      "Haumea": {
-        "lon": 116.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Cancer",
-        "deg": 26.0,
-        "house": 8,
-        "harmonics": 116.0
-      },
-      "Makemake": {
+      "Juno": {
         "lon": 169.0,
         "lat": 0.0,
         "retrograde": false,
@@ -2947,77 +2817,87 @@
         "house": 10,
         "harmonics": 169.0
       },
-      "Quaoar": {
-        "lon": 250.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Sagittarius",
-        "deg": 10.0,
-        "house": 1,
-        "harmonics": 250.0
-      },
-      "Varuna": {
-        "lon": 5.0,
+      "Vesta": {
+        "lon": 17.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
         "sign": "Aries",
-        "deg": 5.0,
+        "deg": 17.0,
         "house": 5,
-        "harmonics": 5.0
+        "harmonics": 17.0
       },
-      "Ixion": {
-        "lon": 272.0,
+      "Psyche": {
+        "lon": 99.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
-        "sign": "Capricorn",
-        "deg": 2.0,
-        "house": 2,
-        "harmonics": 272.0
+        "sign": "Cancer",
+        "deg": 9.0,
+        "house": 8,
+        "harmonics": 99.0
       },
-      "Orcus": {
-        "lon": 247.0,
+      "Amor": {
+        "lon": 266.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
         "sign": "Sagittarius",
-        "deg": 7.0,
+        "deg": 26.0,
         "house": 1,
-        "harmonics": 247.0
+        "harmonics": 266.0
       },
-      "Salacia": {
-        "lon": 355.0,
+      "Eros": {
+        "lon": 256.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Sagittarius",
+        "deg": 16.0,
+        "house": 1,
+        "harmonics": 256.0
+      },
+      "Astraea": {
+        "lon": 166.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Virgo",
+        "deg": 16.0,
+        "house": 10,
+        "harmonics": 166.0
+      },
+      "Sappho": {
+        "lon": 55.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Taurus",
+        "deg": 25.0,
+        "house": 6,
+        "harmonics": 55.0
+      },
+      "Hygiea": {
+        "lon": 351.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
         "sign": "Pisces",
-        "deg": 25.0,
+        "deg": 21.0,
         "house": 4,
-        "harmonics": 355.0
+        "harmonics": 351.0
       },
-      "Typhon": {
-        "lon": 13.0,
+      "Karma": {
+        "lon": 88.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
-        "sign": "Aries",
-        "deg": 13.0,
-        "house": 5,
-        "harmonics": 13.0
+        "sign": "Gemini",
+        "deg": 28.0,
+        "house": 7,
+        "harmonics": 88.0
       },
-      "2002 AW197": {
-        "lon": 320.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Aquarius",
-        "deg": 20.0,
-        "house": 3,
-        "harmonics": 320.0
-      },
-      "2003 VS2": {
+      "Bacchus": {
         "lon": 257.0,
         "lat": 0.0,
         "retrograde": false,
@@ -3026,6 +2906,126 @@
         "deg": 17.0,
         "house": 1,
         "harmonics": 257.0
+      },
+      "Eris": {
+        "lon": 198.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Libra",
+        "deg": 18.0,
+        "house": 11,
+        "harmonics": 198.0
+      },
+      "Sedna": {
+        "lon": 98.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Cancer",
+        "deg": 8.0,
+        "house": 8,
+        "harmonics": 98.0
+      },
+      "Haumea": {
+        "lon": 274.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Capricorn",
+        "deg": 4.0,
+        "house": 2,
+        "harmonics": 274.0
+      },
+      "Makemake": {
+        "lon": 148.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Leo",
+        "deg": 28.0,
+        "house": 9,
+        "harmonics": 148.0
+      },
+      "Quaoar": {
+        "lon": 173.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Virgo",
+        "deg": 23.0,
+        "house": 10,
+        "harmonics": 173.0
+      },
+      "Varuna": {
+        "lon": 213.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Scorpio",
+        "deg": 3.0,
+        "house": 12,
+        "harmonics": 213.0
+      },
+      "Ixion": {
+        "lon": 218.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Scorpio",
+        "deg": 8.0,
+        "house": 12,
+        "harmonics": 218.0
+      },
+      "Orcus": {
+        "lon": 243.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Sagittarius",
+        "deg": 3.0,
+        "house": 1,
+        "harmonics": 243.0
+      },
+      "Salacia": {
+        "lon": 310.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Aquarius",
+        "deg": 10.0,
+        "house": 3,
+        "harmonics": 310.0
+      },
+      "Typhon": {
+        "lon": 315.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Aquarius",
+        "deg": 15.0,
+        "house": 3,
+        "harmonics": 315.0
+      },
+      "2002 AW197": {
+        "lon": 284.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Capricorn",
+        "deg": 14.0,
+        "house": 2,
+        "harmonics": 284.0
+      },
+      "2003 VS2": {
+        "lon": 160.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Virgo",
+        "deg": 10.0,
+        "house": 10,
+        "harmonics": 160.0
       },
       "Regulus": {
         "lon": 149.83,
@@ -3210,139 +3210,29 @@
     }
   },
   {
-    "timestamp": "2026-02-25T10:30:00Z",
+    "timestamp": "2026-02-25T10:36:49Z",
     "transits": {
       "Sun": {
-        "lon": 27.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Aries",
-        "deg": 27.0,
-        "house": 5,
-        "harmonics": 27.0
-      },
-      "Moon": {
-        "lon": 153.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Virgo",
-        "deg": 3.0,
-        "house": 10,
-        "harmonics": 153.0
-      },
-      "Mercury": {
-        "lon": 81.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Gemini",
-        "deg": 21.0,
-        "house": 7,
-        "harmonics": 81.0
-      },
-      "Venus": {
-        "lon": 291.0,
+        "lon": 273.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
         "sign": "Capricorn",
-        "deg": 21.0,
+        "deg": 3.0,
         "house": 2,
-        "harmonics": 291.0
+        "harmonics": 273.0
       },
-      "Mars": {
-        "lon": 261.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Sagittarius",
-        "deg": 21.0,
-        "house": 1,
-        "harmonics": 261.0
-      },
-      "Jupiter": {
-        "lon": 307.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Aquarius",
-        "deg": 7.0,
-        "house": 3,
-        "harmonics": 307.0
-      },
-      "Saturn": {
-        "lon": 147.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Leo",
-        "deg": 27.0,
-        "house": 9,
-        "harmonics": 147.0
-      },
-      "Uranus": {
-        "lon": 229.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Scorpio",
-        "deg": 19.0,
-        "house": 12,
-        "harmonics": 229.0
-      },
-      "Neptune": {
-        "lon": 126.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Leo",
-        "deg": 6.0,
-        "house": 9,
-        "harmonics": 126.0
-      },
-      "Pluto": {
-        "lon": 27.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Aries",
-        "deg": 27.0,
-        "house": 5,
-        "harmonics": 27.0
-      },
-      "Chiron": {
-        "lon": 339.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Pisces",
-        "deg": 9.0,
-        "house": 4,
-        "harmonics": 339.0
-      },
-      "Ceres": {
-        "lon": 224.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Scorpio",
-        "deg": 14.0,
-        "house": 12,
-        "harmonics": 224.0
-      },
-      "Pallas": {
-        "lon": 161.0,
+      "Moon": {
+        "lon": 178.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
         "sign": "Virgo",
-        "deg": 11.0,
+        "deg": 28.0,
         "house": 10,
-        "harmonics": 161.0
+        "harmonics": 178.0
       },
-      "Juno": {
+      "Mercury": {
         "lon": 127.0,
         "lat": 0.0,
         "retrograde": false,
@@ -3352,127 +3242,107 @@
         "house": 9,
         "harmonics": 127.0
       },
-      "Vesta": {
-        "lon": 132.0,
+      "Venus": {
+        "lon": 267.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Sagittarius",
+        "deg": 27.0,
+        "house": 1,
+        "harmonics": 267.0
+      },
+      "Mars": {
+        "lon": 230.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Scorpio",
+        "deg": 20.0,
+        "house": 12,
+        "harmonics": 230.0
+      },
+      "Jupiter": {
+        "lon": 98.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Cancer",
+        "deg": 8.0,
+        "house": 8,
+        "harmonics": 98.0
+      },
+      "Saturn": {
+        "lon": 133.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
         "sign": "Leo",
-        "deg": 12.0,
+        "deg": 13.0,
         "house": 9,
-        "harmonics": 132.0
+        "harmonics": 133.0
       },
-      "Psyche": {
-        "lon": 54.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Taurus",
-        "deg": 24.0,
-        "house": 6,
-        "harmonics": 54.0
-      },
-      "Amor": {
-        "lon": 272.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Capricorn",
-        "deg": 2.0,
-        "house": 2,
-        "harmonics": 272.0
-      },
-      "Eros": {
-        "lon": 89.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Gemini",
-        "deg": 29.0,
-        "house": 7,
-        "harmonics": 89.0
-      },
-      "Astraea": {
-        "lon": 80.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Gemini",
-        "deg": 20.0,
-        "house": 7,
-        "harmonics": 80.0
-      },
-      "Sappho": {
-        "lon": 10.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Aries",
-        "deg": 10.0,
-        "house": 5,
-        "harmonics": 10.0
-      },
-      "Hygiea": {
-        "lon": 117.0,
+      "Uranus": {
+        "lon": 102.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
         "sign": "Cancer",
-        "deg": 27.0,
+        "deg": 12.0,
         "house": 8,
-        "harmonics": 117.0
+        "harmonics": 102.0
       },
-      "Karma": {
-        "lon": 83.0,
+      "Neptune": {
+        "lon": 78.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
         "sign": "Gemini",
-        "deg": 23.0,
+        "deg": 18.0,
         "house": 7,
-        "harmonics": 83.0
+        "harmonics": 78.0
       },
-      "Bacchus": {
-        "lon": 201.0,
+      "Pluto": {
+        "lon": 147.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Leo",
+        "deg": 27.0,
+        "house": 9,
+        "harmonics": 147.0
+      },
+      "Chiron": {
+        "lon": 198.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
         "sign": "Libra",
-        "deg": 21.0,
+        "deg": 18.0,
         "house": 11,
-        "harmonics": 201.0
+        "harmonics": 198.0
       },
-      "Eris": {
-        "lon": 15.0,
+      "Ceres": {
+        "lon": 260.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
-        "sign": "Aries",
-        "deg": 15.0,
-        "house": 5,
-        "harmonics": 15.0
+        "sign": "Sagittarius",
+        "deg": 20.0,
+        "house": 1,
+        "harmonics": 260.0
       },
-      "Sedna": {
-        "lon": 55.0,
+      "Pallas": {
+        "lon": 352.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
-        "sign": "Taurus",
-        "deg": 25.0,
-        "house": 6,
-        "harmonics": 55.0
+        "sign": "Pisces",
+        "deg": 22.0,
+        "house": 4,
+        "harmonics": 352.0
       },
-      "Haumea": {
-        "lon": 116.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Cancer",
-        "deg": 26.0,
-        "house": 8,
-        "harmonics": 116.0
-      },
-      "Makemake": {
+      "Juno": {
         "lon": 169.0,
         "lat": 0.0,
         "retrograde": false,
@@ -3482,77 +3352,87 @@
         "house": 10,
         "harmonics": 169.0
       },
-      "Quaoar": {
-        "lon": 250.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Sagittarius",
-        "deg": 10.0,
-        "house": 1,
-        "harmonics": 250.0
-      },
-      "Varuna": {
-        "lon": 5.0,
+      "Vesta": {
+        "lon": 17.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
         "sign": "Aries",
-        "deg": 5.0,
+        "deg": 17.0,
         "house": 5,
-        "harmonics": 5.0
+        "harmonics": 17.0
       },
-      "Ixion": {
-        "lon": 272.0,
+      "Psyche": {
+        "lon": 99.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
-        "sign": "Capricorn",
-        "deg": 2.0,
-        "house": 2,
-        "harmonics": 272.0
+        "sign": "Cancer",
+        "deg": 9.0,
+        "house": 8,
+        "harmonics": 99.0
       },
-      "Orcus": {
-        "lon": 247.0,
+      "Amor": {
+        "lon": 266.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
         "sign": "Sagittarius",
-        "deg": 7.0,
+        "deg": 26.0,
         "house": 1,
-        "harmonics": 247.0
+        "harmonics": 266.0
       },
-      "Salacia": {
-        "lon": 355.0,
+      "Eros": {
+        "lon": 256.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Sagittarius",
+        "deg": 16.0,
+        "house": 1,
+        "harmonics": 256.0
+      },
+      "Astraea": {
+        "lon": 166.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Virgo",
+        "deg": 16.0,
+        "house": 10,
+        "harmonics": 166.0
+      },
+      "Sappho": {
+        "lon": 55.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Taurus",
+        "deg": 25.0,
+        "house": 6,
+        "harmonics": 55.0
+      },
+      "Hygiea": {
+        "lon": 351.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
         "sign": "Pisces",
-        "deg": 25.0,
+        "deg": 21.0,
         "house": 4,
-        "harmonics": 355.0
+        "harmonics": 351.0
       },
-      "Typhon": {
-        "lon": 13.0,
+      "Karma": {
+        "lon": 88.0,
         "lat": 0.0,
         "retrograde": false,
         "speed": 0.0,
-        "sign": "Aries",
-        "deg": 13.0,
-        "house": 5,
-        "harmonics": 13.0
+        "sign": "Gemini",
+        "deg": 28.0,
+        "house": 7,
+        "harmonics": 88.0
       },
-      "2002 AW197": {
-        "lon": 320.0,
-        "lat": 0.0,
-        "retrograde": false,
-        "speed": 0.0,
-        "sign": "Aquarius",
-        "deg": 20.0,
-        "house": 3,
-        "harmonics": 320.0
-      },
-      "2003 VS2": {
+      "Bacchus": {
         "lon": 257.0,
         "lat": 0.0,
         "retrograde": false,
@@ -3561,6 +3441,126 @@
         "deg": 17.0,
         "house": 1,
         "harmonics": 257.0
+      },
+      "Eris": {
+        "lon": 198.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Libra",
+        "deg": 18.0,
+        "house": 11,
+        "harmonics": 198.0
+      },
+      "Sedna": {
+        "lon": 98.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Cancer",
+        "deg": 8.0,
+        "house": 8,
+        "harmonics": 98.0
+      },
+      "Haumea": {
+        "lon": 274.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Capricorn",
+        "deg": 4.0,
+        "house": 2,
+        "harmonics": 274.0
+      },
+      "Makemake": {
+        "lon": 148.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Leo",
+        "deg": 28.0,
+        "house": 9,
+        "harmonics": 148.0
+      },
+      "Quaoar": {
+        "lon": 173.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Virgo",
+        "deg": 23.0,
+        "house": 10,
+        "harmonics": 173.0
+      },
+      "Varuna": {
+        "lon": 213.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Scorpio",
+        "deg": 3.0,
+        "house": 12,
+        "harmonics": 213.0
+      },
+      "Ixion": {
+        "lon": 218.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Scorpio",
+        "deg": 8.0,
+        "house": 12,
+        "harmonics": 218.0
+      },
+      "Orcus": {
+        "lon": 243.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Sagittarius",
+        "deg": 3.0,
+        "house": 1,
+        "harmonics": 243.0
+      },
+      "Salacia": {
+        "lon": 310.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Aquarius",
+        "deg": 10.0,
+        "house": 3,
+        "harmonics": 310.0
+      },
+      "Typhon": {
+        "lon": 315.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Aquarius",
+        "deg": 15.0,
+        "house": 3,
+        "harmonics": 315.0
+      },
+      "2002 AW197": {
+        "lon": 284.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Capricorn",
+        "deg": 14.0,
+        "house": 2,
+        "harmonics": 284.0
+      },
+      "2003 VS2": {
+        "lon": 160.0,
+        "lat": 0.0,
+        "retrograde": false,
+        "speed": 0.0,
+        "sign": "Virgo",
+        "deg": 10.0,
+        "house": 10,
+        "harmonics": 160.0
       },
       "Regulus": {
         "lon": 149.83,
