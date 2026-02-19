@@ -2,19 +2,16 @@ import json
 import os
 from datetime import datetime, timedelta
 
-# REAL primary ephemeris
+# Ephemeris fetch engines
 from scripts.bodies.horizons_engine import fetch as fetch_horizons
-
-# Secondary fallback (TNOs and asteroids Horizons cannot resolve)
 from scripts.bodies.miriade_engine import fetch as fetch_miriade
-
-# Final fallback (Swiss stub)
 from scripts.bodies.swiss_engine import fetch as fetch_swiss
 
+# Core utilities
 from scripts.utils.zodiac import zodiac_sign, degree_in_sign
 from scripts.utils.harmonics import harmonics
 
-# House engines
+# House engine (Greenwich global baseline)
 from scripts.utils.houses import (
     julian_date_from_iso,
     compute_ascendant,
@@ -22,15 +19,15 @@ from scripts.utils.houses import (
     whole_sign_house
 )
 
-# Aspect engine (Phase 3 Step 1)
-from scripts.utils.aspects import detect_aspects
-
+# Fixed-star pull
 from scripts.fixed_stars import get_fixed_star_positions
 
+# Aspect engine (Phase 3)
+from scripts.utils.aspects import compute_all_aspects
 
 
 # ---------------------------------------------------------------
-# GLOBAL FEED LOCATION — Greenwich Observatory (Prime Meridian)
+# GLOBAL FEED OBSERVER LOCATION — Greenwich Observatory
 # ---------------------------------------------------------------
 OBSERVER_LAT = 51.4769
 OBSERVER_LON = 0.0000
@@ -52,7 +49,7 @@ BODIES = [
 
 
 # ---------------------------------------------------------------
-# FETCH ENGINE — Horizons → Miriade → Swiss
+# FETCH PIPELINE: Horizons → Miriade → Swiss
 # ---------------------------------------------------------------
 def fetch_body_data(body, ts):
     data = fetch_horizons(body, ts)
@@ -64,20 +61,20 @@ def fetch_body_data(body, ts):
 
 
 # ---------------------------------------------------------------
-# COMPUTE TRANSITS FOR A TIMESTAMP  (Phase 3-ready)
+# COMPUTE ALL TRANSITS FOR ONE TIMESTAMP
 # ---------------------------------------------------------------
 def compute_transits(ts):
     jd = julian_date_from_iso(ts)
 
-    # Greenwich Ascendant
+    # House framework
     asc_lon = compute_ascendant(jd, OBSERVER_LAT, OBSERVER_LON)
     cusps = whole_sign_cusps(asc_lon)
 
-    # -----------------------------
-    # POSITION MAP (Phase 2 output)
-    # -----------------------------
     positions = {}
 
+    # -------------------------------
+    # PLANETS / ASTEROIDS / TNOs
+    # -------------------------------
     for body in BODIES:
         ephem = fetch_body_data(body, ts)
         if ephem is None:
@@ -88,20 +85,25 @@ def compute_transits(ts):
         retrograde = ephem.get("retrograde", False)
         speed = ephem.get("speed", 0.0)
 
+        sign = zodiac_sign(lon)
+        deg = degree_in_sign(lon)
+        harm = harmonics(lon)
+        house = whole_sign_house(lon, asc_lon)
+
         positions[body] = {
             "lon": lon,
             "lat": lat,
             "retrograde": retrograde,
             "speed": speed,
-            "sign": zodiac_sign(lon),
-            "deg": degree_in_sign(lon),
-            "house": whole_sign_house(lon, asc_lon),
-            "harmonics": harmonics(lon)
+            "sign": sign,
+            "deg": deg,
+            "house": house,
+            "harmonics": harm
         }
 
-    # -----------------------------
+    # -------------------------------
     # FIXED STARS
-    # -----------------------------
+    # -------------------------------
     for star in get_fixed_star_positions():
         lon = star["longitude"]
         positions[star["name"]] = {
@@ -115,10 +117,10 @@ def compute_transits(ts):
             "harmonics": harmonics(lon)
         }
 
-    # -----------------------------
-    # PHASE 3 STEP 1 — ASPECT ENGINE
-    # -----------------------------
-    aspects = detect_aspects(positions)
+    # -------------------------------
+    # ASPECT GRID (NEW)
+    # -------------------------------
+    aspects = compute_all_aspects(positions)
 
     return {
         "positions": positions,
@@ -127,7 +129,7 @@ def compute_transits(ts):
 
 
 # ---------------------------------------------------------------
-# JSON WRITER
+# HELPERS: JSON writer
 # ---------------------------------------------------------------
 def write_json(path, data):
     os.makedirs(os.path.dirname(path), exist_ok=True)
@@ -136,7 +138,7 @@ def write_json(path, data):
 
 
 # ---------------------------------------------------------------
-# FEED GENERATION
+# FEED GENERATOR (weekly workflow)
 # ---------------------------------------------------------------
 def generate_all_feeds():
     now = datetime.utcnow().replace(microsecond=0)
@@ -144,33 +146,30 @@ def generate_all_feeds():
 
     ts_list = [now + timedelta(days=i) for i in range(7)]
 
+    # Build the full feed suite
     feeds = {
         "feed_now.json": [
             {"timestamp": ts_now, "transits": compute_transits(ts_now)}
         ],
-
         "feed_daily.json": [
-            {"timestamp": t.isoformat() + "Z",
-             "transits": compute_transits(t.isoformat() + "Z")}
+            {"timestamp": t.isoformat() + "Z", "transits": compute_transits(t.isoformat() + "Z")}
             for t in ts_list
         ],
-
         "feed_week.json": [
-            {"timestamp": t.isoformat() + "Z",
-             "transits": compute_transits(t.isoformat() + "Z")}
+            {"timestamp": t.isoformat() + "Z", "transits": compute_transits(t.isoformat() + "Z")}
             for t in ts_list
         ],
-
         "feed_weekly.json": [
-            {"timestamp": t.isoformat() + "Z",
-             "transits": compute_transits(t.isoformat() + "Z")}
+            {"timestamp": t.isoformat() + "Z", "transits": compute_transits(t.isoformat() + "Z")}
             for t in ts_list
         ]
     }
 
+    # Write feeds
     for fn, feed_data in feeds.items():
         write_json(os.path.join("docs", fn), feed_data)
 
+    # Metadata
     write_json(os.path.join("docs", "metadata.json"), {
         "generated_utc": datetime.utcnow().isoformat() + "Z",
         "bodies": BODIES,
