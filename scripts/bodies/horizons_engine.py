@@ -1,13 +1,16 @@
 """
 Real JPL Horizons Ephemeris Engine
-Returns TRUE planetary positions with correct RA/DEC
-and converts them into ecliptic coordinates.
+Provides TRUE planetary and TNO positions using the NASA/JPL Horizons system.
+Converts RA/DEC into ecliptic longitude/latitude for full astrological use.
 """
 
 from astroquery.jplhorizons import Horizons
 from scripts.utils.coord import equatorial_to_ecliptic
 
-# ID numbers for planets for Horizons API
+
+# ---------------------------------------------------------
+# NAIF MAJOR-BODY IDs (planets + Moon + Pluto)
+# ---------------------------------------------------------
 PLANET_IDS = {
     "Sun": 10,
     "Moon": 301,
@@ -21,39 +24,67 @@ PLANET_IDS = {
     "Pluto": 999,
 }
 
+
+# ---------------------------------------------------------
+# TNO & DWARF PLANET TARGETS — Horizons string identifiers
+# These resolve correctly in Horizons for full ephemerides.
+# ---------------------------------------------------------
+TNO_TARGETS = {
+    "Eris": "Eris",
+    "Haumea": "Haumea",
+    "Makemake": "Makemake",
+    "Sedna": "Sedna",
+    "Quaoar": "Quaoar",
+    "Orcus": "Orcus",
+    "Salacia": "Salacia",
+    "Ixion": "Ixion",
+    "Varuna": "Varuna",
+    "Typhon": "Typhon",
+    "2002 AW197": "2002 AW197",
+    "2003 VS2": "2003 VS2",
+}
+
+
+# ---------------------------------------------------------
+# MAIN FETCH ENGINE
+# ---------------------------------------------------------
 def fetch(body_name, iso_utc_timestamp):
     """
-    Fetch REAL planetary positions from JPL Horizons.
+    Fetch REAL ephemeris data for major planets AND TNOs using JPL Horizons.
+    Returns:
+        {"lon": float, "lat": float, "retrograde": bool}
     """
 
-    if body_name not in PLANET_IDS:
+    # Determine target for Horizons
+    if body_name in PLANET_IDS:
+        target = PLANET_IDS[body_name]
+    elif body_name in TNO_TARGETS:
+        target = TNO_TARGETS[body_name]
+    else:
         return None
 
-    obj_id = PLANET_IDS[body_name]
-
-    # Query JPL Horizons
     try:
+        # Query real NASA ephemeris
         obj = Horizons(
-            id=obj_id,
-            location="500@0",      # geocentric
+            id=target,
+            location="500@0",  # geocentric observer
             epochs=iso_utc_timestamp
         )
 
         eph = obj.ephemerides()
 
-        # RA / DEC (true center)
-        ra = float(eph["RA"][0])          # degrees
-        dec = float(eph["DEC"][0])        # degrees
+        # Extract positions
+        ra = float(eph["RA"][0])      # Right Ascension (deg)
+        dec = float(eph["DEC"][0])    # Declination (deg)
 
-        # Convert RA/DEC → ecliptic lon/lat
+        # Convert to ecliptic
         lon, lat = equatorial_to_ecliptic(ra, dec)
 
-        # Compute retrograde from delta-longitude
+        # Retrograde determination
         try:
-            lon_prev, _ = equatorial_to_ecliptic(
-                float(eph["RA_rate"][0] * -1 + ra),
-                float(eph["DEC_rate"][0] * -1 + dec)
-            )
+            dra = float(eph["RA_rate"][0])
+            ddec = float(eph["DEC_rate"][0])
+            lon_prev, _ = equatorial_to_ecliptic(ra - dra, dec - ddec)
             retrograde = lon_prev > lon
         except Exception:
             retrograde = False
@@ -64,5 +95,5 @@ def fetch(body_name, iso_utc_timestamp):
             "retrograde": retrograde
         }
 
-    except Exception as e:
+    except Exception:
         return None
