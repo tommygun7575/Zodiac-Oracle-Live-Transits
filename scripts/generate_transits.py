@@ -22,7 +22,7 @@ from scripts.utils.houses import (
 # Fixed-star pull
 from scripts.fixed_stars import get_fixed_star_positions
 
-# Aspect engine (Phase 3)
+# Aspect engine
 from scripts.utils.aspects import compute_all_aspects
 
 
@@ -49,7 +49,7 @@ BODIES = [
 
 
 # ---------------------------------------------------------------
-# FETCH PIPELINE: Horizons → Miriade → Swiss
+# FETCH ENGINE: Horizons → Miriade → Swiss
 # ---------------------------------------------------------------
 def fetch_body_data(body, ts):
     data = fetch_horizons(body, ts)
@@ -61,20 +61,29 @@ def fetch_body_data(body, ts):
 
 
 # ---------------------------------------------------------------
+# NEXT SUNDAY CALCULATOR
+# ---------------------------------------------------------------
+def get_next_sunday(dt):
+    # Monday=0 ... Sunday=6
+    days_until = (6 - dt.weekday()) % 7
+    if days_until == 0:
+        days_until = 7
+    return dt + timedelta(days=days_until)
+
+
+# ---------------------------------------------------------------
 # COMPUTE ALL TRANSITS FOR ONE TIMESTAMP
 # ---------------------------------------------------------------
 def compute_transits(ts):
     jd = julian_date_from_iso(ts)
 
-    # House framework
+    # House structure
     asc_lon = compute_ascendant(jd, OBSERVER_LAT, OBSERVER_LON)
     cusps = whole_sign_cusps(asc_lon)
 
     positions = {}
 
-    # -------------------------------
-    # PLANETS / ASTEROIDS / TNOs
-    # -------------------------------
+    # Main bodies
     for body in BODIES:
         ephem = fetch_body_data(body, ts)
         if ephem is None:
@@ -101,9 +110,7 @@ def compute_transits(ts):
             "harmonics": harm
         }
 
-    # -------------------------------
-    # FIXED STARS
-    # -------------------------------
+    # Fixed stars
     for star in get_fixed_star_positions():
         lon = star["longitude"]
         positions[star["name"]] = {
@@ -117,9 +124,7 @@ def compute_transits(ts):
             "harmonics": harmonics(lon)
         }
 
-    # -------------------------------
-    # ASPECT GRID (NEW)
-    # -------------------------------
+    # Aspects
     aspects = compute_all_aspects(positions)
 
     return {
@@ -129,7 +134,7 @@ def compute_transits(ts):
 
 
 # ---------------------------------------------------------------
-# HELPERS: JSON writer
+# JSON WRITER
 # ---------------------------------------------------------------
 def write_json(path, data):
     os.makedirs(os.path.dirname(path), exist_ok=True)
@@ -138,42 +143,64 @@ def write_json(path, data):
 
 
 # ---------------------------------------------------------------
-# FEED GENERATOR (weekly workflow)
+# FEED GENERATOR — WEEKLY PIPELINE
 # ---------------------------------------------------------------
 def generate_all_feeds():
     now = datetime.utcnow().replace(microsecond=0)
     ts_now = now.isoformat() + "Z"
 
-    ts_list = [now + timedelta(days=i) for i in range(7)]
+    # Determine Sunday→Saturday window
+    next_sun = get_next_sunday(now)
+    week_days = [(next_sun + timedelta(days=i)) for i in range(7)]
 
-    # Build the full feed suite
-    feeds = {
-        "feed_now.json": [
-            {"timestamp": ts_now, "transits": compute_transits(ts_now)}
-        ],
-        "feed_daily.json": [
-            {"timestamp": t.isoformat() + "Z", "transits": compute_transits(t.isoformat() + "Z")}
-            for t in ts_list
-        ],
-        "feed_week.json": [
-            {"timestamp": t.isoformat() + "Z", "transits": compute_transits(t.isoformat() + "Z")}
-            for t in ts_list
-        ],
-        "feed_weekly.json": [
-            {"timestamp": t.isoformat() + "Z", "transits": compute_transits(t.isoformat() + "Z")}
-            for t in ts_list
+    # feed_now.json
+    feed_now = [
+        {
+            "version": "ephemeris-v1.0",
+            "timestamp": ts_now,
+            "transits": compute_transits(ts_now)
+        }
+    ]
+
+    # feed_daily.json (next Sunday + 6 following days)
+    feed_daily = [
+        {
+            "version": "ephemeris-v1.0",
+            "timestamp": t.isoformat() + "Z",
+            "transits": compute_transits(t.isoformat() + "Z")
+        }
+        for t in week_days
+    ]
+
+    # current_week.json — APP PRIMARY FILE
+    feed_weekly = {
+        "version": "ephemeris-v1.0",
+        "week_start": next_sun.isoformat() + "Z",
+        "days": [
+            {
+                "timestamp": t.isoformat() + "Z",
+                "transits": compute_transits(t.isoformat() + "Z")
+            }
+            for t in week_days
         ]
     }
 
-    # Write feeds
-    for fn, feed_data in feeds.items():
-        write_json(os.path.join("docs", fn), feed_data)
+    # Write outputs
+    write_json(os.path.join("docs", "feed_now.json"), feed_now)
+    write_json(os.path.join("docs", "feed_daily.json"), feed_daily)
+    write_json(os.path.join("docs", "current_week.json"), feed_weekly)
 
     # Metadata
-    write_json(os.path.join("docs", "metadata.json"), {
+    write_json(os.path.join("docs", "_meta.json"), {
         "generated_utc": datetime.utcnow().isoformat() + "Z",
-        "bodies": BODIES,
-        "fixed_stars": [star["name"] for star in get_fixed_star_positions()]
+        "version": "ephemeris-v1.0",
+        "location": "Greenwich Observatory",
+        "includes": {
+            "positions": True,
+            "aspects": True,
+            "houses": True,
+            "harmonics": True
+        }
     })
 
 
