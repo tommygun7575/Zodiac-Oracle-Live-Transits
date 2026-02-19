@@ -1,69 +1,93 @@
-def generate_feeds():
-    dt_now = datetime.datetime.utcnow().replace(microsecond=0)
-    ISO_now = dt_now.isoformat() + "Z"
+import json
+from datetime import datetime, timedelta
+from scripts.bodies.horizons_engine import fetch as fetch_horizons
+from scripts.bodies.miriade_engine import fetch as fetch_miriade
+from scripts.bodies.swiss_engine import fetch as fetch_swiss
+from scripts.utils.zodiac import zodiac_sign, degree_in_sign
+from scripts.utils.harmonics import harmonics
+from scripts.fixed_stars import get_fixed_star_positions
+import os
 
-    # -- feed_now.json --
-    now_transits, engines = compute_transits(ISO_now)
-    feed_now = {
-        "datetime_utc": ISO_now,
-        "transits": now_transits,
-        "metadata": make_metadata(engines),
-        "generated_at": now_utc()   # <--- Added here!
-    }
-    write_feed(feed_now, "docs/feed_now.json")
-    print("Generated docs/feed_now.json")
+BODIES = [
+    "Sun", "Moon", "Mercury", "Venus", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune", "Pluto", "Chiron",
+    "Ceres", "Pallas", "Juno", "Vesta", "Psyche", "Amor", "Eros", "Astraea", "Sappho", "Hygiea", "Karma", "Bacchus",
+    "Eris", "Sedna", "Haumea", "Makemake", "Quaoar", "Varuna", "Ixion", "Orcus", "Salacia", "Typhon", "2002 AW197", "2003 VS2"
+]
+# Add or update as needed
 
-    # -- feed_daily.json --
-    daily = []
-    for i in range(7):
-        dt = dt_now + datetime.timedelta(days=i)
-        iso_dt = dt.isoformat() + "Z"
-        trn, engines = compute_transits(iso_dt)
-        daily.append({
-            "datetime_utc": iso_dt,
-            "transits": trn
-        })
-    feed_daily = {
-        "days": daily,
-        "metadata": make_metadata(engines),
-        "generated_at": now_utc()   # <--- Added here!
-    }
-    write_feed(feed_daily, "docs/feed_daily.json")
-    print("Generated docs/feed_daily.json")
+def fetch_body_data(body, timestamp):
+    data = fetch_horizons(body, timestamp)
+    if data is None:
+        data = fetch_miriade(body, timestamp)
+    if data is None:
+        data = fetch_swiss(body, timestamp)
+    return data
 
-    # -- feed_week.json --
-    week = []
-    for i in range(7):
-        dt = dt_now + datetime.timedelta(days=i)
-        iso_dt = dt.isoformat() + "Z"
-        trn, engines = compute_transits(iso_dt)
-        week.append({
-            "date": iso_dt[:10],
-            "transits": trn
-        })
-    feed_week = {
-        "week": week,
-        "metadata": make_metadata(engines),
-        "generated_at": now_utc()   # <--- Added here!
-    }
-    write_feed(feed_week, "docs/feed_week.json")
-    print("Generated docs/feed_week.json")
+def compute_transits(ts):
+    # Output strictly follows: { body: { lon, lat, retrograde, sign, deg_in_sign, harmonics, ... } }
+    result = {}
+    for body in BODIES:
+        ephem = fetch_body_data(body, ts)
+        if ephem is None:
+            continue
+        lon = ephem["lon"]
+        lat = ephem["lat"]
+        retrograde = ephem["retrograde"]
+        sign = zodiac_sign(lon)
+        deg = degree_in_sign(lon)
+        harm = harmonics(lon)
+        # No actual house calculation; put None for now. Add if implemented.
+        result[body] = {
+            "lon": lon, "lat": lat, "retrograde": retrograde,
+            "sign": sign, "deg": deg, "house": None,
+            "harmonics": harm
+        }
+    # Add fixed stars, placeholder harmonics
+    for star in get_fixed_star_positions():
+        lon = star["longitude"]
+        sign = zodiac_sign(lon)
+        deg = degree_in_sign(lon)
+        result[star["name"]] = {
+            "lon": lon, "lat": 0.0, "retrograde": False,
+            "sign": sign, "deg": deg, "house": None,
+            "harmonics": harmonics(lon)
+        }
+    return result
 
-    # -- feed_weekly.json --
-    mon = dt_now - datetime.timedelta(days=dt_now.weekday())
-    week_dates = [mon + datetime.timedelta(days=i) for i in range(7)]
-    weekly = []
-    for dt in week_dates:
-        iso_dt = dt.isoformat() + "Z"
-        trn, engines = compute_transits(iso_dt)
-        weekly.append({
-            "date": iso_dt[:10],
-            "transits": trn
-        })
-    feed_weekly = {
-        "week": weekly,
-        "metadata": make_metadata(engines),
-        "generated_at": now_utc()   # <--- Added here!
+def write_json(path, data):
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "w") as f:
+        json.dump(data, f, indent=2)
+
+def generate_all_feeds():
+    now = datetime.utcnow().replace(microsecond=0)
+    ts_now = now.isoformat() + "Z"
+    ts_list = [now + timedelta(days=i) for i in range(7)]
+    # Single now, daily (7 days), week, weekly
+    feeds = {
+        "feed_now.json": [{"timestamp": ts_now, "transits": compute_transits(ts_now)}],
+        "feed_daily.json": [
+            {"timestamp": t.isoformat() + "Z", "transits": compute_transits(t.isoformat() + "Z")}
+            for t in ts_list
+        ],
+        "feed_week.json": [
+            {"timestamp": t.isoformat() + "Z", "transits": compute_transits(t.isoformat() + "Z")}
+            for t in ts_list
+        ],
+        "feed_weekly.json": [
+            {"timestamp": t.isoformat() + "Z", "transits": compute_transits(t.isoformat() + "Z")}
+            for t in ts_list
+        ],
     }
-    write_feed(feed_weekly, "docs/feed_weekly.json")
-    print("Generated docs/feed_weekly.json")
+    for fn, feed_data in feeds.items():
+        write_json(os.path.join("docs", fn), feed_data)
+
+    # Optional metadata
+    write_json(os.path.join("docs", "metadata.json"), {
+        "generated_utc": datetime.utcnow().isoformat() + "Z",
+        "bodies": BODIES,
+        "fixed_stars": [star["name"] for star in get_fixed_star_positions()],
+    })
+
+if __name__ == "__main__":
+    generate_all_feeds()
