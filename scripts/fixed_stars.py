@@ -1,4 +1,4 @@
-# """
+"""
 Fixed Star Position Provider
 Returns ecliptic longitudes for major fixed stars used in overlays.
 Values are approximate but stable for astrological processing.
@@ -28,9 +28,6 @@ FIXED_STARS = {
 
 def get_fixed_star_positions():
     """
-    Returns a dict of fixed star → ecliptic longitude (degrees).
+    Returns a dict of fixed star to ecliptic longitude (degrees).
     """
     return FIXED_STARS.copy()
-Fixed Star Longitude Updates Module
-
-# This module contains functions to update the longitudes of fixed stars.
