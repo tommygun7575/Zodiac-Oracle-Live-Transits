@@ -1,9 +1,9 @@
 name: Generate Transit Feeds
 
 on:
-  workflow_dispatch:        # manual run
+  workflow_dispatch:        # Manual trigger
   schedule:
-    - cron: "0 3 * * *"     # runs daily at 03:00 UTC
+    - cron: "0 3 * * *"     # Daily at 03:00 UTC
 
 jobs:
   build:
@@ -22,10 +22,9 @@ jobs:
         run: |
           pip install swisseph astroquery requests python-dateutil
 
-      - name: Fix Python path for scripts package
+      - name: Add scripts folder to PYTHONPATH
         run: |
           echo "PYTHONPATH=${{ github.workspace }}" >> $GITHUB_ENV
-        # This makes "scripts" importable everywhere
 
       - name: Run transit generator
         run: |
@@ -33,10 +32,28 @@ jobs:
         env:
           PYTHONPATH: ${{ github.workspace }}
 
+      - name: Create date-stamped weekly copy
+        run: |
+          DATE=$(date +'%Y-%m-%d')
+          if [ -f docs/current_week.json ]; then
+            cp docs/current_week.json docs/current_week_$DATE.json
+          else
+            echo "current_week.json not found – skipping dated copy"
+          fi
+
+      - name: Keep only the last 4 dated weekly files
+        run: |
+          cd docs
+          ls current_week_*.json 2>/dev/null | sort -r | tail -n +5 | xargs -r rm
+          cd ..
+
       - name: Commit updated feeds
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "actions@github.com"
+
           git add docs/*.json
-          git commit -m "Update transit feeds" || echo "No changes to commit"
+          git add changelog || true
+
+          git commit -m "Update transit feeds (auto-generated + 4-week retention)" || echo "No changes to commit"
           git push
