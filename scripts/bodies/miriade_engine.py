@@ -1,27 +1,36 @@
 import requests
+from datetime import datetime, timedelta
 
-MIRIADE_URL = "https://ssp.imcce.fr/webservices/miriade/api/ephemcc.php"
+URL = "https://ssp.imcce.fr/webservices/miriade/api/ephemcc.php"
 
-def fetch_miriade(body, jd):
+def fetch_miriade(body, start, stop):
 
-    params = {
-        "name": body,
-        "type": "object",
-        "epoch": jd,
-        "center": "500@399",
-        "output": "json"
-    }
+    start_dt = datetime.strptime(start, "%Y-%m-%d")
 
-    try:
+    vectors = []
 
-        r = requests.get(MIRIADE_URL, params=params, timeout=20)
+    for i in range(7):
+
+        day = start_dt + timedelta(days=i)
+
+        params = {
+            "name": body,
+            "type": "object",
+            "epoch": day.strftime("%Y-%m-%d"),
+            "observer": "500",
+            "mime": "json"
+        }
+
+        r = requests.get(URL, params=params, timeout=30)
+
+        if r.status_code != 200:
+            raise RuntimeError("Miriade request failed")
 
         data = r.json()
 
         lon = float(data["data"][0]["EclLon"])
         lat = float(data["data"][0]["EclLat"])
 
-        return lon, lat, "miriade"
+        vectors.append((lon, lat))
 
-    except:
-        return None
+    return vectors
