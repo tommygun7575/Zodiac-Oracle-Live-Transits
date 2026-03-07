@@ -1,41 +1,28 @@
 import requests
-from datetime import datetime
-
-MIRIADE_URL = "https://ssp.imcce.fr/webservices/miriade/api/ephemcc.php"
+import math
 
 
-def fetch_miriade_position(body, timestamp):
+def fetch(body, jd):
 
-    # convert ISO timestamp to required format
-    dt = datetime.fromisoformat(timestamp.replace("Z", "+00:00"))
+    try:
 
-    date_str = dt.strftime("%Y-%m-%dT%H:%M:%S")
+        url = "https://ssp.imcce.fr/webservices/miriade/api/ephemcc.php"
 
-    params = {
-        "name": body,
-        "type": "majorbody",
-        "epoch": date_str,
-        "coord": "ECLIPTIC",
-        "refsystem": "ICRF",
-        "mime": "json"
-    }
+        params = {
+            "name": body,
+            "type": "planet",
+            "ep": jd
+        }
 
-    response = requests.get(MIRIADE_URL, params=params, timeout=20)
+        r = requests.get(url, params=params, timeout=10)
 
-    if response.status_code != 200:
-        raise Exception("Miriade request failed")
+        data = r.json()
 
-    data = response.json()
+        lon = float(data["longitude"])
+        lat = float(data["latitude"])
 
-    if "data" not in data:
-        raise Exception("Invalid Miriade response")
+        return lon, lat, "miriade"
 
-    entry = data["data"][0]
+    except Exception:
 
-    lon = float(entry["longitude"])
-    lat = float(entry["latitude"])
-
-    return {
-        "ecl_lon_deg": lon,
-        "ecl_lat_deg": lat
-    }
+        return None
