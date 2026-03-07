@@ -21,7 +21,7 @@ def fetch_swiss(body, start, stop):
 
     start_dt = datetime.strptime(start, "%Y-%m-%d")
 
-    vectors = []
+    results = []
 
     for i in range(7):
 
@@ -31,9 +31,9 @@ def fetch_swiss(body, start, stop):
 
         pos, flags = swe.calc_ut(jd, PLANETS[body])
 
-        lon = float(pos[0])
-        lat = float(pos[1])
+        results.append({
+            "lon": float(pos[0]),
+            "lat": float(pos[1])
+        })
 
-        vectors.append((lon, lat))
-
-    return vectors
+    return results
