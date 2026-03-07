@@ -42,7 +42,7 @@ jobs:
 
       - name: Run weekly transit generator
         run: |
-          python scripts/generate_transits.py
+          python -m scripts.generate_transits
 
 
       - name: Commit updated weekly overlay
