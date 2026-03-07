@@ -2,7 +2,7 @@ name: Generate Weekly Transits
 
 on:
   schedule:
-    - cron: "0 */6 * * *"
+    - cron: "0 12 * * 0"
   workflow_dispatch:
 
 jobs:
@@ -29,10 +29,9 @@ jobs:
           pip install numpy requests
 
       - name: Run generator
-        run: |
-          python scripts/generate_transits.py
+        run: python scripts/generate_transits.py
 
-      - name: Commit updated transit feeds
+      - name: Commit output
         run: |
           git config --global user.name "oracle-bot"
           git config --global user.email "oracle@bot"
