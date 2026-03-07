@@ -2,6 +2,7 @@ import requests
 import json
 from datetime import datetime, timedelta
 import swisseph as swe
+import math
 
 HORIZONS_URL = "https://ssd.jpl.nasa.gov/api/horizons.api"
 MIRIADE_URL = "https://ssp.imcce.fr/webservices/miriade/api/ephemcc.php"
@@ -81,13 +82,10 @@ def fetch_jpl(body_id, start, stop):
 
     data = r.json()
 
-    if "result" not in data:
-        raise RuntimeError("Malformed JPL response")
-
     rows = parse_horizons(data["result"])
 
     if not rows:
-        raise RuntimeError("JPL returned empty data")
+        raise RuntimeError("JPL returned empty")
 
     return rows
 
@@ -104,7 +102,7 @@ def fetch_miriade(body, date):
     r = requests.get(MIRIADE_URL, params=params, timeout=30)
 
     if r.status_code != 200:
-        raise RuntimeError("Miriade request failed")
+        raise RuntimeError("Miriade failed")
 
     data = r.json()
 
@@ -126,14 +124,11 @@ def fetch_swiss(body, date):
     planet = SWISS_MAP.get(body)
 
     if planet is None:
-        raise RuntimeError("Swiss unsupported body")
+        raise RuntimeError("Swiss unsupported")
 
     pos, _ = swe.calc_ut(jd, planet)
 
-    lon = pos[0]
-    lat = pos[1]
-
-    return lon, lat
+    return pos[0], pos[1]
 
 
 def resolve_body(body, start_date):
@@ -141,27 +136,20 @@ def resolve_body(body, start_date):
     start = start_date.strftime("%Y-%m-%d")
     stop = (start_date + timedelta(days=6)).strftime("%Y-%m-%d")
 
-    results = []
-
     try:
 
         rows = fetch_jpl(BODIES[body], start, stop)
 
-        for lon, lat in rows:
-            results.append({
-                "lon": lon,
-                "lat": lat,
-                "source": "JPL"
-            })
-
-        print(f"[OK] {body} via JPL")
-
-        return results
+        return [
+            {"lon": lon, "lat": lat, "source": "JPL"}
+            for lon, lat in rows
+        ]
 
     except Exception as e:
 
         print(f"[WARN] JPL failed for {body}: {e}")
 
+    results = []
 
     for i in range(7):
 
@@ -177,45 +165,94 @@ def resolve_body(body, start_date):
                 "source": "Miriade"
             })
 
-            print(f"[OK] {body} via Miriade")
+        except:
 
-        except Exception:
+            lon, lat = fetch_swiss(body, date)
 
-            try:
-
-                lon, lat = fetch_swiss(body, date)
-
-                results.append({
-                    "lon": lon,
-                    "lat": lat,
-                    "source": "Swiss"
-                })
-
-                print(f"[OK] {body} via Swiss")
-
-            except Exception:
-
-                raise RuntimeError(f"No data for {body}")
+            results.append({
+                "lon": lon,
+                "lat": lat,
+                "source": "Swiss"
+            })
 
     return results
+
+
+def calc_arabic_parts(data):
+
+    parts = []
+
+    for i in range(7):
+
+        sun = data["Sun"][i]["lon"]
+        moon = data["Moon"][i]["lon"]
+
+        fortune = (moon - sun) % 360
+
+        parts.append({
+            "part_of_fortune": fortune
+        })
+
+    return parts
+
+
+def calc_harmonics(data):
+
+    harmonics = []
+
+    for i in range(7):
+
+        sun = data["Sun"][i]["lon"]
+
+        harmonics.append({
+            "sun_h5": (sun * 5) % 360,
+            "sun_h7": (sun * 7) % 360
+        })
+
+    return harmonics
+
+
+def calc_fixed_stars():
+
+    return {
+        "Regulus": 150.0,
+        "Spica": 204.0,
+        "Aldebaran": 69.0,
+        "Antares": 249.0
+    }
 
 
 def main():
 
     start_date = datetime.utcnow()
 
-    output = {
+    bodies = {}
+
+    for body in BODIES:
+
+        print("Resolving", body)
+
+        bodies[body] = resolve_body(body, start_date)
+
+    data = {
         "generated": datetime.utcnow().isoformat(),
-        "bodies": {}
+        "bodies": bodies
     }
 
-    for body in BODIES.keys():
+    data["arabic_parts"] = calc_arabic_parts(bodies)
 
-        output["bodies"][body] = resolve_body(body, start_date)
+    data["harmonics"] = calc_harmonics(bodies)
+
+    data["fixed_stars"] = calc_fixed_stars()
+
+    data["tnos"] = {}
+    data["asteroids"] = {}
+    data["minor_bodies"] = {}
+    data["aether_planets"] = {}
 
     with open("docs/current_week.json", "w") as f:
 
-        json.dump(output, f, indent=2)
+        json.dump(data, f, indent=2)
 
     print("current_week.json written")
 
