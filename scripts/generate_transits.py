@@ -4,9 +4,11 @@ from datetime import datetime, timedelta
 import swisseph as swe
 import time
 
+# JPL Horizons and Miriade URLs
 HORIZONS_URL = "https://ssd.jpl.nasa.gov/api/horizons.api"
 MIRIADE_URL = "https://ssp.imcce.fr/webservices/miriade/api/ephemcc.php"
 
+# Body registry for JPL, Miriade, and Swiss
 BODIES = {
     "Sun": "10",
     "Moon": "301",
@@ -43,7 +45,6 @@ SWISS_MAP = {
     "Neptune": swe.NEPTUNE,
     "Pluto": swe.PLUTO
 }
-
 
 def parse_horizons(text):
     """Parse Horizons CSV output."""
@@ -84,7 +85,6 @@ def parse_horizons(text):
 
     return rows
 
-
 def fetch_jpl(body_id, start, stop):
     """Fetch data from JPL Horizons."""
     params = {
@@ -113,7 +113,6 @@ def fetch_jpl(body_id, start, stop):
 
     raise RuntimeError("JPL request failed")
 
-
 def fetch_miriade(body, date):
     """Fetch data from Miriade."""
     params = {
@@ -136,7 +135,6 @@ def fetch_miriade(body, date):
 
     return lon, lat
 
-
 def fetch_swiss(body, date):
     """Fetch data from Swiss Ephemeris."""
     swe.set_ephe_path(".")
@@ -151,7 +149,6 @@ def fetch_swiss(body, date):
     pos, _ = swe.calc_ut(jd, planet)
 
     return pos[0], pos[1]
-
 
 def resolve_body(body, start_date):
     """Resolve ephemeris data for a body."""
@@ -176,7 +173,6 @@ def resolve_body(body, start_date):
 
     return results
 
-
 def calc_arabic_parts(data):
     """Calculate Arabic Parts."""
     parts = []
@@ -186,7 +182,6 @@ def calc_arabic_parts(data):
         fortune = (moon - sun) % 360
         parts.append({"part_of_fortune": fortune})
     return parts
-
 
 def calc_harmonics(data):
     """Calculate Harmonics."""
@@ -199,7 +194,6 @@ def calc_harmonics(data):
         })
     return harmonics
 
-
 def calc_fixed_stars():
     """Calculate fixed stars."""
     return {
@@ -209,7 +203,6 @@ def calc_fixed_stars():
         "Antares": 249.0
     }
 
-
 def calc_tnos():
     """Calculate TNOs."""
     return {
@@ -218,14 +211,12 @@ def calc_tnos():
         "Orcus": 18.0
     }
 
-
 def calc_minor_bodies():
     """Calculate Minor Bodies."""
     return {
         "Ceres": 10.0,
         "Vesta": 6.0
     }
-
 
 def calc_aether_planets():
     """Calculate Aether Planets."""
@@ -234,7 +225,6 @@ def calc_aether_planets():
         "Haumea": 140.0,
         "Makemake": 280.0
     }
-
 
 def main():
     """Main function to generate the weekly ephemeris."""
@@ -266,7 +256,6 @@ def main():
         json.dump(data, f, indent=2)
 
     print("current_week.json written")
-
 
 if __name__ == "__main__":
     main()
