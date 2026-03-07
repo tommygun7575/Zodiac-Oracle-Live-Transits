@@ -14,10 +14,11 @@ PLANETS = {
     "Pluto": swe.PLUTO
 }
 
+
 def fetch_swiss(body, start, stop):
 
     if body not in PLANETS:
-        raise RuntimeError("unsupported body")
+        raise RuntimeError(f"Swiss unsupported body {body}")
 
     start_dt = datetime.strptime(start, "%Y-%m-%d")
 
@@ -31,9 +32,18 @@ def fetch_swiss(body, start, stop):
 
         pos, flags = swe.calc_ut(jd, PLANETS[body])
 
+        lon = None
+        lat = None
+
+        try:
+            lon = float(pos[0])
+            lat = float(pos[1])
+        except Exception:
+            pass
+
         results.append({
-            "lon": float(pos[0]),
-            "lat": float(pos[1])
+            "lon": lon,
+            "lat": lat
         })
 
     return results
