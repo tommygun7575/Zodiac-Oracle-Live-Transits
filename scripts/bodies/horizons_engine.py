@@ -1,46 +1,60 @@
-import datetime
+from astroquery.jplhorizons import Horizons
+from datetime import datetime
+import time
 
-# -------------------------------------------------------
-# Make astroquery optional so GitHub workflow never fails
-# -------------------------------------------------------
-try:
-    from astroquery.jplhorizons import Horizons
-    ASTROQUERY_AVAILABLE = True
-except Exception:
-    ASTROQUERY_AVAILABLE = False
+HORIZONS_IDS = {
+    "Sun": "10",
+    "Moon": "301",
+    "Mercury": "199",
+    "Venus": "299",
+    "Mars": "499",
+    "Jupiter": "599",
+    "Saturn": "699",
+    "Uranus": "799",
+    "Neptune": "899",
+    "Pluto": "999"
+}
+
+def iso_to_epoch(timestamp):
+
+    dt = datetime.fromisoformat(timestamp.replace("Z","+00:00"))
+
+    return dt.strftime("%Y-%m-%d %H:%M")
 
 
-def fetch_horizons_position(body_name: str, timestamp: str):
-    """
-    Fetch ecliptic coordinates from JPL Horizons.
+def fetch_horizons_position(body, timestamp):
 
-    If astroquery is not installed (GitHub runner case),
-    the function safely returns None so the pipeline
-    falls back to Swiss Ephemeris.
-    """
+    if body not in HORIZONS_IDS:
+        raise Exception(f"Horizons unsupported body {body}")
 
-    if not ASTROQUERY_AVAILABLE:
-        return None
+    target = HORIZONS_IDS[body]
 
-    try:
+    epoch = iso_to_epoch(timestamp)
 
-        dt = datetime.datetime.fromisoformat(timestamp.replace("Z", ""))
+    for attempt in range(3):
 
-        obj = Horizons(
-            id=body_name,
-            location="500@10",
-            epochs=dt.timestamp()
-        )
+        try:
 
-        eph = obj.ephemerides()
+            obj = Horizons(
+                id=target,
+                location="500@0",
+                epochs={"start":epoch,"stop":epoch,"step":"1m"}
+            )
 
-        lon = float(eph["EclLon"][0])
-        lat = float(eph["EclLat"][0])
+            eph = obj.ephemerides()
 
-        return {
-            "ecl_lon_deg": lon,
-            "ecl_lat_deg": lat
-        }
+            lon = float(eph["EclLon"][0])
+            lat = float(eph["EclLat"][0])
 
-    except Exception:
-        return None
+            time.sleep(0.15)
+
+            return {
+                "ecl_lon_deg": lon,
+                "ecl_lat_deg": lat
+            }
+
+        except Exception:
+
+            time.sleep(1)
+
+    raise Exception("Horizons failed after retries")
