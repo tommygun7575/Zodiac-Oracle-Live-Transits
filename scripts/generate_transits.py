@@ -1,7 +1,6 @@
 import os
 import sys
 import json
-import time
 import numpy as np
 from datetime import datetime, timedelta
 from concurrent.futures import ThreadPoolExecutor, as_completed
