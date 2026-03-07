@@ -2,10 +2,12 @@ import requests
 import numpy as np
 import time
 
+
 HORIZONS_URL = "https://ssd.jpl.nasa.gov/api/horizons.api"
 
-MAX_RETRIES = 4
+MAX_RETRIES = 5
 RETRY_DELAY = 2
+
 
 session = requests.Session()
 
@@ -24,45 +26,62 @@ def fetch_batch(body_id: str, start: str, stop: str):
         "CSV_FORMAT": "YES"
     }
 
+    last_error = None
+
     for attempt in range(MAX_RETRIES):
 
         try:
-            response = session.get(HORIZONS_URL, params=params, timeout=60)
 
-            if response.status_code == 200:
+            response = session.get(
+                HORIZONS_URL,
+                params=params,
+                timeout=60
+            )
 
-                data = response.json()
+            if response.status_code != 200:
+                raise RuntimeError(f"Horizons HTTP {response.status_code}")
 
-                if "result" not in data:
-                    raise RuntimeError("Horizons malformed payload")
+            data = response.json()
 
-                text = data["result"]
+            if "result" not in data:
+                raise RuntimeError("Horizons returned malformed payload")
 
-                if "$$SOE" not in text:
-                    raise RuntimeError("Horizons returned no ephemeris block")
+            text = data["result"]
 
-                return parse_ephemeris(text)
+            if "$$SOE" not in text:
+                raise RuntimeError("Horizons returned no ephemeris block")
 
-            if response.status_code in (500, 502, 503, 504):
+            rows = parse_ephemeris(text)
+
+            if len(rows) == 0:
+                raise RuntimeError("Ephemeris empty")
+
+            return np.array(rows, dtype=float)
+
+        except Exception as e:
+
+            last_error = e
+
+            if attempt < MAX_RETRIES - 1:
                 time.sleep(RETRY_DELAY)
-                continue
+            else:
+                raise RuntimeError(f"Horizons fetch failed: {e}")
 
-            raise RuntimeError(f"Horizons request failed {response.status_code}")
-
-        except requests.exceptions.RequestException:
-            time.sleep(RETRY_DELAY)
-
-    raise RuntimeError("Horizons unavailable after retries")
+    raise RuntimeError(f"Horizons failure: {last_error}")
 
 
 def parse_ephemeris(text: str):
 
     rows = []
+
     reading = False
 
     for raw in text.splitlines():
 
         line = raw.strip()
+
+        if not line:
+            continue
 
         if line.startswith("$$SOE"):
             reading = True
@@ -74,31 +93,31 @@ def parse_ephemeris(text: str):
         if not reading:
             continue
 
-        if not line:
-            continue
-
         parts = [p.strip() for p in line.split(",")]
 
-        if len(parts) < 3:
+        if len(parts) < 2:
             continue
 
-        floats = []
+        numeric_values = []
 
         for p in parts:
+
             try:
-                floats.append(float(p))
-            except:
+                numeric_values.append(float(p))
+            except ValueError:
                 continue
 
-        if len(floats) < 2:
+        if len(numeric_values) < 2:
             continue
 
-        lon = floats[0]
-        lat = floats[1]
+        lon = numeric_values[0]
+        lat = numeric_values[1]
 
-        rows.append((lon, lat))
+        lon = lon % 360.0
+
+        rows.append([lon, lat])
 
     if len(rows) == 0:
         raise RuntimeError("Horizons ephemeris parse produced no rows")
 
-    return np.array(rows, dtype=float)
+    return rows
