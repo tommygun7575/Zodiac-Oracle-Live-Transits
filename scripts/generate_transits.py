@@ -1,7 +1,6 @@
 import json
 import os
 from datetime import datetime, timedelta
-import math
 
 from scripts.bodies.horizons_engine import fetch as fetch_horizons
 from scripts.bodies.miriade_engine import fetch as fetch_miriade
@@ -13,7 +12,6 @@ from scripts.utils.harmonics import harmonics
 from scripts.utils.houses import (
     julian_date_from_iso,
     compute_ascendant,
-    whole_sign_cusps,
     whole_sign_house
 )
 
@@ -149,7 +147,8 @@ def detect_aspect_events(week_positions):
 
     events = []
 
-    bodies = [b for b in ASPECT_BODIES if b in week_positions[0]]
+    # FIX: bodies must be read from the positions dictionary
+    bodies = [b for b in ASPECT_BODIES if b in week_positions[0]["positions"]]
 
     for i in range(len(bodies)):
 
