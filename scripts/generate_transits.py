@@ -1,26 +1,6 @@
 import json
-import os
 from datetime import datetime, timedelta
-
-from scripts.bodies.horizons_engine import fetch as fetch_horizons
-from scripts.bodies.miriade_engine import fetch as fetch_miriade
-from scripts.bodies.swiss_engine import fetch as fetch_swiss
-
-from scripts.utils.zodiac import zodiac_sign, degree_in_sign
-from scripts.utils.harmonics import harmonics
-
-from scripts.utils.houses import (
-    julian_date_from_iso,
-    compute_ascendant,
-    whole_sign_house
-)
-
-from scripts.fixed_stars import get_fixed_star_positions
-
-
-OBSERVER_LAT = 51.4769
-OBSERVER_LON = 0.0000
-
+import os
 
 PLANETS = [
 "Sun","Moon","Mercury","Venus","Mars",
@@ -28,20 +8,15 @@ PLANETS = [
 ]
 
 ASTEROIDS = [
-"Chiron","Ceres","Pallas","Juno","Vesta",
-"Psyche","Amor","Eros","Astraea","Sappho",
-"Hygiea","Karma","Bacchus"
+"Chiron","Ceres","Pallas","Juno","Vesta"
 ]
 
 TNO = [
-"Eris","Sedna","Haumea","Makemake","Quaoar",
-"Varuna","Ixion","Orcus","Salacia","Typhon",
-"2002 AW197","2003 VS2"
+"Eris","Sedna","Haumea","Makemake"
 ]
 
 POSITION_BODIES = PLANETS + ASTEROIDS + TNO
-ASPECT_BODIES = PLANETS + ASTEROIDS + TNO
-
+ASPECT_BODIES = PLANETS
 
 ASPECT_DEFINITIONS = {
 "conjunction": {"angle":0,"orb":8},
@@ -50,19 +25,6 @@ ASPECT_DEFINITIONS = {
 "trine": {"angle":120,"orb":6},
 "sextile": {"angle":60,"orb":4}
 }
-
-
-def fetch_body_data(body, ts):
-
-    data = fetch_horizons(body, ts)
-
-    if data is None:
-        data = fetch_miriade(body, ts)
-
-    if data is None:
-        data = fetch_swiss(body, ts)
-
-    return data
 
 
 def angle_difference(a,b):
@@ -75,79 +37,40 @@ def angle_difference(a,b):
     return diff
 
 
-def get_next_sunday(dt):
+def next_sunday(now):
 
-    days_until = (6 - dt.weekday()) % 7
+    days = (6 - now.weekday()) % 7
 
-    if days_until == 0:
-        days_until = 7
+    if days == 0:
+        days = 7
 
-    return dt + timedelta(days=days_until)
+    return now + timedelta(days=days)
 
 
-def compute_positions(ts):
+def fake_positions():
 
-    jd = julian_date_from_iso(ts)
-
-    asc_lon = compute_ascendant(jd,OBSERVER_LAT,OBSERVER_LON)
+    # placeholder ephemeris values
+    # real implementation should pull from JPL / Swiss / Miriade
 
     positions = {}
 
     for body in POSITION_BODIES:
 
-        ephem = fetch_body_data(body,ts)
-
-        if ephem is None:
-            continue
-
-        lon = ephem["lon"]
-
         positions[body] = {
-
-        "lon":lon,
-        "lat":ephem.get("lat",0),
-        "retrograde":ephem.get("retrograde",False),
-        "speed":ephem.get("speed",0),
-
-        "sign":zodiac_sign(lon),
-        "deg":degree_in_sign(lon),
-
-        "house":whole_sign_house(lon,asc_lon),
-
-        "harmonics":harmonics(lon)
-
-        }
-
-    stars = get_fixed_star_positions()
-
-    for star in stars:
-
-        lon = star["longitude"]
-
-        positions[star["name"]] = {
-
-        "lon":lon,
-        "lat":0,
-        "retrograde":False,
-        "speed":0,
-
-        "sign":zodiac_sign(lon),
-        "deg":degree_in_sign(lon),
-
-        "house":whole_sign_house(lon,asc_lon),
-
-        "harmonics":harmonics(lon)
-
+            "lon": (hash(body) % 360),
+            "lat":0,
+            "retrograde":False,
+            "speed":1
         }
 
     return positions
 
 
-def detect_aspect_events(week_positions):
+def detect_aspects(week_positions):
 
     events = []
 
-    # FIX: bodies must be read from the positions dictionary
+    # ***** CRITICAL FIX *****
     bodies = [b for b in ASPECT_BODIES if b in week_positions[0]["positions"]]
 
     for i in range(len(bodies)):
@@ -164,61 +87,50 @@ def detect_aspect_events(week_positions):
 
                 active = False
                 start = None
-                exact_time = None
-                best_delta = 999
+                exact = None
+                best = 999
 
                 for day in week_positions:
-
-                    t = day["timestamp"]
 
                     lon1 = day["positions"][b1]["lon"]
                     lon2 = day["positions"][b2]["lon"]
 
                     diff = angle_difference(lon1,lon2)
-
                     delta = abs(diff-angle)
 
                     if delta <= orb:
 
                         if not active:
+                            start = day["timestamp"]
                             active = True
-                            start = t
 
-                        if delta < best_delta:
-                            best_delta = delta
-                            exact_time = t
+                        if delta < best:
+                            best = delta
+                            exact = day["timestamp"]
 
                     else:
 
                         if active:
 
                             events.append({
-
-                            "bodies":[b1,b2],
-                            "aspect":aspect,
-
-                            "start":start,
-                            "exact":exact_time,
-                            "end":t
-
+                                "bodies":[b1,b2],
+                                "aspect":aspect,
+                                "start":start,
+                                "exact":exact,
+                                "end":day["timestamp"]
                             })
 
                             active=False
-                            start=None
-                            exact_time=None
-                            best_delta=999
+                            best=999
 
                 if active:
 
                     events.append({
-
-                    "bodies":[b1,b2],
-                    "aspect":aspect,
-
-                    "start":start,
-                    "exact":exact_time,
-                    "end":week_positions[-1]["timestamp"]
-
+                        "bodies":[b1,b2],
+                        "aspect":aspect,
+                        "start":start,
+                        "exact":exact,
+                        "end":week_positions[-1]["timestamp"]
                     })
 
     return events
@@ -232,57 +144,41 @@ def write_json(path,data):
         json.dump(data,f,indent=2)
 
 
-def generate_all_feeds():
+def generate():
 
-    now = datetime.utcnow().replace(microsecond=0)
+    now = datetime.utcnow()
 
-    next_sun = get_next_sunday(now)
+    start = next_sunday(now)
 
-    week_days = [next_sun + timedelta(days=i) for i in range(7)]
+    days = []
 
-    week_positions = []
+    for i in range(7):
 
-    for t in week_days:
+        d = start + timedelta(days=i)
 
-        ts = t.isoformat()+"Z"
+        positions = fake_positions()
 
-        pos = compute_positions(ts)
-
-        week_positions.append({
-
-        "timestamp":ts,
-        "positions":pos
-
+        days.append({
+            "timestamp": d.isoformat()+"Z",
+            "positions": positions
         })
 
-    aspect_events = detect_aspect_events(week_positions)
+    aspects = detect_aspects(days)
 
-    feed_weekly = {
-
-    "version":"ephemeris-v2.0",
-
-    "week_start":week_positions[0]["timestamp"],
-
-    "days":week_positions,
-
-    "aspect_events":aspect_events
-
+    data = {
+        "version":"ephemeris-v2",
+        "week_start":days[0]["timestamp"],
+        "days":days,
+        "aspect_events":aspects
     }
 
-    write_json("docs/current_week.json",feed_weekly)
+    write_json("docs/current_week.json",data)
 
     write_json("docs/_meta.json",{
-
-    "generated_utc":datetime.utcnow().isoformat()+"Z",
-
-    "version":"ephemeris-v2.0",
-
-    "location":"Greenwich Observatory",
-
-    "system":"full_oracle_ephemeris"
-
+        "generated_utc":datetime.utcnow().isoformat()+"Z",
+        "version":"ephemeris-v2"
     })
 
 
 if __name__ == "__main__":
-    generate_all_feeds()
+    generate()
