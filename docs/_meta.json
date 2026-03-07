@@ -1,11 +1,6 @@
 {
-  "generated_utc": "2026-03-07T03:42:25.996038Z",
-  "version": "ephemeris-v1.0",
+  "generated_utc": "2026-03-07T12:40:03.941528Z",
+  "version": "ephemeris-v2.0",
   "location": "Greenwich Observatory",
-  "includes": {
-    "positions": true,
-    "aspects": true,
-    "houses": true,
-    "harmonics": true
-  }
+  "system": "full_oracle_ephemeris"
 }
