@@ -1,17 +1,15 @@
 import json
 import os
 from datetime import datetime, timedelta
+import math
 
-# Ephemeris fetch engines
 from scripts.bodies.horizons_engine import fetch as fetch_horizons
 from scripts.bodies.miriade_engine import fetch as fetch_miriade
 from scripts.bodies.swiss_engine import fetch as fetch_swiss
 
-# Astrology utilities
 from scripts.utils.zodiac import zodiac_sign, degree_in_sign
 from scripts.utils.harmonics import harmonics
 
-# Houses
 from scripts.utils.houses import (
     julian_date_from_iso,
     compute_ascendant,
@@ -19,56 +17,42 @@ from scripts.utils.houses import (
     whole_sign_house
 )
 
-# Fixed stars
 from scripts.fixed_stars import get_fixed_star_positions
 
-# Aspect engine
-from scripts.utils.aspects import compute_all_aspects
-
-
-# --------------------------------------------------
-# GLOBAL OBSERVER BASELINE (Greenwich)
-# --------------------------------------------------
 
 OBSERVER_LAT = 51.4769
 OBSERVER_LON = 0.0000
 
 
-# --------------------------------------------------
-# FULL BODY SYSTEM (positions layer)
-# --------------------------------------------------
-
 PLANETS = [
-    "Sun","Moon","Mercury","Venus","Mars",
-    "Jupiter","Saturn","Uranus","Neptune","Pluto"
+"Sun","Moon","Mercury","Venus","Mars",
+"Jupiter","Saturn","Uranus","Neptune","Pluto"
 ]
 
 ASTEROIDS = [
-    "Chiron","Ceres","Pallas","Juno","Vesta",
-    "Psyche","Amor","Eros","Astraea","Sappho",
-    "Hygiea","Karma","Bacchus"
+"Chiron","Ceres","Pallas","Juno","Vesta",
+"Psyche","Amor","Eros","Astraea","Sappho",
+"Hygiea","Karma","Bacchus"
 ]
 
 TNO = [
-    "Eris","Sedna","Haumea","Makemake","Quaoar",
-    "Varuna","Ixion","Orcus","Salacia","Typhon",
-    "2002 AW197","2003 VS2"
+"Eris","Sedna","Haumea","Makemake","Quaoar",
+"Varuna","Ixion","Orcus","Salacia","Typhon",
+"2002 AW197","2003 VS2"
 ]
 
 POSITION_BODIES = PLANETS + ASTEROIDS + TNO
-
-
-# --------------------------------------------------
-# ASPECT PARTICIPANTS
-# (no star-to-star relationships)
-# --------------------------------------------------
-
 ASPECT_BODIES = PLANETS + ASTEROIDS + TNO
 
 
-# --------------------------------------------------
-# EPHEMERIS FETCH CASCADE
-# --------------------------------------------------
+ASPECT_DEFINITIONS = {
+"conjunction": {"angle":0,"orb":8},
+"opposition": {"angle":180,"orb":8},
+"square": {"angle":90,"orb":6},
+"trine": {"angle":120,"orb":6},
+"sextile": {"angle":60,"orb":4}
+}
+
 
 def fetch_body_data(body, ts):
 
@@ -83,9 +67,15 @@ def fetch_body_data(body, ts):
     return data
 
 
-# --------------------------------------------------
-# NEXT SUNDAY CALCULATOR
-# --------------------------------------------------
+def angle_difference(a,b):
+
+    diff = abs(a-b) % 360
+
+    if diff > 180:
+        diff = 360-diff
+
+    return diff
+
 
 def get_next_sunday(dt):
 
@@ -97,51 +87,38 @@ def get_next_sunday(dt):
     return dt + timedelta(days=days_until)
 
 
-# --------------------------------------------------
-# COMPUTE SKY STATE
-# --------------------------------------------------
-
-def compute_transits(ts):
+def compute_positions(ts):
 
     jd = julian_date_from_iso(ts)
 
-    asc_lon = compute_ascendant(jd, OBSERVER_LAT, OBSERVER_LON)
-
-    cusps = whole_sign_cusps(asc_lon)
+    asc_lon = compute_ascendant(jd,OBSERVER_LAT,OBSERVER_LON)
 
     positions = {}
 
-    # -----------------------------
-    # planets / asteroids / TNOs
-    # -----------------------------
-
     for body in POSITION_BODIES:
 
-        ephem = fetch_body_data(body, ts)
+        ephem = fetch_body_data(body,ts)
 
         if ephem is None:
             continue
 
         lon = ephem["lon"]
-        lat = ephem.get("lat",0.0)
-        retrograde = ephem.get("retrograde",False)
-        speed = ephem.get("speed",0.0)
 
         positions[body] = {
-            "lon": lon,
-            "lat": lat,
-            "retrograde": retrograde,
-            "speed": speed,
-            "sign": zodiac_sign(lon),
-            "deg": degree_in_sign(lon),
-            "house": whole_sign_house(lon, asc_lon),
-            "harmonics": harmonics(lon)
+
+        "lon":lon,
+        "lat":ephem.get("lat",0),
+        "retrograde":ephem.get("retrograde",False),
+        "speed":ephem.get("speed",0),
+
+        "sign":zodiac_sign(lon),
+        "deg":degree_in_sign(lon),
+
+        "house":whole_sign_house(lon,asc_lon),
+
+        "harmonics":harmonics(lon)
+
         }
-
-
-    # -----------------------------
-    # fixed stars (positions only)
-    # -----------------------------
 
     stars = get_fixed_star_positions()
 
@@ -150,38 +127,103 @@ def compute_transits(ts):
         lon = star["longitude"]
 
         positions[star["name"]] = {
-            "lon": lon,
-            "lat": 0.0,
-            "retrograde": False,
-            "speed": 0.0,
-            "sign": zodiac_sign(lon),
-            "deg": degree_in_sign(lon),
-            "house": whole_sign_house(lon, asc_lon),
-            "harmonics": harmonics(lon)
+
+        "lon":lon,
+        "lat":0,
+        "retrograde":False,
+        "speed":0,
+
+        "sign":zodiac_sign(lon),
+        "deg":degree_in_sign(lon),
+
+        "house":whole_sign_house(lon,asc_lon),
+
+        "harmonics":harmonics(lon)
+
         }
 
-
-    # -----------------------------
-    # FILTERED ASPECT ENGINE
-    # -----------------------------
-
-    aspect_positions = {
-        k:v for k,v in positions.items()
-        if k in ASPECT_BODIES
-    }
-
-    aspects = compute_all_aspects(aspect_positions)
+    return positions
 
 
-    return {
-        "positions": positions,
-        "aspects": aspects
-    }
+def detect_aspect_events(week_positions):
 
+    events = []
 
-# --------------------------------------------------
-# JSON WRITER
-# --------------------------------------------------
+    bodies = [b for b in ASPECT_BODIES if b in week_positions[0]]
+
+    for i in range(len(bodies)):
+
+        for j in range(i+1,len(bodies)):
+
+            b1 = bodies[i]
+            b2 = bodies[j]
+
+            for aspect,conf in ASPECT_DEFINITIONS.items():
+
+                angle = conf["angle"]
+                orb = conf["orb"]
+
+                active = False
+                start = None
+                exact_time = None
+                best_delta = 999
+
+                for day in week_positions:
+
+                    t = day["timestamp"]
+
+                    lon1 = day["positions"][b1]["lon"]
+                    lon2 = day["positions"][b2]["lon"]
+
+                    diff = angle_difference(lon1,lon2)
+
+                    delta = abs(diff-angle)
+
+                    if delta <= orb:
+
+                        if not active:
+                            active = True
+                            start = t
+
+                        if delta < best_delta:
+                            best_delta = delta
+                            exact_time = t
+
+                    else:
+
+                        if active:
+
+                            events.append({
+
+                            "bodies":[b1,b2],
+                            "aspect":aspect,
+
+                            "start":start,
+                            "exact":exact_time,
+                            "end":t
+
+                            })
+
+                            active=False
+                            start=None
+                            exact_time=None
+                            best_delta=999
+
+                if active:
+
+                    events.append({
+
+                    "bodies":[b1,b2],
+                    "aspect":aspect,
+
+                    "start":start,
+                    "exact":exact_time,
+                    "end":week_positions[-1]["timestamp"]
+
+                    })
+
+    return events
+
 
 def write_json(path,data):
 
@@ -191,88 +233,54 @@ def write_json(path,data):
         json.dump(data,f,indent=2)
 
 
-# --------------------------------------------------
-# WEEKLY FEED GENERATOR
-# --------------------------------------------------
-
 def generate_all_feeds():
 
     now = datetime.utcnow().replace(microsecond=0)
-
-    ts_now = now.isoformat()+"Z"
 
     next_sun = get_next_sunday(now)
 
     week_days = [next_sun + timedelta(days=i) for i in range(7)]
 
+    week_positions = []
 
-    # realtime snapshot
+    for t in week_days:
 
-    feed_now = [{
-        "version":"ephemeris-v1.1",
-        "timestamp": ts_now,
-        "transits": compute_transits(ts_now)
-    }]
+        ts = t.isoformat()+"Z"
 
+        pos = compute_positions(ts)
 
-    # daily forecast
+        week_positions.append({
 
-    feed_daily = [
+        "timestamp":ts,
+        "positions":pos
 
-        {
-            "version":"ephemeris-v1.1",
-            "timestamp":t.isoformat()+"Z",
-            "transits":compute_transits(t.isoformat()+"Z")
-        }
+        })
 
-        for t in week_days
-    ]
-
-
-    # weekly primary feed
+    aspect_events = detect_aspect_events(week_positions)
 
     feed_weekly = {
 
-        "version":"ephemeris-v1.1",
+    "version":"ephemeris-v2.0",
 
-        "week_start":next_sun.isoformat()+"Z",
+    "week_start":week_positions[0]["timestamp"],
 
-        "days":[
-            {
-                "timestamp":t.isoformat()+"Z",
-                "transits":compute_transits(t.isoformat()+"Z")
-            }
-            for t in week_days
-        ]
+    "days":week_positions,
+
+    "aspect_events":aspect_events
+
     }
-
-
-    # write feeds
-
-    write_json("docs/feed_now.json",feed_now)
-
-    write_json("docs/feed_daily.json",feed_daily)
 
     write_json("docs/current_week.json",feed_weekly)
 
-
-    # metadata
-
     write_json("docs/_meta.json",{
 
-        "generated_utc":datetime.utcnow().isoformat()+"Z",
+    "generated_utc":datetime.utcnow().isoformat()+"Z",
 
-        "version":"ephemeris-v1.1",
+    "version":"ephemeris-v2.0",
 
-        "location":"Greenwich Observatory",
+    "location":"Greenwich Observatory",
 
-        "includes":{
-            "positions":True,
-            "aspects":True,
-            "houses":True,
-            "harmonics":True,
-            "bodies":"planets+asteroids+TNO+fixed_stars"
-        }
+    "system":"full_oracle_ephemeris"
 
     })
 
