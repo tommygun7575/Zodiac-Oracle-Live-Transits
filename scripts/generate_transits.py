@@ -1,11 +1,9 @@
 import os
 import sys
 import json
+import time
 from datetime import datetime, timedelta, timezone
 
-# ---------------------------------------------------
-# allow imports when running inside GitHub runner
-# ---------------------------------------------------
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
 
@@ -13,56 +11,44 @@ from scripts.bodies.horizons_engine import fetch_horizons_position
 from scripts.bodies.swiss_engine import fetch_swiss_position
 from scripts.bodies.miriade_engine import fetch_miriade_position
 
-
-OUTPUT_FILE = "docs/current_week.json"
-
-
-MAJOR_BODIES = [
-    "Sun",
-    "Moon",
-    "Mercury",
-    "Venus",
-    "Mars",
-    "Jupiter",
-    "Saturn",
-    "Uranus",
-    "Neptune",
-    "Pluto"
-]
+REGISTRY = "data/body_registry.json"
+OUTPUT = "docs/current_week.json"
 
 
-# ---------------------------------------------------
-# BODY RESOLUTION ORDER
-# JPL → Swiss → Miriade
-# ---------------------------------------------------
+def load_registry():
+
+    with open(REGISTRY) as f:
+        data = json.load(f)
+
+    bodies = []
+
+    for group in data.values():
+        bodies.extend(group)
+
+    return bodies
+
 
 def resolve_body(body, timestamp):
 
-    # JPL Horizons (PRIMARY SOURCE)
     try:
-        result = fetch_horizons_position(body, timestamp)
-        if result:
-            result["used_source"] = "jpl"
-            return result
-    except Exception:
+        r = fetch_horizons_position(body, timestamp)
+        r["used_source"] = "jpl"
+        return r
+    except:
         pass
 
-    # Swiss Ephemeris (fallback)
     try:
-        result = fetch_swiss_position(body, timestamp)
-        if result:
-            result["used_source"] = "swiss"
-            return result
-    except Exception:
+        r = fetch_swiss_position(body, timestamp)
+        r["used_source"] = "swiss"
+        return r
+    except:
         pass
 
-    # Miriade (final fallback)
     try:
-        result = fetch_miriade_position(body, timestamp)
-        if result:
-            result["used_source"] = "miriade"
-            return result
-    except Exception:
+        r = fetch_miriade_position(body, timestamp)
+        r["used_source"] = "miriade"
+        return r
+    except:
         pass
 
     return {
@@ -72,33 +58,63 @@ def resolve_body(body, timestamp):
     }
 
 
-# ---------------------------------------------------
-# COMPUTE ONE DAY OF TRANSITS
-# ---------------------------------------------------
+def compute_arabic_parts(objects):
 
-def compute_day(timestamp):
+    parts = {}
+
+    if "Sun" in objects and "Moon" in objects:
+
+        sun = objects["Sun"]["ecl_lon_deg"]
+        moon = objects["Moon"]["ecl_lon_deg"]
+
+        if sun is not None and moon is not None:
+
+            fortune = (moon - sun) % 360
+
+            parts["Part_of_Fortune"] = fortune
+
+    return parts
+
+
+def compute_harmonics(objects):
+
+    harmonics = {}
+
+    for body, data in objects.items():
+
+        lon = data["ecl_lon_deg"]
+
+        if lon is None:
+            continue
+
+        harmonics[f"{body}_H5"] = (lon * 5) % 360
+        harmonics[f"{body}_H7"] = (lon * 7) % 360
+
+    return harmonics
+
+
+def compute_day(bodies, timestamp):
 
     objects = {}
 
-    for body in MAJOR_BODIES:
+    for body in bodies:
 
-        position = resolve_body(body, timestamp)
+        pos = resolve_body(body, timestamp)
 
-        objects[body] = {
-            "ecl_lon_deg": position["ecl_lon_deg"],
-            "ecl_lat_deg": position["ecl_lat_deg"],
-            "used_source": position["used_source"]
-        }
+        objects[body] = pos
+
+        time.sleep(0.1)
+
+    parts = compute_arabic_parts(objects)
+    harmonics = compute_harmonics(objects)
 
     return {
         "timestamp": timestamp,
-        "objects": objects
+        "objects": objects,
+        "arabic_parts": parts,
+        "harmonics": harmonics
     }
 
-
-# ---------------------------------------------------
-# FIND NEXT SUNDAY (UTC)
-# ---------------------------------------------------
 
 def next_sunday():
 
@@ -112,11 +128,9 @@ def next_sunday():
     return now + timedelta(days=days)
 
 
-# ---------------------------------------------------
-# GENERATE WEEKLY TRANSIT DATA
-# ---------------------------------------------------
-
 def generate_week():
+
+    bodies = load_registry()
 
     start = next_sunday()
 
@@ -126,34 +140,30 @@ def generate_week():
 
         t = start + timedelta(days=i)
 
-        iso = t.replace(microsecond=0).isoformat().replace("+00:00", "Z")
+        iso = t.replace(microsecond=0).isoformat().replace("+00:00","Z")
 
-        week.append(compute_day(iso))
+        week.append(compute_day(bodies, iso))
 
     return week
 
 
-# ---------------------------------------------------
-# MAIN
-# ---------------------------------------------------
-
 def main():
 
-    week_data = generate_week()
+    week = generate_week()
 
     output = {
         "version": "oracle-weekly-transits",
-        "generated_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
-        "week_start": week_data[0]["timestamp"],
-        "days": week_data
+        "generated_at": datetime.now(timezone.utc).isoformat().replace("+00:00","Z"),
+        "week_start": week[0]["timestamp"],
+        "days": week
     }
 
     os.makedirs("docs", exist_ok=True)
 
-    with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
+    with open(OUTPUT,"w") as f:
         json.dump(output, f, indent=2)
 
-    print("Weekly transit file generated:", OUTPUT_FILE)
+    print("Weekly transit file generated")
 
 
 if __name__ == "__main__":
