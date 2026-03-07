@@ -3,8 +3,8 @@ import sys
 import json
 import numpy as np
 from datetime import datetime, timedelta
+from concurrent.futures import ThreadPoolExecutor
 
-# ensure repo root is importable
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(ROOT)
 
@@ -38,6 +38,40 @@ BODY_REGISTRY = {
 }
 
 
+CACHE_DIR = "cache"
+SLOW_OBJECTS = {"Sedna", "Eris", "Haumea", "Makemake", "Orcus"}
+
+
+def load_cache(name):
+    path = f"{CACHE_DIR}/{name}.json"
+    if os.path.exists(path):
+        with open(path) as f:
+            return np.array(json.load(f))
+    return None
+
+
+def save_cache(name, data):
+    os.makedirs(CACHE_DIR, exist_ok=True)
+    with open(f"{CACHE_DIR}/{name}.json", "w") as f:
+        json.dump(data.tolist(), f)
+
+
+def fetch_body(args):
+    name, body_id, start, end = args
+
+    if name in SLOW_OBJECTS:
+        cached = load_cache(name)
+        if cached is not None:
+            return name, cached
+
+    vec = fetch_batch(body_id, start, end)
+
+    if name in SLOW_OBJECTS:
+        save_cache(name, vec)
+
+    return name, vec
+
+
 def generate_week():
 
     now = datetime.utcnow()
@@ -46,11 +80,14 @@ def generate_week():
 
     body_vectors = {}
 
-    # batch ephemeris queries
-    for name, body_id in BODY_REGISTRY.items():
+    with ThreadPoolExecutor(max_workers=8) as executor:
 
-        vec = fetch_batch(body_id, start, end)
+        results = executor.map(
+            fetch_body,
+            [(n, i, start, end) for n, i in BODY_REGISTRY.items()]
+        )
 
+    for name, vec in results:
         body_vectors[name] = vec
 
     days = []
