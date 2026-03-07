@@ -1,8 +1,9 @@
 import json
 import os
-import numpy as np
 from datetime import datetime, timedelta
 from concurrent.futures import ThreadPoolExecutor, as_completed
+
+import numpy as np
 
 from scripts.bodies.horizons_engine import fetch_batch
 from scripts.bodies.harmonics_engine import compute_harmonics
@@ -16,6 +17,20 @@ BODY_REGISTRY = [
     "Eris","Haumea","Makemake","Sedna",
     "Orcus","Quaoar","Ixion"
 ]
+
+
+def safe_float(x):
+    if isinstance(x, (np.floating, np.integer)):
+        return float(x)
+    return x
+
+
+def convert_numpy(obj):
+    if isinstance(obj, np.ndarray):
+        return obj.tolist()
+    if isinstance(obj, (np.floating, np.integer)):
+        return float(obj)
+    return obj
 
 
 def fetch_body(body, start, stop):
@@ -75,8 +90,8 @@ def generate_week():
 
             lon, lat = vec[i]
 
-            lon = float(lon)
-            lat = float(lat)
+            lon = safe_float(lon)
+            lat = safe_float(lat)
 
             objects[body] = {
                 "ecl_lon_deg": lon,
@@ -90,7 +105,9 @@ def generate_week():
         longitudes_np = np.array(longitudes)
 
         harmonics = compute_harmonics(longitudes_np)
+
         stars = detect_star_hits(longitudes_np)
+
 
         sun = objects["Sun"]["ecl_lon_deg"]
         moon = objects["Moon"]["ecl_lon_deg"]
@@ -109,12 +126,12 @@ def generate_week():
             },
 
             "harmonics": {
-                "h5": harmonics["h5"].tolist(),
-                "h7": harmonics["h7"].tolist(),
-                "h9": harmonics["h9"].tolist()
+                "h5": convert_numpy(harmonics["h5"]),
+                "h7": convert_numpy(harmonics["h7"]),
+                "h9": convert_numpy(harmonics["h9"])
             },
 
-            "fixed_star_hits": stars
+            "fixed_star_hits": convert_numpy(stars)
 
         })
 
