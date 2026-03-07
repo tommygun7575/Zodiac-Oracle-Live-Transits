@@ -1,249 +1,334 @@
-import requests
 import json
-from datetime import datetime, timedelta
 import os
-import time
+import sys
+import math
+from datetime import datetime, timedelta, timezone
+from typing import Dict, Any
+from math import fmod
+import swisseph as swe
+from dateutil import parser
+import pytz
 
-HORIZONS_URL = "https://ssd.jpl.nasa.gov/api/horizons.api"
+from scripts.sources import horizons_client, swiss_client, miriade_client
+from scripts.utils.coords import ra_dec_to_ecl
 
-PLANETS = {
-    "Sun": "10",
-    "Moon": "301",
-    "Mercury": "199",
-    "Venus": "299",
-    "Mars": "499",
-    "Jupiter": "599",
-    "Saturn": "699",
-    "Uranus": "799",
-    "Neptune": "899",
-    "Pluto": "999"
-}
+ROOT = os.path.dirname(os.path.dirname(__file__))
+DATA = os.path.join(ROOT, "data")
 
-ASTEROIDS = {
-    "Ceres": "1",
-    "Pallas": "2",
-    "Juno": "3",
-    "Vesta": "4",
-    "Chiron": "2060"
-}
+swe.set_ephe_path(os.path.join(ROOT, "ephe"))
 
-TNO = {
-    "Eris": "136199",
-    "Haumea": "136108",
-    "Makemake": "136472",
-    "Sedna": "90377"
-}
-
-ALL_BODIES = {**PLANETS, **ASTEROIDS, **TNO}
-
-ASPECTS = {
-    "conjunction": {"angle": 0, "orb": 8},
-    "opposition": {"angle": 180, "orb": 8},
-    "square": {"angle": 90, "orb": 6},
-    "trine": {"angle": 120, "orb": 6},
-    "sextile": {"angle": 60, "orb": 4}
+NAME_ALIASES = {
+    "Sun": ["Sun", "SUN"],
+    "Moon": ["Moon", "MOON", "301"]
 }
 
 
-def zodiac_sign(lon):
-    signs = [
-        "Aries","Taurus","Gemini","Cancer",
-        "Leo","Virgo","Libra","Scorpio",
-        "Sagittarius","Capricorn","Aquarius","Pisces"
-    ]
-    return signs[int(lon // 30)]
+def load_json(path: str) -> dict:
+    with open(path, "r", encoding="utf-8") as f:
+        return json.load(f)
 
 
-def degree_in_sign(lon):
-    return round(lon % 30, 4)
+def normalize(deg: float) -> float:
+    return fmod(deg + 360.0, 360.0)
 
 
-def angle_diff(a, b):
-    d = abs(a - b) % 360
-    if d > 180:
-        d = 360 - d
-    return d
+def iso_now() -> str:
+    return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
 
 
-def fetch_horizons(body_id, timestamp):
+def compute_arabic_parts(asc, sun, moon):
+    parts = {}
 
-    params = {
-        "format": "json",
-        "COMMAND": body_id,
-        "EPHEM_TYPE": "OBSERVER",
-        "CENTER": "500@399",
-        "START_TIME": timestamp,
-        "STOP_TIME": timestamp,
-        "STEP_SIZE": "1d",
-        "QUANTITIES": "1"
-    }
+    is_day = (sun - asc) % 360 < 180
 
-    try:
-        r = requests.get(HORIZONS_URL, params=params, timeout=30)
-        data = r.json()
+    fortune = asc + (moon - sun if is_day else sun - moon)
+    spirit = asc + (sun - moon if is_day else moon - sun)
+    karma = asc + (sun + moon) / 2.0
+    treachery = asc + (moon - karma)
+    victory = asc + (sun - karma)
+    deliverance = asc + (spirit - fortune)
 
-        if "result" not in data:
-            return None
+    for name, lon in {
+        "Part_of_Fortune": fortune,
+        "Part_of_Spirit": spirit,
+        "Part_of_Karma": karma,
+        "Part_of_Treachery": treachery,
+        "Part_of_Victory": victory,
+        "Part_of_Deliverance": deliverance,
+    }.items():
 
-        text = data["result"]
-
-        for line in text.split("\n"):
-            if "Ecl. Lon." in line:
-                return float(line.split()[-1])
-
-    except Exception:
-        return None
-
-    return None
-
-
-def compute_positions(timestamp):
-
-    positions = {}
-
-    for name, body_id in ALL_BODIES.items():
-
-        lon = fetch_horizons(body_id, timestamp)
-
-        if lon is None:
-            continue
-
-        positions[name] = {
-            "lon": lon,
-            "lat": 0,
-            "retrograde": False,
-            "speed": 0,
-            "sign": zodiac_sign(lon),
-            "deg": degree_in_sign(lon)
+        parts[name] = {
+            "ecl_lon_deg": normalize(lon),
+            "ecl_lat_deg": 0.0,
+            "used_source": "calculated"
         }
 
-        time.sleep(0.2)
-
-    return positions
+    return parts
 
 
-def detect_aspects(days):
+def compute_house_cusps(lat, lon, when_iso, hsys="P"):
 
-    events = []
+    dt = parser.isoparse(when_iso)
 
-    bodies = list(PLANETS.keys())
+    jd = swe.julday(
+        dt.year,
+        dt.month,
+        dt.day,
+        dt.hour + dt.minute/60.0 + dt.second/3600.0
+    )
 
-    for i in range(len(bodies)):
-        for j in range(i + 1, len(bodies)):
+    cusps, ascmc = swe.houses(jd, lat, lon, hsys.encode("utf-8"))
 
-            b1 = bodies[i]
-            b2 = bodies[j]
+    houses = {}
 
-            for asp, conf in ASPECTS.items():
+    for i, cusp in enumerate(cusps, start=1):
+        houses[f"House_{i}"] = {
+            "ecl_lon_deg": cusp,
+            "ecl_lat_deg": 0.0,
+            "used_source": f"houses-{hsys}"
+        }
 
-                angle = conf["angle"]
-                orb = conf["orb"]
+    houses["ASC"] = {
+        "ecl_lon_deg": ascmc[0],
+        "ecl_lat_deg": 0.0,
+        "used_source": "houses"
+    }
 
-                active = False
-                start = None
-                exact = None
-                best = 999
+    houses["MC"] = {
+        "ecl_lon_deg": ascmc[1],
+        "ecl_lat_deg": 0.0,
+        "used_source": "houses"
+    }
 
-                for d in days:
-
-                    if b1 not in d["positions"]:
-                        continue
-
-                    if b2 not in d["positions"]:
-                        continue
-
-                    lon1 = d["positions"][b1]["lon"]
-                    lon2 = d["positions"][b2]["lon"]
-
-                    diff = angle_diff(lon1, lon2)
-                    delta = abs(diff - angle)
-
-                    if delta <= orb:
-
-                        if not active:
-                            start = d["timestamp"]
-                            active = True
-
-                        if delta < best:
-                            best = delta
-                            exact = d["timestamp"]
-
-                    else:
-
-                        if active:
-
-                            events.append({
-                                "bodies": [b1, b2],
-                                "aspect": asp,
-                                "start": start,
-                                "exact": exact,
-                                "end": d["timestamp"]
-                            })
-
-                            active = False
-                            best = 999
-
-                if active:
-
-                    events.append({
-                        "bodies": [b1, b2],
-                        "aspect": asp,
-                        "start": start,
-                        "exact": exact,
-                        "end": days[-1]["timestamp"]
-                    })
-
-    return events
+    return houses
 
 
-def next_sunday(now):
+def compute_harmonics(base_positions: Dict[str, Dict[str, Any]]):
+
+    harmonics = {}
+
+    for body, pos in base_positions.items():
+
+        if pos["ecl_lon_deg"] is None:
+            continue
+
+        lon = pos["ecl_lon_deg"]
+
+        harmonics[f"{body}_h8"] = {
+            "ecl_lon_deg": normalize(lon * 8 % 360),
+            "ecl_lat_deg": 0.0,
+            "used_source": "harmonic8"
+        }
+
+        harmonics[f"{body}_h9"] = {
+            "ecl_lon_deg": normalize(lon * 9 % 360),
+            "ecl_lat_deg": 0.0,
+            "used_source": "harmonic9"
+        }
+
+    return harmonics
+
+
+def resolve_body(name, sources, when_iso, force_fallback=False):
+
+    got, used = None, None
+
+    aliases = NAME_ALIASES.get(name, [name])
+
+    for alias in aliases:
+
+        for label, func in sources:
+
+            try:
+                pos = func(alias, when_iso)
+            except Exception as e:
+                print(f"[RESOLVER] {name} via {label} → ERROR: {e}")
+                pos = None
+
+            if pos:
+                lon, lat = pos
+                got, used = (lon, lat), label
+                print(f"[RESOLVER] {name} → picked {label}")
+                break
+
+        if got:
+            break
+
+    if not got and force_fallback:
+
+        got, used = (0.0, 0.0), "calculated-fallback"
+
+        print(f"[RESOLVER] {name} → FORCED FALLBACK")
+
+    return {
+        "ecl_lon_deg": None if not got else float(got[0]),
+        "ecl_lat_deg": None if not got else float(got[1]),
+        "used_source": "missing" if not used else used
+    }
+
+
+def compute_positions(when_iso, lat, lon):
+
+    out = {}
+
+    MAJORS = [
+        "Sun","Moon","Mercury","Venus","Mars",
+        "Jupiter","Saturn","Uranus","Neptune","Pluto","Chiron"
+    ]
+
+    ASTEROIDS = [
+        "Ceres","Pallas","Juno","Vesta","Psyche","Amor",
+        "Eros","Astraea","Sappho","Karma","Bacchus","Hygiea","Nessus"
+    ]
+
+    TNOs = [
+        "Eris","Sedna","Haumea","Makemake","Varuna",
+        "Ixion","Typhon","Salacia","Orcus","Quaoar"
+    ]
+
+    AETHERS = [
+        "Vulcan","Persephone","Hades","Proserpina","Isis"
+    ]
+
+    # SUN FIX (primary issue)
+    out["Sun"] = resolve_body(
+        "Sun",
+        [
+            ("jpl", horizons_client.get_ecliptic_lonlat),
+            ("swiss", swiss_client.get_ecliptic_lonlat),
+            ("miriade", miriade_client.get_ecliptic_lonlat)
+        ],
+        when_iso,
+        force_fallback=True
+    )
+
+    for name in MAJORS:
+
+        if name == "Sun":
+            continue
+
+        out[name] = resolve_body(
+            name,
+            [
+                ("jpl", horizons_client.get_ecliptic_lonlat),
+                ("swiss", swiss_client.get_ecliptic_lonlat),
+                ("miriade", miriade_client.get_ecliptic_lonlat)
+            ],
+            when_iso,
+            force_fallback=True
+        )
+
+    for name in ASTEROIDS:
+
+        out[name] = resolve_body(
+            name,
+            [
+                ("jpl", horizons_client.get_ecliptic_lonlat),
+                ("swiss", swiss_client.get_ecliptic_lonlat),
+                ("miriade", miriade_client.get_ecliptic_lonlat)
+            ],
+            when_iso,
+            force_fallback=True
+        )
+
+    for name in TNOs:
+
+        out[name] = resolve_body(
+            name,
+            [
+                ("jpl", horizons_client.get_ecliptic_lonlat),
+                ("swiss", swiss_client.get_ecliptic_lonlat),
+                ("miriade", miriade_client.get_ecliptic_lonlat)
+            ],
+            when_iso,
+            force_fallback=True
+        )
+
+    for name in AETHERS:
+
+        out[name] = resolve_body(
+            name,
+            [("swiss", swiss_client.get_ecliptic_lonlat)],
+            when_iso,
+            force_fallback=True
+        )
+
+    stars = load_json(os.path.join(DATA, "fixed_stars.json"))["stars"]
+
+    for s in stars:
+
+        lam, bet = ra_dec_to_ecl(s["ra_deg"], s["dec_deg"], when_iso)
+
+        out[s["id"]] = {
+            "ecl_lon_deg": lam,
+            "ecl_lat_deg": bet,
+            "used_source": "fixed"
+        }
+
+    out.update(compute_house_cusps(lat, lon, when_iso))
+
+    if "ASC" in out and "Sun" in out and "Moon" in out:
+
+        asc = out["ASC"]["ecl_lon_deg"]
+        sun = out["Sun"]["ecl_lon_deg"]
+        moon = out["Moon"]["ecl_lon_deg"]
+
+        if None not in (asc, sun, moon):
+            out.update(compute_arabic_parts(asc, sun, moon))
+
+    out.update(compute_harmonics(out))
+
+    return out
+
+
+def next_sunday():
+
+    now = datetime.now(timezone.utc)
 
     days = (6 - now.weekday()) % 7
+
     if days == 0:
         days = 7
 
     return now + timedelta(days=days)
 
 
-def generate_week():
+def main(argv):
 
-    now = datetime.utcnow()
+    start = next_sunday()
 
-    start = next_sunday(now)
+    lat = 0.0
+    lon = 0.0
 
-    days = []
+    week = []
 
     for i in range(7):
 
         t = start + timedelta(days=i)
-        ts = t.isoformat() + "Z"
 
-        positions = compute_positions(ts)
+        when_iso = t.replace(microsecond=0).isoformat().replace("+00:00","Z")
 
-        days.append({
-            "timestamp": ts,
-            "positions": positions
+        objects = compute_positions(when_iso, lat, lon)
+
+        week.append({
+            "timestamp": when_iso,
+            "objects": objects
         })
 
-    aspects = detect_aspects(days)
-
     data = {
-        "version": "oracle-live-ephemeris",
-        "week_start": days[0]["timestamp"],
-        "days": days,
-        "aspect_events": aspects
+        "version": "oracle-weekly-transits",
+        "generated_at": iso_now(),
+        "week_start": week[0]["timestamp"],
+        "days": week
     }
 
     os.makedirs("docs", exist_ok=True)
 
-    with open("docs/current_week.json", "w") as f:
-        json.dump(data, f, indent=2)
+    with open("docs/current_week.json","w",encoding="utf-8") as f:
+        json.dump(data,f,indent=2,ensure_ascii=False)
 
-    with open("docs/_meta.json", "w") as f:
-        json.dump({
-            "generated_utc": datetime.utcnow().isoformat() + "Z"
-        }, f, indent=2)
+    print("[OK] weekly transit file written")
 
 
 if __name__ == "__main__":
-    generate_week()
+    main(sys.argv[1:])
