@@ -121,7 +121,7 @@ def generate_week():
 
     futures = []
 
-    with ThreadPoolExecutor(max_workers=6) as executor:
+    with ThreadPoolExecutor(max_workers=3) as executor:
 
         for name, body_id in BODY_REGISTRY.items():
 
