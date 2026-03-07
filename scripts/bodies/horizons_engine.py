@@ -41,34 +41,29 @@ def fetch_batch(body, start, stop):
         "START_TIME": start,
         "STOP_TIME": stop,
         "STEP_SIZE": "1 d",
-        "QUANTITIES": "18,20",
+        "QUANTITIES": "1,2,3,4",
         "CSV_FORMAT": "YES"
     }
 
-    retries = 3
+    for attempt in range(3):
 
-    for attempt in range(retries):
+        r = requests.get(HORIZONS_URL, params=params, timeout=60)
 
-        try:
+        if r.status_code == 200:
 
-            r = requests.get(HORIZONS_URL, params=params, timeout=60)
+            data = r.json()
 
-            if r.status_code == 200:
+            if "result" not in data:
+                raise RuntimeError("Horizons malformed response")
 
-                data = r.json()
+            rows = parse_ephemeris(data["result"])
 
-                if "result" not in data:
-                    raise RuntimeError("Horizons malformed response")
+            if rows:
+                return rows
 
-                return parse_ephemeris(data["result"])
+        time.sleep(2)
 
-            time.sleep(2)
-
-        except Exception:
-
-            time.sleep(2)
-
-    raise RuntimeError(f"Horizons request failed for {body}")
+    raise RuntimeError(f"Horizons failed for {body}")
 
 
 def parse_ephemeris(text):
@@ -89,19 +84,17 @@ def parse_ephemeris(text):
 
             parts = [p.strip() for p in line.split(",")]
 
-            if len(parts) < 5:
-                rows.append((None, None))
+            if len(parts) < 4:
                 continue
 
             try:
 
                 lon = float(parts[3])
-                lat = float(parts[4])
+                lat = float(parts[4]) if len(parts) > 4 else 0.0
 
                 rows.append((lon, lat))
 
             except Exception:
-
-                rows.append((None, None))
+                continue
 
     return rows
