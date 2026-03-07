@@ -1,9 +1,10 @@
 import os
 import sys
 import json
+import time
 import numpy as np
 from datetime import datetime, timedelta
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(ROOT)
@@ -39,65 +40,118 @@ BODY_REGISTRY = {
 
 
 CACHE_DIR = "cache"
-SLOW_OBJECTS = {"Sedna", "Eris", "Haumea", "Makemake", "Orcus"}
+
+SLOW_OBJECTS = {
+    "Sedna",
+    "Eris",
+    "Haumea",
+    "Makemake",
+    "Orcus"
+}
 
 
 def load_cache(name):
-    path = f"{CACHE_DIR}/{name}.json"
-    if os.path.exists(path):
+
+    path = os.path.join(CACHE_DIR, f"{name}.json")
+
+    if not os.path.exists(path):
+        return None
+
+    try:
         with open(path) as f:
-            return np.array(json.load(f))
-    return None
+            data = json.load(f)
+
+        arr = np.array(data)
+
+        if arr.shape[0] < 7:
+            return None
+
+        return arr
+
+    except Exception:
+        return None
 
 
 def save_cache(name, data):
+
     os.makedirs(CACHE_DIR, exist_ok=True)
-    with open(f"{CACHE_DIR}/{name}.json", "w") as f:
+
+    path = os.path.join(CACHE_DIR, f"{name}.json")
+
+    with open(path, "w") as f:
         json.dump(data.tolist(), f)
 
 
-def fetch_body(args):
-    name, body_id, start, end = args
+def fetch_body_safe(name, body_id, start, end):
 
-    if name in SLOW_OBJECTS:
-        cached = load_cache(name)
-        if cached is not None:
-            return name, cached
+    try:
 
-    vec = fetch_batch(body_id, start, end)
+        if name in SLOW_OBJECTS:
 
-    if name in SLOW_OBJECTS:
-        save_cache(name, vec)
+            cached = load_cache(name)
 
-    return name, vec
+            if cached is not None:
+                return name, cached
+
+        vec = fetch_batch(body_id, start, end)
+
+        if vec is None or len(vec) < 7:
+            raise RuntimeError("Vector incomplete")
+
+        if name in SLOW_OBJECTS:
+            save_cache(name, vec)
+
+        return name, vec
+
+    except Exception as e:
+
+        print(f"[WARN] skipping {name}: {e}")
+
+        return name, None
 
 
 def generate_week():
 
     now = datetime.utcnow()
+
     start = now.strftime("%Y-%m-%d")
+
     end = (now + timedelta(days=6)).strftime("%Y-%m-%d")
 
     body_vectors = {}
 
-    with ThreadPoolExecutor(max_workers=8) as executor:
+    futures = []
 
-        results = executor.map(
-            fetch_body,
-            [(n, i, start, end) for n, i in BODY_REGISTRY.items()]
-        )
+    with ThreadPoolExecutor(max_workers=6) as executor:
 
-    for name, vec in results:
-        body_vectors[name] = vec
+        for name, body_id in BODY_REGISTRY.items():
+
+            futures.append(
+                executor.submit(fetch_body_safe, name, body_id, start, end)
+            )
+
+        for future in as_completed(futures):
+
+            name, vec = future.result()
+
+            if vec is not None:
+                body_vectors[name] = vec
+
+    if "Sun" not in body_vectors or "Moon" not in body_vectors:
+        raise RuntimeError("Critical bodies missing from ephemeris")
 
     days = []
 
     for i in range(7):
 
         objects = {}
+
         longitudes = []
 
         for body, vec in body_vectors.items():
+
+            if i >= len(vec):
+                continue
 
             lon, lat = vec[i]
 
@@ -107,46 +161,63 @@ def generate_week():
                 "used_source": "jpl_horizons"
             }
 
-            longitudes.append(lon)
+            longitudes.append(float(lon))
 
         harmonics = compute_harmonics(longitudes)
+
         stars = detect_star_hits(longitudes)
 
         sun = objects["Sun"]["ecl_lon_deg"]
+
         moon = objects["Moon"]["ecl_lon_deg"]
 
         part_of_fortune = (moon - sun) % 360
 
         days.append({
+
             "timestamp": (now + timedelta(days=i)).isoformat(),
+
             "objects": objects,
+
             "arabic_parts": {
                 "Part_of_Fortune": part_of_fortune
             },
+
             "harmonics": {
                 "h5": harmonics["h5"].tolist(),
                 "h7": harmonics["h7"].tolist(),
                 "h9": harmonics["h9"].tolist()
             },
+
             "fixed_star_hits": stars
         })
 
     return {
+
         "version": "oracle-weekly-transits",
+
         "generated_at": datetime.utcnow().isoformat(),
+
         "week_start": now.isoformat(),
+
         "days": days
     }
 
 
 def main():
 
+    print("Generating weekly transits...")
+
     data = generate_week()
 
     os.makedirs("docs", exist_ok=True)
 
-    with open("docs/weekly_overlay.json", "w") as f:
+    output_path = os.path.join("docs", "weekly_overlay.json")
+
+    with open(output_path, "w") as f:
         json.dump(data, f, indent=2)
+
+    print("Weekly overlay written:", output_path)
 
 
 if __name__ == "__main__":
