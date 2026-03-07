@@ -1,340 +1,103 @@
 import os
-import sys
-
-# -------------------------------------------------
-# FIX 1: allow GitHub runner to resolve repo imports
-# -------------------------------------------------
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.insert(0, ROOT)
-
 import json
-import math
 from datetime import datetime, timedelta, timezone
-from typing import Dict, Any
-from math import fmod
 
-import swisseph as swe
-from dateutil import parser
-import pytz
-
-from scripts.sources import horizons_client, swiss_client, miriade_client
-from scripts.utils.coords import ra_dec_to_ecl
+from scripts.bodies.horizons_engine import fetch_horizons_position
+from scripts.bodies.swiss_engine import fetch_swiss_position
+from scripts.bodies.miriade_engine import fetch_miriade_position
 
 
-DATA = os.path.join(ROOT, "data")
-EPHE = os.path.join(ROOT, "ephe")
-
-# -------------------------------------------------
-# FIX 2: ensure Swiss Ephemeris loads correctly
-# -------------------------------------------------
-swe.set_ephe_path(EPHE)
+OUTPUT_FILE = "docs/current_week.json"
 
 
-NAME_ALIASES = {
-    "Sun": ["Sun", "SUN"],
-    "Moon": ["Moon", "MOON", "301"]
-}
+MAJOR_BODIES = [
+    "Sun",
+    "Moon",
+    "Mercury",
+    "Venus",
+    "Mars",
+    "Jupiter",
+    "Saturn",
+    "Uranus",
+    "Neptune",
+    "Pluto"
+]
 
 
-def load_json(path: str) -> dict:
-    with open(path, "r", encoding="utf-8") as f:
-        return json.load(f)
+def resolve_body(body, timestamp):
+    """
+    Resolution order:
+    1. JPL Horizons
+    2. Swiss Ephemeris
+    3. IMCCE Miriade
+    """
 
+    try:
+        result = fetch_horizons_position(body, timestamp)
+        if result:
+            result["used_source"] = "jpl"
+            return result
+    except Exception:
+        pass
 
-def normalize(deg: float) -> float:
-    return fmod(deg + 360.0, 360.0)
+    try:
+        result = fetch_swiss_position(body, timestamp)
+        if result:
+            result["used_source"] = "swiss"
+            return result
+    except Exception:
+        pass
 
-
-def iso_now() -> str:
-    return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
-
-
-# ----------------------------
-# Arabic Parts
-# ----------------------------
-
-def compute_arabic_parts(asc, sun, moon):
-
-    parts = {}
-
-    is_day = (sun - asc) % 360 < 180
-
-    fortune = asc + (moon - sun if is_day else sun - moon)
-    spirit = asc + (sun - moon if is_day else moon - sun)
-    karma = asc + (sun + moon) / 2.0
-    treachery = asc + (moon - karma)
-    victory = asc + (sun - karma)
-    deliverance = asc + (spirit - fortune)
-
-    for name, lon in {
-        "Part_of_Fortune": fortune,
-        "Part_of_Spirit": spirit,
-        "Part_of_Karma": karma,
-        "Part_of_Treachery": treachery,
-        "Part_of_Victory": victory,
-        "Part_of_Deliverance": deliverance,
-    }.items():
-
-        parts[name] = {
-            "ecl_lon_deg": normalize(lon),
-            "ecl_lat_deg": 0.0,
-            "used_source": "calculated"
-        }
-
-    return parts
-
-
-# ----------------------------
-# Houses
-# ----------------------------
-
-def compute_house_cusps(lat, lon, when_iso, hsys="P"):
-
-    dt = parser.isoparse(when_iso)
-
-    jd = swe.julday(
-        dt.year,
-        dt.month,
-        dt.day,
-        dt.hour + dt.minute / 60.0 + dt.second / 3600.0
-    )
-
-    cusps, ascmc = swe.houses(jd, lat, lon, hsys.encode("utf-8"))
-
-    houses = {}
-
-    for i, cusp in enumerate(cusps, start=1):
-
-        houses[f"House_{i}"] = {
-            "ecl_lon_deg": cusp,
-            "ecl_lat_deg": 0.0,
-            "used_source": f"houses-{hsys}"
-        }
-
-    houses["ASC"] = {
-        "ecl_lon_deg": ascmc[0],
-        "ecl_lat_deg": 0.0,
-        "used_source": "houses"
-    }
-
-    houses["MC"] = {
-        "ecl_lon_deg": ascmc[1],
-        "ecl_lat_deg": 0.0,
-        "used_source": "houses"
-    }
-
-    return houses
-
-
-# ----------------------------
-# Harmonics
-# ----------------------------
-
-def compute_harmonics(base_positions: Dict[str, Dict[str, Any]]):
-
-    harmonics = {}
-
-    for body, pos in base_positions.items():
-
-        if pos["ecl_lon_deg"] is None:
-            continue
-
-        lon = pos["ecl_lon_deg"]
-
-        harmonics[f"{body}_h8"] = {
-            "ecl_lon_deg": normalize(lon * 8 % 360),
-            "ecl_lat_deg": 0.0,
-            "used_source": "harmonic8"
-        }
-
-        harmonics[f"{body}_h9"] = {
-            "ecl_lon_deg": normalize(lon * 9 % 360),
-            "ecl_lat_deg": 0.0,
-            "used_source": "harmonic9"
-        }
-
-    return harmonics
-
-
-# ----------------------------
-# Resolver (JPL → Swiss → Miriade)
-# ----------------------------
-
-def resolve_body(name, sources, when_iso, force_fallback=False):
-
-    got, used = None, None
-
-    aliases = NAME_ALIASES.get(name, [name])
-
-    for alias in aliases:
-
-        for label, func in sources:
-
-            try:
-                pos = func(alias, when_iso)
-            except Exception:
-                pos = None
-
-            if pos:
-
-                lon, lat = pos
-                got, used = (lon, lat), label
-                break
-
-        if got:
-            break
-
-    if not got and force_fallback:
-
-        got, used = (0.0, 0.0), "fallback"
+    try:
+        result = fetch_miriade_position(body, timestamp)
+        if result:
+            result["used_source"] = "miriade"
+            return result
+    except Exception:
+        pass
 
     return {
-        "ecl_lon_deg": None if not got else float(got[0]),
-        "ecl_lat_deg": None if not got else float(got[1]),
-        "used_source": "missing" if not used else used
+        "ecl_lon_deg": None,
+        "ecl_lat_deg": None,
+        "used_source": "missing"
     }
 
 
-# ----------------------------
-# Position Engine
-# ----------------------------
+def compute_day(timestamp):
 
-def compute_positions(when_iso, lat, lon):
+    objects = {}
 
-    out = {}
+    for body in MAJOR_BODIES:
 
-    MAJORS = [
-        "Sun","Moon","Mercury","Venus","Mars",
-        "Jupiter","Saturn","Uranus","Neptune","Pluto","Chiron"
-    ]
+        position = resolve_body(body, timestamp)
 
-    ASTEROIDS = [
-        "Ceres","Pallas","Juno","Vesta","Psyche","Amor",
-        "Eros","Astraea","Sappho","Karma","Bacchus","Hygiea","Nessus"
-    ]
-
-    TNOs = [
-        "Eris","Sedna","Haumea","Makemake","Varuna",
-        "Ixion","Typhon","Salacia","Orcus","Quaoar"
-    ]
-
-    AETHERS = [
-        "Vulcan","Persephone","Hades","Proserpina","Isis"
-    ]
-
-    # Sun (primary issue previously)
-    out["Sun"] = resolve_body(
-        "Sun",
-        [
-            ("jpl", horizons_client.get_ecliptic_lonlat),
-            ("swiss", swiss_client.get_ecliptic_lonlat),
-            ("miriade", miriade_client.get_ecliptic_lonlat)
-        ],
-        when_iso,
-        force_fallback=True
-    )
-
-    for name in MAJORS:
-
-        if name == "Sun":
-            continue
-
-        out[name] = resolve_body(
-            name,
-            [
-                ("jpl", horizons_client.get_ecliptic_lonlat),
-                ("swiss", swiss_client.get_ecliptic_lonlat),
-                ("miriade", miriade_client.get_ecliptic_lonlat)
-            ],
-            when_iso,
-            force_fallback=True
-        )
-
-    for name in ASTEROIDS:
-
-        out[name] = resolve_body(
-            name,
-            [
-                ("jpl", horizons_client.get_ecliptic_lonlat),
-                ("swiss", swiss_client.get_ecliptic_lonlat),
-                ("miriade", miriade_client.get_ecliptic_lonlat)
-            ],
-            when_iso,
-            force_fallback=True
-        )
-
-    for name in TNOs:
-
-        out[name] = resolve_body(
-            name,
-            [
-                ("jpl", horizons_client.get_ecliptic_lonlat),
-                ("swiss", swiss_client.get_ecliptic_lonlat),
-                ("miriade", miriade_client.get_ecliptic_lonlat)
-            ],
-            when_iso,
-            force_fallback=True
-        )
-
-    for name in AETHERS:
-
-        out[name] = resolve_body(
-            name,
-            [("swiss", swiss_client.get_ecliptic_lonlat)],
-            when_iso,
-            force_fallback=True
-        )
-
-    stars = load_json(os.path.join(DATA, "fixed_stars.json"))["stars"]
-
-    for s in stars:
-
-        lam, bet = ra_dec_to_ecl(s["ra_deg"], s["dec_deg"], when_iso)
-
-        out[s["id"]] = {
-            "ecl_lon_deg": lam,
-            "ecl_lat_deg": bet,
-            "used_source": "fixed"
+        objects[body] = {
+            "ecl_lon_deg": position["ecl_lon_deg"],
+            "ecl_lat_deg": position["ecl_lat_deg"],
+            "used_source": position["used_source"]
         }
 
-    out.update(compute_house_cusps(lat, lon, when_iso))
+    return {
+        "timestamp": timestamp,
+        "objects": objects
+    }
 
-    if "ASC" in out and "Sun" in out and "Moon" in out:
-
-        asc = out["ASC"]["ecl_lon_deg"]
-        sun = out["Sun"]["ecl_lon_deg"]
-        moon = out["Moon"]["ecl_lon_deg"]
-
-        if None not in (asc, sun, moon):
-            out.update(compute_arabic_parts(asc, sun, moon))
-
-    out.update(compute_harmonics(out))
-
-    return out
-
-
-# ----------------------------
-# Weekly generator
-# ----------------------------
 
 def next_sunday():
 
     now = datetime.now(timezone.utc)
 
-    days = (6 - now.weekday()) % 7
+    days_ahead = (6 - now.weekday()) % 7
 
-    if days == 0:
-        days = 7
+    if days_ahead == 0:
+        days_ahead = 7
 
-    return now + timedelta(days=days)
+    return now + timedelta(days=days_ahead)
 
 
-def main():
+def generate_week():
 
     start = next_sunday()
-
-    lat = 0.0
-    lon = 0.0
 
     week = []
 
@@ -342,28 +105,30 @@ def main():
 
         t = start + timedelta(days=i)
 
-        when_iso = t.replace(microsecond=0).isoformat().replace("+00:00", "Z")
+        iso = t.replace(microsecond=0).isoformat().replace("+00:00", "Z")
 
-        objects = compute_positions(when_iso, lat, lon)
+        week.append(compute_day(iso))
 
-        week.append({
-            "timestamp": when_iso,
-            "objects": objects
-        })
+    return week
 
-    data = {
+
+def main():
+
+    week_data = generate_week()
+
+    output = {
         "version": "oracle-weekly-transits",
-        "generated_at": iso_now(),
-        "week_start": week[0]["timestamp"],
-        "days": week
+        "generated_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+        "week_start": week_data[0]["timestamp"],
+        "days": week_data
     }
 
     os.makedirs("docs", exist_ok=True)
 
-    with open("docs/current_week.json", "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=2, ensure_ascii=False)
+    with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
+        json.dump(output, f, indent=2)
 
-    print("[OK] weekly transit file written")
+    print("Weekly transit file generated:", OUTPUT_FILE)
 
 
 if __name__ == "__main__":
