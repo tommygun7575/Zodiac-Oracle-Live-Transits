@@ -1,14 +1,12 @@
 import json
 import datetime
 import swisseph as swe
-from concurrent.futures import ThreadPoolExecutor, as_completed
 
-from bodies.swiss_engine import get_planet, get_asteroid
 from bodies.horizons_engine import fetch, fetch_numbered
-from bodies.miriade_engine import fetch as miriade_fetch
-
+from bodies.swiss_engine import get_planet, get_asteroid
 
 OUTPUT_FILE = "docs/current_week.json"
+
 
 MAJOR_BODIES = [
     "Sun","Moon","Mercury","Venus","Mars",
@@ -49,14 +47,12 @@ FIXED_STARS = {
 def resolve_major(body, jd):
 
     r = fetch(body, jd)
+
     if r:
         return body, r
 
     r = get_planet(body, jd)
-    if r:
-        return body, r
 
-    r = miriade_fetch(body, jd)
     if r:
         return body, r
 
@@ -66,10 +62,12 @@ def resolve_major(body, jd):
 def resolve_numbered(name, number, jd):
 
     r = fetch_numbered(number, jd)
+
     if r:
         return name, r
 
-    r = get_asteroid(number, jd)
+    r = get_asteroid(name, jd)
+
     if r:
         return name, r
 
@@ -107,44 +105,62 @@ def generate():
         sun = None
         moon = None
 
-        tasks = []
 
-        with ThreadPoolExecutor(max_workers=6) as pool:
+        for body in MAJOR_BODIES:
 
-            for body in MAJOR_BODIES:
-                tasks.append(pool.submit(resolve_major, body, jd))
+            name,(lon,lat,src) = resolve_major(body,jd)
 
-            for name,num in ASTEROIDS.items():
-                tasks.append(pool.submit(resolve_numbered, name, num, jd))
+            objects[name] = {
+                "ecl_lon_deg": lon,
+                "ecl_lat_deg": lat,
+                "used_source": src
+            }
 
-            for name,num in CENTAURS.items():
-                tasks.append(pool.submit(resolve_numbered, name, num, jd))
+            if lon is not None:
 
-            for name,num in TNOS.items():
-                tasks.append(pool.submit(resolve_numbered, name, num, jd))
+                h = harmonics(lon)
 
-            for task in as_completed(tasks):
+                harmonic_map[f"{name}_H5"] = h["H5"]
+                harmonic_map[f"{name}_H7"] = h["H7"]
 
-                name,(lon,lat,src) = task.result()
+                if name == "Sun":
+                    sun = lon
 
-                objects[name] = {
-                    "ecl_lon_deg": lon,
-                    "ecl_lat_deg": lat,
-                    "used_source": src
-                }
+                if name == "Moon":
+                    moon = lon
 
-                if name in MAJOR_BODIES and lon is not None:
 
-                    h = harmonics(lon)
+        for name,num in ASTEROIDS.items():
 
-                    harmonic_map[f"{name}_H5"] = h["H5"]
-                    harmonic_map[f"{name}_H7"] = h["H7"]
+            name,(lon,lat,src) = resolve_numbered(name,num,jd)
 
-                    if name == "Sun":
-                        sun = lon
+            objects[name] = {
+                "ecl_lon_deg": lon,
+                "ecl_lat_deg": lat,
+                "used_source": src
+            }
 
-                    if name == "Moon":
-                        moon = lon
+
+        for name,num in CENTAURS.items():
+
+            name,(lon,lat,src) = resolve_numbered(name,num,jd)
+
+            objects[name] = {
+                "ecl_lon_deg": lon,
+                "ecl_lat_deg": lat,
+                "used_source": src
+            }
+
+
+        for name,num in TNOS.items():
+
+            name,(lon,lat,src) = resolve_numbered(name,num,jd)
+
+            objects[name] = {
+                "ecl_lon_deg": lon,
+                "ecl_lat_deg": lat,
+                "used_source": src
+            }
 
 
         for star,lon in FIXED_STARS.items():
