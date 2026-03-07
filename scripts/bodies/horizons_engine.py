@@ -1,9 +1,9 @@
-import math
-import numpy as np
-from astroquery.jplhorizons import Horizons
+import requests
+import time
 
+HORIZONS_URL = "https://ssd.jpl.nasa.gov/api/horizons.api"
 
-HORIZONS_IDS = {
+BODY_IDS = {
     "Sun": "10",
     "Moon": "301",
     "Mercury": "199",
@@ -19,10 +19,10 @@ HORIZONS_IDS = {
     "Juno": "3",
     "Vesta": "4",
     "Eris": "136199",
-    "Haumea": "136108",
-    "Makemake": "136472",
     "Sedna": "90377",
     "Orcus": "90482",
+    "Makemake": "136472",
+    "Haumea": "136108",
     "Quaoar": "50000",
     "Ixion": "28978"
 }
@@ -30,59 +30,27 @@ HORIZONS_IDS = {
 
 def fetch_batch(body, start, stop):
 
-    try:
+    if body not in BODY_IDS:
+        raise RuntimeError(f"Unknown Horizons body: {body}")
 
-        body_id = HORIZONS_IDS.get(body)
+    command = BODY_IDS[body]
 
-        if body_id is None:
-            raise RuntimeError(f"No Horizons ID for {body}")
+    params = {
+        "format": "text",
+        "COMMAND": command,
+        "EPHEM_TYPE": "OBSERVER",
+        "CENTER": "500@399",
+        "START_TIME": start,
+        "STOP_TIME": stop,
+        "STEP_SIZE": "1 d",
+        "QUANTITIES": "18,20",
+        "CSV_FORMAT": "YES"
+    }
 
-        obj = Horizons(
-            id=body_id,
-            location="500@399",
-            epochs={
-                "start": start,
-                "stop": stop,
-                "step": "1d"
-            }
-        )
+    retries = 3
 
-        eph = obj.ephemerides()
+    for attempt in range(retries):
 
-        if eph is None or len(eph) == 0:
-            raise RuntimeError(f"Horizons returned empty ephemeris for {body}")
+        try:
 
-        vectors = []
-
-        for row in eph:
-
-            lon = row["EclLon"]
-            lat = row["EclLat"]
-
-            if lon is None or lat is None:
-                continue
-
-            if isinstance(lon, np.ma.core.MaskedConstant):
-                continue
-
-            if isinstance(lat, np.ma.core.MaskedConstant):
-                continue
-
-            lon = float(lon)
-            lat = float(lat)
-
-            if math.isnan(lon) or math.isnan(lat):
-                continue
-
-            lon = lon % 360
-
-            vectors.append((lon, lat))
-
-        if len(vectors) == 0:
-            raise RuntimeError(f"Horizons returned no usable coordinates for {body}")
-
-        return vectors
-
-    except Exception as e:
-
-        raise RuntimeError(str(e))
+            response = requests.get(HORIZONS_URL, params
