@@ -2,12 +2,10 @@ import requests
 import numpy as np
 import time
 
-
 HORIZONS_URL = "https://ssd.jpl.nasa.gov/api/horizons.api"
 
 MAX_RETRIES = 6
 RETRY_DELAY = 3
-
 
 session = requests.Session()
 
@@ -17,12 +15,14 @@ def fetch_batch(body_id: str, start: str, stop: str):
     params = {
         "format": "json",
         "COMMAND": body_id,
-        "EPHEM_TYPE": "VECTORS",
-        "CENTER": "500@10",
-        "REF_PLANE": "ECLIPTIC",
+        "EPHEM_TYPE": "OBSERVER",
+        "CENTER": "500@399",
+        "REF_SYSTEM": "ICRF",
         "START_TIME": start,
         "STOP_TIME": stop,
-        "STEP_SIZE": "1 d"
+        "STEP_SIZE": "1 d",
+        "QUANTITIES": "18,20",
+        "CSV_FORMAT": "YES"
     }
 
     last_error = None
@@ -31,29 +31,25 @@ def fetch_batch(body_id: str, start: str, stop: str):
 
         try:
 
-            response = session.get(
-                HORIZONS_URL,
-                params=params,
-                timeout=60
-            )
+            r = session.get(HORIZONS_URL, params=params, timeout=60)
 
-            if response.status_code != 200:
-                raise RuntimeError(f"Horizons HTTP {response.status_code}")
+            if r.status_code != 200:
+                raise RuntimeError(f"Horizons HTTP {r.status_code}")
 
-            data = response.json()
+            data = r.json()
 
             if "result" not in data:
-                raise RuntimeError("Horizons malformed response")
+                raise RuntimeError("Horizons malformed payload")
 
             text = data["result"]
 
             if "$$SOE" not in text:
                 raise RuntimeError("Horizons returned no ephemeris block")
 
-            rows = parse_vectors(text)
+            rows = parse_ephemeris(text)
 
             if len(rows) == 0:
-                raise RuntimeError("Empty vector output")
+                raise RuntimeError("Empty ephemeris")
 
             return np.array(rows, dtype=float)
 
@@ -66,13 +62,12 @@ def fetch_batch(body_id: str, start: str, stop: str):
             else:
                 raise RuntimeError(f"Horizons fetch failed: {e}")
 
-    raise RuntimeError(f"Horizons failure: {last_error}")
+    raise RuntimeError(last_error)
 
 
-def parse_vectors(text: str):
+def parse_ephemeris(text: str):
 
     rows = []
-
     reading = False
 
     for raw in text.splitlines():
@@ -89,25 +84,22 @@ def parse_vectors(text: str):
         if not reading:
             continue
 
-        if "X =" in line and "Y =" in line and "Z =" in line:
+        parts = [p.strip() for p in line.split(",")]
 
-            parts = line.replace("=", " ").replace(",", " ").split()
+        if len(parts) < 4:
+            continue
 
-            try:
+        try:
 
-                x = float(parts[parts.index("X") + 1])
-                y = float(parts[parts.index("Y") + 1])
-                z = float(parts[parts.index("Z") + 1])
+            lon = float(parts[3]) % 360.0
+            lat = float(parts[4])
 
-                lon = np.degrees(np.arctan2(y, x)) % 360
-                lat = np.degrees(np.arctan2(z, np.sqrt(x*x + y*y)))
+            rows.append([lon, lat])
 
-                rows.append([lon, lat])
-
-            except Exception:
-                continue
+        except Exception:
+            continue
 
     if len(rows) == 0:
-        raise RuntimeError("Horizons vector parse produced no rows")
+        raise RuntimeError("Horizons ephemeris parse produced no rows")
 
     return rows
