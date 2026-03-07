@@ -6,7 +6,7 @@ from astroquery.jplhorizons import Horizons
 import swisseph as swe
 
 
-BODY_IDS = {
+MAJOR_BODIES = {
     "Sun": "10",
     "Moon": "301",
     "Mercury": "199",
@@ -16,11 +16,15 @@ BODY_IDS = {
     "Saturn": "699",
     "Uranus": "799",
     "Neptune": "899",
-    "Pluto": "999",
-    "Ceres": "1;",
-    "Pallas": "2;",
-    "Juno": "3;",
-    "Vesta": "4;",
+    "Pluto": "999"
+}
+
+
+SMALL_BODIES = {
+    "Ceres": "1",
+    "Pallas": "2",
+    "Juno": "3",
+    "Vesta": "4",
     "Eris": "136199",
     "Haumea": "136108",
     "Makemake": "136472",
@@ -31,26 +35,39 @@ BODY_IDS = {
 }
 
 
-def _get_lonlat(target: str, when_iso: str) -> Optional[Tuple[float, float]]:
+BODY_IDS = {**MAJOR_BODIES, **SMALL_BODIES}
+
+
+def _fetch_one(body: str, when: datetime) -> Optional[Tuple[float, float]]:
 
     try:
 
-        body_id = BODY_IDS.get(target, target)
-
-        dt = datetime.fromisoformat(when_iso)
+        body_id = BODY_IDS[body]
 
         jd = swe.julday(
-            dt.year,
-            dt.month,
-            dt.day,
-            dt.hour + dt.minute/60 + dt.second/3600
+            when.year,
+            when.month,
+            when.day,
+            when.hour + when.minute/60 + when.second/3600
         )
 
-        obj = Horizons(
-            id=body_id,
-            location="500@399",
-            epochs=[jd]
-        )
+        if body in MAJOR_BODIES:
+
+            obj = Horizons(
+                id=body_id,
+                location="500@399",
+                epochs=[jd],
+                id_type="majorbody"
+            )
+
+        else:
+
+            obj = Horizons(
+                id=body_id,
+                location="500@399",
+                epochs=[jd],
+                id_type="smallbody"
+            )
 
         eph = obj.ephemerides()
 
@@ -70,13 +87,13 @@ def _get_lonlat(target: str, when_iso: str) -> Optional[Tuple[float, float]]:
         if lon is None or lat is None:
             return None
 
-        return (lon % 360, lat)
+        return lon % 360, lat
 
     except Exception:
         return None
 
 
-def fetch_batch(body_name: str, start: str, end: str):
+def fetch_batch(body: str, start: str, end: str):
 
     start_dt = datetime.fromisoformat(start)
     end_dt = datetime.fromisoformat(end)
@@ -89,10 +106,10 @@ def fetch_batch(body_name: str, start: str, end: str):
 
         t = start_dt + timedelta(days=i)
 
-        lonlat = _get_lonlat(body_name, t.isoformat())
+        lonlat = _fetch_one(body, t)
 
         if lonlat is None:
-            raise RuntimeError(f"Horizons returned no coordinates for {body_name}")
+            raise RuntimeError(f"Horizons returned no coordinates for {body}")
 
         results.append(lonlat)
 
