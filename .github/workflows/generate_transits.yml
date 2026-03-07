@@ -1,61 +1,41 @@
-name: Generate Transit Feeds
+name: Generate Weekly Transits
 
 on:
+  schedule:
+    - cron: '0 4 * * 0'
   workflow_dispatch:
 
-  schedule:
-    - cron: "0 4 * * 0"   # Every Sunday at 04:00 UTC
-
 jobs:
-  build:
+  generate:
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
-          python-version: "3.10"
+          python-version: '3.11'
 
       - name: Install dependencies
         run: |
-          pip install swisseph astroquery requests python-dateutil
-
-      - name: Add scripts folder to PYTHONPATH
-        run: |
-          echo "PYTHONPATH=${{ github.workspace }}" >> $GITHUB_ENV
+          pip install requests numpy skyfield
 
       - name: Run transit generator
         run: |
-          python3 scripts/generate_transits.py
-        env:
-          PYTHONPATH: ${{ github.workspace }}
+          python scripts/generate_transits.py
 
-      - name: Create weekly archive copy
+      - name: Commit updated transit file
         run: |
-          DATE=$(date -u +'%Y-%m-%d')
+          git config --global user.name "oracle-bot"
+          git config --global user.email "oracle-bot@github"
 
-          if [ -f docs/current_week.json ]; then
-            cp docs/current_week.json docs/current_week_$DATE.json
-          else
-            echo "current_week.json not found – skipping archive"
-          fi
+          git add docs/current_week.json docs/_meta.json
 
-      - name: Keep only the last 4 weekly files
-        run: |
-          cd docs
-          ls current_week_*.json 2>/dev/null | sort -r | tail -n +5 | xargs -r rm
-          cd ..
+          git commit -m "Weekly transit update" || echo "No changes"
 
-      - name: Commit updated feeds
-        run: |
-          git config --global user.name "github-actions"
-          git config --global user.email "actions@github.com"
-
-          git add docs/*.json
-          git add changelog || true
-
-          git commit -m "Update weekly transit feed (auto-generated)" || echo "No changes to commit"
           git push
