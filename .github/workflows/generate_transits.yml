@@ -16,18 +16,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
-
       - name: Install system libraries (required for pyswisseph)
         run: |
           sudo apt-get update
           sudo apt-get install -y build-essential
-
 
       - name: Install Python dependencies
         run: |
@@ -39,18 +36,16 @@ jobs:
             python-dateutil \
             requests
 
-
       - name: Run weekly transit generator
         run: |
           python -m scripts.generate_transits
-
 
       - name: Commit updated weekly overlay
         run: |
           git config --global user.name "transit-bot"
           git config --global user.email "bot@github.com"
 
-          git add docs/weekly_overlay.json
+          git add docs/current_week.json
 
           git commit -m "update weekly transits" || echo "no changes"
 
