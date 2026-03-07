@@ -1,7 +1,8 @@
 import requests
 from datetime import datetime, timedelta
 
-URL = "https://ssp.imcce.fr/webservices/miriade/api/ephemcc.php"
+MIRIADE_URL = "https://ssp.imcce.fr/webservices/miriade/api/ephemcc.php"
+
 
 def fetch_miriade(body, start, stop):
 
@@ -21,15 +22,21 @@ def fetch_miriade(body, start, stop):
             "mime": "json"
         }
 
-        r = requests.get(URL, params=params, timeout=30)
+        r = requests.get(MIRIADE_URL, params=params, timeout=30)
 
         if r.status_code != 200:
-            raise RuntimeError("Miriade request failed")
+            raise RuntimeError(f"Miriade request failed for {body}")
 
         data = r.json()
 
-        lon = float(data["data"][0]["EclLon"])
-        lat = float(data["data"][0]["EclLat"])
+        lon = None
+        lat = None
+
+        try:
+            lon = float(data["data"][0]["EclLon"])
+            lat = float(data["data"][0]["EclLat"])
+        except Exception:
+            pass
 
         results.append({
             "lon": lon,
