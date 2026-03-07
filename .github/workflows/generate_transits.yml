@@ -1,16 +1,17 @@
 name: Generate Transit Feeds
 
 on:
-  workflow_dispatch:        # Manual trigger
+  workflow_dispatch:
+
   schedule:
-    - cron: "0 3 * * *"     # Daily at 03:00 UTC
+    - cron: "0 4 * * 0"   # Every Sunday at 04:00 UTC
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
+      - name: Checkout repository
         uses: actions/checkout@v3
 
       - name: Set up Python
@@ -32,16 +33,17 @@ jobs:
         env:
           PYTHONPATH: ${{ github.workspace }}
 
-      - name: Create date-stamped weekly copy
+      - name: Create weekly archive copy
         run: |
-          DATE=$(date +'%Y-%m-%d')
+          DATE=$(date -u +'%Y-%m-%d')
+
           if [ -f docs/current_week.json ]; then
             cp docs/current_week.json docs/current_week_$DATE.json
           else
-            echo "current_week.json not found – skipping dated copy"
+            echo "current_week.json not found – skipping archive"
           fi
 
-      - name: Keep only the last 4 dated weekly files
+      - name: Keep only the last 4 weekly files
         run: |
           cd docs
           ls current_week_*.json 2>/dev/null | sort -r | tail -n +5 | xargs -r rm
@@ -55,5 +57,5 @@ jobs:
           git add docs/*.json
           git add changelog || true
 
-          git commit -m "Update transit feeds (auto-generated + 4-week retention)" || echo "No changes to commit"
+          git commit -m "Update weekly transit feed (auto-generated)" || echo "No changes to commit"
           git push
