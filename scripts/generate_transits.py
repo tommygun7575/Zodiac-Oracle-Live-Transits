@@ -1,10 +1,18 @@
-import json
 import os
 import sys
+
+# -------------------------------------------------
+# FIX 1: allow GitHub runner to resolve repo imports
+# -------------------------------------------------
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, ROOT)
+
+import json
 import math
 from datetime import datetime, timedelta, timezone
 from typing import Dict, Any
 from math import fmod
+
 import swisseph as swe
 from dateutil import parser
 import pytz
@@ -12,10 +20,15 @@ import pytz
 from scripts.sources import horizons_client, swiss_client, miriade_client
 from scripts.utils.coords import ra_dec_to_ecl
 
-ROOT = os.path.dirname(os.path.dirname(__file__))
-DATA = os.path.join(ROOT, "data")
 
-swe.set_ephe_path(os.path.join(ROOT, "ephe"))
+DATA = os.path.join(ROOT, "data")
+EPHE = os.path.join(ROOT, "ephe")
+
+# -------------------------------------------------
+# FIX 2: ensure Swiss Ephemeris loads correctly
+# -------------------------------------------------
+swe.set_ephe_path(EPHE)
+
 
 NAME_ALIASES = {
     "Sun": ["Sun", "SUN"],
@@ -36,7 +49,12 @@ def iso_now() -> str:
     return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
 
 
+# ----------------------------
+# Arabic Parts
+# ----------------------------
+
 def compute_arabic_parts(asc, sun, moon):
+
     parts = {}
 
     is_day = (sun - asc) % 360 < 180
@@ -66,6 +84,10 @@ def compute_arabic_parts(asc, sun, moon):
     return parts
 
 
+# ----------------------------
+# Houses
+# ----------------------------
+
 def compute_house_cusps(lat, lon, when_iso, hsys="P"):
 
     dt = parser.isoparse(when_iso)
@@ -74,7 +96,7 @@ def compute_house_cusps(lat, lon, when_iso, hsys="P"):
         dt.year,
         dt.month,
         dt.day,
-        dt.hour + dt.minute/60.0 + dt.second/3600.0
+        dt.hour + dt.minute / 60.0 + dt.second / 3600.0
     )
 
     cusps, ascmc = swe.houses(jd, lat, lon, hsys.encode("utf-8"))
@@ -82,6 +104,7 @@ def compute_house_cusps(lat, lon, when_iso, hsys="P"):
     houses = {}
 
     for i, cusp in enumerate(cusps, start=1):
+
         houses[f"House_{i}"] = {
             "ecl_lon_deg": cusp,
             "ecl_lat_deg": 0.0,
@@ -102,6 +125,10 @@ def compute_house_cusps(lat, lon, when_iso, hsys="P"):
 
     return houses
 
+
+# ----------------------------
+# Harmonics
+# ----------------------------
 
 def compute_harmonics(base_positions: Dict[str, Dict[str, Any]]):
 
@@ -129,6 +156,10 @@ def compute_harmonics(base_positions: Dict[str, Dict[str, Any]]):
     return harmonics
 
 
+# ----------------------------
+# Resolver (JPL → Swiss → Miriade)
+# ----------------------------
+
 def resolve_body(name, sources, when_iso, force_fallback=False):
 
     got, used = None, None
@@ -141,14 +172,13 @@ def resolve_body(name, sources, when_iso, force_fallback=False):
 
             try:
                 pos = func(alias, when_iso)
-            except Exception as e:
-                print(f"[RESOLVER] {name} via {label} → ERROR: {e}")
+            except Exception:
                 pos = None
 
             if pos:
+
                 lon, lat = pos
                 got, used = (lon, lat), label
-                print(f"[RESOLVER] {name} → picked {label}")
                 break
 
         if got:
@@ -156,9 +186,7 @@ def resolve_body(name, sources, when_iso, force_fallback=False):
 
     if not got and force_fallback:
 
-        got, used = (0.0, 0.0), "calculated-fallback"
-
-        print(f"[RESOLVER] {name} → FORCED FALLBACK")
+        got, used = (0.0, 0.0), "fallback"
 
     return {
         "ecl_lon_deg": None if not got else float(got[0]),
@@ -166,6 +194,10 @@ def resolve_body(name, sources, when_iso, force_fallback=False):
         "used_source": "missing" if not used else used
     }
 
+
+# ----------------------------
+# Position Engine
+# ----------------------------
 
 def compute_positions(when_iso, lat, lon):
 
@@ -190,7 +222,7 @@ def compute_positions(when_iso, lat, lon):
         "Vulcan","Persephone","Hades","Proserpina","Isis"
     ]
 
-    # SUN FIX (primary issue)
+    # Sun (primary issue previously)
     out["Sun"] = resolve_body(
         "Sun",
         [
@@ -281,6 +313,10 @@ def compute_positions(when_iso, lat, lon):
     return out
 
 
+# ----------------------------
+# Weekly generator
+# ----------------------------
+
 def next_sunday():
 
     now = datetime.now(timezone.utc)
@@ -293,7 +329,7 @@ def next_sunday():
     return now + timedelta(days=days)
 
 
-def main(argv):
+def main():
 
     start = next_sunday()
 
@@ -306,7 +342,7 @@ def main(argv):
 
         t = start + timedelta(days=i)
 
-        when_iso = t.replace(microsecond=0).isoformat().replace("+00:00","Z")
+        when_iso = t.replace(microsecond=0).isoformat().replace("+00:00", "Z")
 
         objects = compute_positions(when_iso, lat, lon)
 
@@ -324,11 +360,11 @@ def main(argv):
 
     os.makedirs("docs", exist_ok=True)
 
-    with open("docs/current_week.json","w",encoding="utf-8") as f:
-        json.dump(data,f,indent=2,ensure_ascii=False)
+    with open("docs/current_week.json", "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2, ensure_ascii=False)
 
     print("[OK] weekly transit file written")
 
 
 if __name__ == "__main__":
-    main(sys.argv[1:])
+    main()
