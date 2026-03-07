@@ -1,37 +1,36 @@
-name: generate
+name: Generate Weekly Transits
 
 on:
   schedule:
-    - cron: "0 14 * * 0"
+    - cron: "0 */6 * * *"
   workflow_dispatch:
 
 jobs:
-  generate:
+  build:
 
     runs-on: ubuntu-latest
 
     steps:
 
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
-          python-version: "3.10"
+          python-version: "3.11"
 
       - name: Install dependencies
         run: |
-          pip install pyswisseph requests
+          pip install numpy requests
 
-      - name: Run transit generator
-        run: |
-          python scripts/generate_transits.py
+      - name: Run generator
+        run: python scripts/generate_transits.py
 
-      - name: Commit updated transit file
+      - name: Commit output
         run: |
-          git config user.name github-actions
-          git config user.email actions@github.com
-          git add docs/current_week.json
-          git commit -m "Update weekly transit file" || echo "no changes"
+          git config --global user.name "oracle-bot"
+          git config --global user.email "oracle@bot"
+          git add docs/
+          git commit -m "update transit feeds" || echo "no changes"
           git push
