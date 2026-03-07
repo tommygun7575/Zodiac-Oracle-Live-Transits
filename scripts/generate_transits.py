@@ -31,21 +31,18 @@ def normalize(vec):
     return result
 
 
-def merge(primary, fallback):
+def first_valid(jpl, miriade, swiss):
 
-    merged = []
+    if jpl and len(jpl) > 0:
+        return jpl
 
-    for i in range(len(primary)):
+    if miriade and len(miriade) > 0:
+        return miriade
 
-        p = primary[i] if primary else {}
-        f = fallback[i] if fallback else {}
+    if swiss and len(swiss) > 0:
+        return swiss
 
-        lon = p.get("lon") if p.get("lon") is not None else f.get("lon")
-        lat = p.get("lat") if p.get("lat") is not None else f.get("lat")
-
-        merged.append({"lon": lon, "lat": lat})
-
-    return merged
+    return None
 
 
 def generate_week():
@@ -83,15 +80,7 @@ def generate_week():
         except Exception as e:
             print(f"[WARN] Swiss failed for {body}: {e}")
 
-        data = jpl
-
-        if data is None and miriade:
-            data = miriade
-        elif data and miriade:
-            data = merge(data, miriade)
-
-        if data and swiss:
-            data = merge(data, swiss)
+        data = first_valid(jpl, miriade, swiss)
 
         if data is None:
             print(f"[FAIL] no data for {body}")
@@ -99,11 +88,13 @@ def generate_week():
 
         body_vectors[body] = data
 
+
     if "Sun" not in body_vectors:
         raise RuntimeError("Sun missing after all providers")
 
     if "Moon" not in body_vectors:
         raise RuntimeError("Moon missing after all providers")
+
 
     return body_vectors
 
