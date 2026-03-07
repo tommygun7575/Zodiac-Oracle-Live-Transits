@@ -19,17 +19,23 @@ BODY_REGISTRY = [
 ]
 
 
-def safe_float(x):
-    if isinstance(x, (np.floating, np.integer)):
-        return float(x)
-    return x
+def sanitize(obj):
+    """
+    Recursively convert numpy objects into JSON-safe Python types.
+    """
 
+    if isinstance(obj, dict):
+        return {k: sanitize(v) for k, v in obj.items()}
 
-def convert_numpy(obj):
+    if isinstance(obj, list):
+        return [sanitize(v) for v in obj]
+
     if isinstance(obj, np.ndarray):
         return obj.tolist()
+
     if isinstance(obj, (np.floating, np.integer)):
-        return float(obj)
+        return obj.item()
+
     return obj
 
 
@@ -90,8 +96,8 @@ def generate_week():
 
             lon, lat = vec[i]
 
-            lon = safe_float(lon)
-            lat = safe_float(lat)
+            lon = float(lon)
+            lat = float(lat)
 
             objects[body] = {
                 "ecl_lon_deg": lon,
@@ -105,7 +111,6 @@ def generate_week():
         longitudes_np = np.array(longitudes)
 
         harmonics = compute_harmonics(longitudes_np)
-
         stars = detect_star_hits(longitudes_np)
 
 
@@ -125,13 +130,9 @@ def generate_week():
                 "Part_of_Fortune": part_of_fortune
             },
 
-            "harmonics": {
-                "h5": convert_numpy(harmonics["h5"]),
-                "h7": convert_numpy(harmonics["h7"]),
-                "h9": convert_numpy(harmonics["h9"])
-            },
+            "harmonics": harmonics,
 
-            "fixed_star_hits": convert_numpy(stars)
+            "fixed_star_hits": stars
 
         })
 
@@ -149,6 +150,9 @@ def main():
     print("Generating weekly transits...")
 
     data = generate_week()
+
+    # CRITICAL FIX — remove numpy types everywhere
+    data = sanitize(data)
 
     os.makedirs("docs", exist_ok=True)
 
