@@ -44,7 +44,7 @@ def fetch_batch(body_id: str, start: str, stop: str):
             data = response.json()
 
             if "result" not in data:
-                raise RuntimeError("Horizons returned malformed payload")
+                raise RuntimeError("Horizons malformed response")
 
             text = data["result"]
 
@@ -54,7 +54,7 @@ def fetch_batch(body_id: str, start: str, stop: str):
             rows = parse_ephemeris(text)
 
             if len(rows) == 0:
-                raise RuntimeError("Ephemeris empty")
+                raise RuntimeError("Ephemeris returned empty")
 
             return np.array(rows, dtype=float)
 
@@ -98,22 +98,19 @@ def parse_ephemeris(text: str):
         if len(parts) < 2:
             continue
 
-        numeric_values = []
+        numeric = []
 
         for p in parts:
-
             try:
-                numeric_values.append(float(p))
+                numeric.append(float(p))
             except ValueError:
                 continue
 
-        if len(numeric_values) < 2:
+        if len(numeric) < 2:
             continue
 
-        lon = numeric_values[0]
-        lat = numeric_values[1]
-
-        lon = lon % 360.0
+        lon = numeric[0] % 360.0
+        lat = numeric[1]
 
         rows.append([lon, lat])
 
