@@ -34,15 +34,16 @@ def fetch_batch(body, start, stop):
         raise RuntimeError(f"Unknown body {body}")
 
     params = {
-        "format": "json",
+        "format": "text",
         "COMMAND": BODY_IDS[body],
         "EPHEM_TYPE": "OBSERVER",
         "CENTER": "500@399",
         "START_TIME": start,
         "STOP_TIME": stop,
         "STEP_SIZE": "1 d",
-        "QUANTITIES": "1,2,3,4",
-        "CSV_FORMAT": "YES"
+        "QUANTITIES": "18,20",
+        "CSV_FORMAT": "YES",
+        "ANG_FORMAT": "DEG"
     }
 
     for attempt in range(3):
@@ -51,12 +52,7 @@ def fetch_batch(body, start, stop):
 
         if r.status_code == 200:
 
-            data = r.json()
-
-            if "result" not in data:
-                raise RuntimeError("Horizons malformed response")
-
-            rows = parse_ephemeris(data["result"])
+            rows = parse_ephemeris(r.text)
 
             if rows:
                 return rows
@@ -84,17 +80,14 @@ def parse_ephemeris(text):
 
             parts = [p.strip() for p in line.split(",")]
 
-            if len(parts) < 4:
+            if len(parts) < 5:
                 continue
 
             try:
-
                 lon = float(parts[3])
-                lat = float(parts[4]) if len(parts) > 4 else 0.0
-
+                lat = float(parts[4])
                 rows.append((lon, lat))
-
             except Exception:
-                continue
+                rows.append((None, None))
 
     return rows
