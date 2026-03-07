@@ -1,6 +1,7 @@
 import json
 import datetime
 import swisseph as swe
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from bodies.swiss_engine import get_planet, get_asteroid
 from bodies.horizons_engine import fetch, fetch_numbered
@@ -9,12 +10,10 @@ from bodies.miriade_engine import fetch as miriade_fetch
 
 OUTPUT_FILE = "docs/current_week.json"
 
-
 MAJOR_BODIES = [
     "Sun","Moon","Mercury","Venus","Mars",
     "Jupiter","Saturn","Uranus","Neptune","Pluto"
 ]
-
 
 ASTEROIDS = {
     "Ceres":1,
@@ -23,13 +22,11 @@ ASTEROIDS = {
     "Vesta":4
 }
 
-
 CENTAURS = {
     "Chiron":2060,
     "Pholus":5145,
     "Nessus":7066
 }
-
 
 TNOS = {
     "Eris":136199,
@@ -40,7 +37,6 @@ TNOS = {
     "Quaoar":50000,
     "Ixion":28978
 }
-
 
 FIXED_STARS = {
     "Regulus":150.0,
@@ -54,30 +50,30 @@ def resolve_major(body, jd):
 
     r = fetch(body, jd)
     if r:
-        return r
+        return body, r
 
     r = get_planet(body, jd)
     if r:
-        return r
+        return body, r
 
     r = miriade_fetch(body, jd)
     if r:
-        return r
+        return body, r
 
-    return None, None, "missing"
+    return body, (None, None, "missing")
 
 
 def resolve_numbered(name, number, jd):
 
     r = fetch_numbered(number, jd)
     if r:
-        return r
+        return name, r
 
     r = get_asteroid(number, jd)
     if r:
-        return r
+        return name, r
 
-    return None, None, "missing"
+    return name, (None, None, "missing")
 
 
 def harmonics(lon):
@@ -111,62 +107,44 @@ def generate():
         sun = None
         moon = None
 
+        tasks = []
 
-        for body in MAJOR_BODIES:
+        with ThreadPoolExecutor(max_workers=6) as pool:
 
-            lon,lat,src = resolve_major(body,jd)
+            for body in MAJOR_BODIES:
+                tasks.append(pool.submit(resolve_major, body, jd))
 
-            objects[body] = {
-                "ecl_lon_deg": lon,
-                "ecl_lat_deg": lat,
-                "used_source": src
-            }
+            for name,num in ASTEROIDS.items():
+                tasks.append(pool.submit(resolve_numbered, name, num, jd))
 
-            if lon is not None:
+            for name,num in CENTAURS.items():
+                tasks.append(pool.submit(resolve_numbered, name, num, jd))
 
-                h = harmonics(lon)
+            for name,num in TNOS.items():
+                tasks.append(pool.submit(resolve_numbered, name, num, jd))
 
-                harmonic_map[f"{body}_H5"] = h["H5"]
-                harmonic_map[f"{body}_H7"] = h["H7"]
+            for task in as_completed(tasks):
 
-            if body == "Sun":
-                sun = lon
+                name,(lon,lat,src) = task.result()
 
-            if body == "Moon":
-                moon = lon
+                objects[name] = {
+                    "ecl_lon_deg": lon,
+                    "ecl_lat_deg": lat,
+                    "used_source": src
+                }
 
+                if name in MAJOR_BODIES and lon is not None:
 
-        for name,num in ASTEROIDS.items():
+                    h = harmonics(lon)
 
-            lon,lat,src = resolve_numbered(name,num,jd)
+                    harmonic_map[f"{name}_H5"] = h["H5"]
+                    harmonic_map[f"{name}_H7"] = h["H7"]
 
-            objects[name] = {
-                "ecl_lon_deg": lon,
-                "ecl_lat_deg": lat,
-                "used_source": src
-            }
+                    if name == "Sun":
+                        sun = lon
 
-
-        for name,num in CENTAURS.items():
-
-            lon,lat,src = resolve_numbered(name,num,jd)
-
-            objects[name] = {
-                "ecl_lon_deg": lon,
-                "ecl_lat_deg": lat,
-                "used_source": src
-            }
-
-
-        for name,num in TNOS.items():
-
-            lon,lat,src = resolve_numbered(name,num,jd)
-
-            objects[name] = {
-                "ecl_lon_deg": lon,
-                "ecl_lat_deg": lat,
-                "used_source": src
-            }
+                    if name == "Moon":
+                        moon = lon
 
 
         for star,lon in FIXED_STARS.items():
