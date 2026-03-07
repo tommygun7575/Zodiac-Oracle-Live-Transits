@@ -6,9 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-
   build:
-
     runs-on: ubuntu-latest
 
     steps:
@@ -26,7 +24,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install numpy
           pip install astroquery
-          pip install swisseph
+          pip install pyswisseph
           pip install python-dateutil
           pip install requests
 
@@ -38,9 +36,6 @@ jobs:
         run: |
           git config --global user.name "transit-bot"
           git config --global user.email "bot@github.com"
-
           git add docs/weekly_overlay.json
-
           git commit -m "update weekly transits" || echo "no changes"
-
           git push
