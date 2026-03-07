@@ -1,14 +1,17 @@
+import sys
+import os
 import json
 import datetime
 import swisseph as swe
 
-from bodies.horizons_engine import fetch, fetch_numbered
-from bodies.swiss_engine import get_planet, get_asteroid
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-OUTPUT_FILE = "docs/current_week.json"
+from scripts.bodies.horizons_engine import fetch, fetch_numbered
+from scripts.bodies.miriade_engine import fetch_miriade
+from scripts.bodies.swiss_engine import get_planet, get_asteroid
 
 
-MAJOR_BODIES = [
+PLANETS = [
     "Sun","Moon","Mercury","Venus","Mars",
     "Jupiter","Saturn","Uranus","Neptune","Pluto"
 ]
@@ -18,12 +21,6 @@ ASTEROIDS = {
     "Pallas":2,
     "Juno":3,
     "Vesta":4
-}
-
-CENTAURS = {
-    "Chiron":2060,
-    "Pholus":5145,
-    "Nessus":7066
 }
 
 TNOS = {
@@ -36,167 +33,149 @@ TNOS = {
     "Ixion":28978
 }
 
-FIXED_STARS = {
-    "Regulus":150.0,
-    "Spica":204.0,
-    "Aldebaran":69.0,
-    "Antares":249.0
-}
 
+def resolve_planet(body,jd):
 
-def resolve_major(body, jd):
-
-    r = fetch(body, jd)
+    r = fetch(body,jd)
 
     if r:
-        return body, r
+        return r
 
-    r = get_planet(body, jd)
-
-    if r:
-        return body, r
-
-    return body, (None, None, "missing")
-
-
-def resolve_numbered(name, number, jd):
-
-    r = fetch_numbered(number, jd)
+    r = fetch_miriade(body,jd)
 
     if r:
-        return name, r
+        return r
 
-    r = get_asteroid(name, jd)
+    r = get_planet(body,jd)
 
     if r:
-        return name, r
+        lon,lat = r
+        return lon,lat,"swiss"
 
-    return name, (None, None, "missing")
+    return None,None,"missing"
 
 
-def harmonics(lon):
+def resolve_minor(name,number,jd):
 
-    return {
-        "H5": (lon*5) % 360,
-        "H7": (lon*7) % 360
-    }
+    r = fetch_numbered(number,jd)
+
+    if r:
+        return r
+
+    r = fetch_miriade(name,jd)
+
+    if r:
+        return r
+
+    r = get_asteroid(number,jd)
+
+    if r:
+        lon,lat = r
+        return lon,lat,"swiss"
+
+    return None,None,"missing"
+
+
+def compute_harmonics(objects):
+
+    harmonics={}
+
+    for body,data in objects.items():
+
+        if data["ecl_lon_deg"] is None:
+            continue
+
+        lon=data["ecl_lon_deg"]
+
+        harmonics[f"{body}_H5"]=(lon*5)%360
+        harmonics[f"{body}_H7"]=(lon*7)%360
+
+    return harmonics
+
+
+def compute_part_of_fortune(objects):
+
+    sun=objects["Sun"]["ecl_lon_deg"]
+    moon=objects["Moon"]["ecl_lon_deg"]
+
+    if sun is None or moon is None:
+        return None
+
+    return (moon-sun)%360
 
 
 def generate():
 
-    now = datetime.datetime.utcnow()
+    now=datetime.datetime.utcnow()
 
-    days = []
+    week=[]
 
     for i in range(7):
 
-        t = now + datetime.timedelta(days=i)
+        t=now+datetime.timedelta(days=i)
 
-        jd = swe.julday(
-            t.year,
-            t.month,
-            t.day,
-            t.hour + t.minute/60
+        jd=swe.julday(
+            t.year,t.month,t.day,
+            t.hour+(t.minute/60)
         )
 
-        objects = {}
-        harmonic_map = {}
+        objects={}
 
-        sun = None
-        moon = None
+        for body in PLANETS:
 
+            lon,lat,src=resolve_planet(body,jd)
 
-        for body in MAJOR_BODIES:
-
-            name,(lon,lat,src) = resolve_major(body,jd)
-
-            objects[name] = {
-                "ecl_lon_deg": lon,
-                "ecl_lat_deg": lat,
-                "used_source": src
+            objects[body]={
+                "ecl_lon_deg":lon,
+                "ecl_lat_deg":lat,
+                "used_source":src
             }
-
-            if lon is not None:
-
-                h = harmonics(lon)
-
-                harmonic_map[f"{name}_H5"] = h["H5"]
-                harmonic_map[f"{name}_H7"] = h["H7"]
-
-                if name == "Sun":
-                    sun = lon
-
-                if name == "Moon":
-                    moon = lon
-
 
         for name,num in ASTEROIDS.items():
 
-            name,(lon,lat,src) = resolve_numbered(name,num,jd)
+            lon,lat,src=resolve_minor(name,num,jd)
 
-            objects[name] = {
-                "ecl_lon_deg": lon,
-                "ecl_lat_deg": lat,
-                "used_source": src
+            objects[name]={
+                "ecl_lon_deg":lon,
+                "ecl_lat_deg":lat,
+                "used_source":src
             }
-
-
-        for name,num in CENTAURS.items():
-
-            name,(lon,lat,src) = resolve_numbered(name,num,jd)
-
-            objects[name] = {
-                "ecl_lon_deg": lon,
-                "ecl_lat_deg": lat,
-                "used_source": src
-            }
-
 
         for name,num in TNOS.items():
 
-            name,(lon,lat,src) = resolve_numbered(name,num,jd)
+            lon,lat,src=resolve_minor(name,num,jd)
 
-            objects[name] = {
-                "ecl_lon_deg": lon,
-                "ecl_lat_deg": lat,
-                "used_source": src
+            objects[name]={
+                "ecl_lon_deg":lon,
+                "ecl_lat_deg":lat,
+                "used_source":src
             }
 
+        arabic_parts={
+            "Part_of_Fortune":compute_part_of_fortune(objects)
+        }
 
-        for star,lon in FIXED_STARS.items():
+        harmonics=compute_harmonics(objects)
 
-            objects[star] = {
-                "ecl_lon_deg": lon,
-                "ecl_lat_deg": 0,
-                "used_source": "catalog"
-            }
-
-
-        arabic = {}
-
-        if sun and moon:
-            arabic["Part_of_Fortune"] = (moon - sun) % 360
-
-
-        days.append({
-            "timestamp": t.isoformat()+"Z",
-            "objects": objects,
-            "arabic_parts": arabic,
-            "harmonics": harmonic_map
+        week.append({
+            "timestamp":t.isoformat()+"Z",
+            "objects":objects,
+            "arabic_parts":arabic_parts,
+            "harmonics":harmonics
         })
 
-
-    data = {
+    out={
         "version":"oracle-weekly-transits",
-        "generated_at": datetime.datetime.utcnow().isoformat()+"Z",
-        "week_start": now.isoformat()+"Z",
-        "days": days
+        "generated_at":datetime.datetime.utcnow().isoformat()+"Z",
+        "week_start":week[0]["timestamp"],
+        "days":week
     }
 
+    os.makedirs("docs",exist_ok=True)
 
-    with open(OUTPUT_FILE,"w") as f:
-        json.dump(data,f,indent=2)
+    with open("docs/current_week.json","w") as f:
+        json.dump(out,f,indent=2)
 
 
-if __name__ == "__main__":
+if __name__=="__main__":
     generate()
