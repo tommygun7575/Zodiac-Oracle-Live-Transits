@@ -1,9 +1,10 @@
+import os
 import swisseph as swe
-from datetime import datetime
 
-# -------------------------------------------------------
-# planet id map
-# -------------------------------------------------------
+# Use Moshier fallback if no ephemeris files exist
+EPHE_PATH = os.getenv("SWISSEPH_EPHE_PATH", "ephe")
+os.makedirs(EPHE_PATH, exist_ok=True)
+swe.set_ephe_path(EPHE_PATH)
 
 PLANET_MAP = {
     "Sun": swe.SUN,
@@ -15,46 +16,20 @@ PLANET_MAP = {
     "Saturn": swe.SATURN,
     "Uranus": swe.URANUS,
     "Neptune": swe.NEPTUNE,
-    "Pluto": swe.PLUTO
+    "Pluto": swe.PLUTO,
 }
 
-# -------------------------------------------------------
-# convert ISO timestamp to julian day
-# -------------------------------------------------------
+def get_planet(body, jd):
+    try:
+        code = PLANET_MAP[body]
+        pos, _ = swe.calc_ut(jd, code)
+        return pos[0], pos[1], "swiss"
+    except Exception:
+        return None
 
-def iso_to_jd(timestamp):
-
-    dt = datetime.fromisoformat(timestamp.replace("Z", "+00:00"))
-
-    jd = swe.julday(
-        dt.year,
-        dt.month,
-        dt.day,
-        dt.hour + dt.minute / 60 + dt.second / 3600
-    )
-
-    return jd
-
-
-# -------------------------------------------------------
-# MAIN FUNCTION
-# -------------------------------------------------------
-
-def fetch_swiss_position(body, timestamp):
-
-    if body not in PLANET_MAP:
-        raise Exception(f"Swiss does not support body: {body}")
-
-    planet_id = PLANET_MAP[body]
-
-    jd = iso_to_jd(timestamp)
-
-    result, _ = swe.calc_ut(jd, planet_id)
-
-    lon = result[0]
-    lat = result[1]
-
-    return {
-        "ecl_lon_deg": float(lon),
-        "ecl_lat_deg": float(lat)
-    }
+def get_asteroid(number, jd):
+    try:
+        pos, _ = swe.calc_ut(jd, swe.AST_OFFSET + number)
+        return pos[0], pos[1], "swiss"
+    except Exception:
+        return None
