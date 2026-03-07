@@ -1,5 +1,7 @@
 import swisseph as swe
 
+swe.set_ephe_path(".")
+
 PLANETS = {
     "Sun": swe.SUN,
     "Moon": swe.MOON,
@@ -13,50 +15,30 @@ PLANETS = {
     "Pluto": swe.PLUTO
 }
 
-ASTEROID_IDS = {
-    "Ceres": 1,
-    "Pallas": 2,
-    "Juno": 3,
-    "Vesta": 4,
-    "Chiron": 2060,
-    "Pholus": 5145,
-    "Nessus": 7066,
-    "Quaoar": 50000,
-    "Orcus": 90482,
-    "Sedna": 90377,
-    "Ixion": 28978
-}
+def get_planet(body, jd):
 
-
-def get_planet(name, jd):
+    if body not in PLANETS:
+        return None
 
     try:
 
-        pid = PLANETS[name]
+        lon, lat, _ = swe.calc_ut(jd, PLANETS[body])
 
-        pos, _ = swe.calc_ut(jd, pid)
-
-        lon = pos[0]
-        lat = pos[1]
-
-        return lon, lat, "swiss"
+        return lon, lat
 
     except:
+
         return None
 
 
-def get_asteroid(name, jd):
+def get_asteroid(number, jd):
 
     try:
 
-        aid = ASTEROID_IDS[name]
+        lon, lat, _ = swe.calc_ut(jd, number + swe.AST_OFFSET)
 
-        pos, _ = swe.calc_ut(jd, swe.AST_OFFSET + aid)
-
-        lon = pos[0]
-        lat = pos[1]
-
-        return lon, lat, "swiss"
+        return lon, lat
 
     except:
+
         return None
