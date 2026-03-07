@@ -1,391 +1,1196 @@
 {
   "version": "oracle-weekly-transits",
-  "generated_at": "2026-03-07T14:10:30.401788Z",
-  "week_start": "2026-03-08T14:10:14Z",
+  "generated_at": "2026-03-07T14:31:06.999090Z",
+  "week_start": "2026-03-08T14:25:25Z",
   "days": [
     {
-      "timestamp": "2026-03-08T14:10:14Z",
+      "timestamp": "2026-03-08T14:25:25Z",
       "objects": {
         "Sun": {
-          "ecl_lon_deg": 348.0097569805014,
-          "ecl_lat_deg": -0.00016963654823637427,
+          "ecl_lon_deg": 348.02030063126824,
+          "ecl_lat_deg": -0.0001697872901685259,
           "used_source": "swiss"
         },
         "Moon": {
-          "ecl_lon_deg": 227.30998529008852,
-          "ecl_lat_deg": -4.90331942018968,
+          "ecl_lon_deg": 227.43692794314774,
+          "ecl_lat_deg": -4.907590013662755,
           "used_source": "swiss"
         },
         "Mercury": {
-          "ecl_lon_deg": 345.73316161837283,
-          "ecl_lat_deg": 3.5480921555409157,
+          "ecl_lon_deg": 345.72248010951006,
+          "ecl_lat_deg": 3.547076514464109,
           "used_source": "swiss"
         },
         "Venus": {
-          "ecl_lon_deg": 2.6643079792413733,
-          "ecl_lat_deg": -1.2136677504379167,
+          "ecl_lon_deg": 2.677418477304802,
+          "ecl_lat_deg": -1.2134258605297372,
           "used_source": "swiss"
         },
         "Mars": {
-          "ecl_lon_deg": 334.7240995814073,
-          "ecl_lat_deg": -1.0929530849546283,
+          "ecl_lon_deg": 334.7324059395498,
+          "ecl_lat_deg": -1.092946019591542,
           "used_source": "swiss"
         },
         "Jupiter": {
-          "ecl_lon_deg": 105.0980572474735,
-          "ecl_lat_deg": 0.3522759816819415,
+          "ecl_lon_deg": 105.09796922207829,
+          "ecl_lat_deg": 0.35228604106523,
           "used_source": "swiss"
         },
         "Saturn": {
-          "ecl_lon_deg": 2.640488132297922,
-          "ecl_lat_deg": -2.125769930838134,
+          "ecl_lon_deg": 2.6417761203812353,
+          "ecl_lat_deg": -2.1257649755373653,
           "used_source": "swiss"
         },
         "Uranus": {
-          "ecl_lon_deg": 57.91916863803614,
-          "ecl_lat_deg": -0.17729579968792542,
+          "ecl_lon_deg": 57.91945988078352,
+          "ecl_lat_deg": -0.1772927238620951,
           "used_source": "swiss"
         },
         "Neptune": {
-          "ecl_lon_deg": 1.3211526619785272,
-          "ecl_lat_deg": -1.3058918298752613,
+          "ecl_lon_deg": 1.3215436528751625,
+          "ecl_lat_deg": -1.3058911648337956,
           "used_source": "swiss"
         },
         "Pluto": {
-          "ecl_lon_deg": 304.73038705475153,
-          "ecl_lat_deg": -3.8801429030894345,
+          "ecl_lon_deg": 304.730649185045,
+          "ecl_lat_deg": -3.880170181368395,
           "used_source": "swiss"
+        },
+        "Ceres": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Pallas": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Juno": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Vesta": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Chiron": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Eris": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Haumea": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Makemake": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Sedna": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Orcus": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Quaoar": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Pholus": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Nessus": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Ixion": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Regulus": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Spica": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Aldebaran": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Antares": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
         }
+      },
+      "arabic_parts": {
+        "Part_of_Fortune": 239.4166273118795
+      },
+      "harmonics": {
+        "Sun_H5": 300.1015031563411,
+        "Sun_H7": 276.1421044188778,
+        "Moon_H5": 57.18463971573874,
+        "Moon_H7": 152.0584956020341,
+        "Mercury_H5": 288.61240054755035,
+        "Mercury_H7": 260.0573607665706,
+        "Venus_H5": 13.38709238652401,
+        "Venus_H7": 18.741929341133616,
+        "Mars_H5": 233.66202969774895,
+        "Mars_H7": 183.12684157684862,
+        "Jupiter_H5": 165.48984611039145,
+        "Jupiter_H7": 15.685784554548036,
+        "Saturn_H5": 13.208880601906177,
+        "Saturn_H7": 18.49243284266865,
+        "Uranus_H5": 289.5972994039176,
+        "Uranus_H7": 45.43621916548466,
+        "Neptune_H5": 6.607718264375812,
+        "Neptune_H7": 9.250805570126138,
+        "Pluto_H5": 83.65324592522506,
+        "Pluto_H7": 333.1145442953152
       }
     },
     {
-      "timestamp": "2026-03-09T14:10:14Z",
+      "timestamp": "2026-03-09T14:25:25Z",
       "objects": {
         "Sun": {
-          "ecl_lon_deg": 349.00950466450354,
-          "ecl_lat_deg": -0.00018021572175920268,
+          "ecl_lon_deg": 349.02004360608987,
+          "ecl_lat_deg": -0.000180286543758343,
           "used_source": "swiss"
         },
         "Moon": {
-          "ecl_lon_deg": 239.28586425069489,
-          "ecl_lat_deg": -5.197892566312956,
+          "ecl_lon_deg": 239.41157358659882,
+          "ecl_lat_deg": -5.199801980793897,
           "used_source": "swiss"
         },
         "Mercury": {
-          "ecl_lon_deg": 344.72788865405346,
-          "ecl_lat_deg": 3.4363513740762115,
+          "ecl_lon_deg": 344.7174112813292,
+          "ecl_lat_deg": 3.4350120635825276,
           "used_source": "swiss"
         },
         "Venus": {
-          "ecl_lon_deg": 3.907518861705064,
-          "ecl_lat_deg": -1.1902427209056625,
+          "ecl_lon_deg": 3.920625097324984,
+          "ecl_lat_deg": -1.1899905385955674,
           "used_source": "swiss"
         },
         "Mars": {
-          "ecl_lon_deg": 335.51185899809064,
-          "ecl_lat_deg": -1.0922214783399677,
+          "ecl_lon_deg": 335.52016485278773,
+          "ecl_lat_deg": -1.0922131013948488,
           "used_source": "swiss"
         },
         "Jupiter": {
-          "ecl_lon_deg": 105.0913301190282,
-          "ecl_lat_deg": 0.3532229208057779,
+          "ecl_lon_deg": 105.0912766433234,
+          "ecl_lat_deg": 0.35323282969991093,
           "used_source": "swiss"
         },
         "Saturn": {
-          "ecl_lon_deg": 2.762805264588752,
-          "ecl_lat_deg": -2.1253241326700394,
+          "ecl_lon_deg": 2.764096696809784,
+          "ecl_lat_deg": -2.125319692561364,
           "used_source": "swiss"
         },
         "Uranus": {
-          "ecl_lon_deg": 57.94717630349528,
-          "ecl_lat_deg": -0.17700456741644022,
+          "ecl_lon_deg": 57.94747575765685,
+          "ecl_lat_deg": -0.17700150187296018,
           "used_source": "swiss"
         },
         "Neptune": {
-          "ecl_lon_deg": 1.3582990021049954,
-          "ecl_lat_deg": -1.3058344929371344,
+          "ecl_lon_deg": 1.3586913486619614,
+          "ecl_lat_deg": -1.3058339502100078,
           "used_source": "swiss"
         },
         "Pluto": {
-          "ecl_lon_deg": 304.7550998095614,
-          "ecl_lat_deg": -3.882741906346654,
+          "ecl_lon_deg": 304.7553587740571,
+          "ecl_lat_deg": -3.8827694380315947,
           "used_source": "swiss"
+        },
+        "Ceres": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Pallas": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Juno": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Vesta": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Chiron": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Eris": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Haumea": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Makemake": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Sedna": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Orcus": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Quaoar": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Pholus": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Nessus": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Ixion": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Regulus": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Spica": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Aldebaran": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Antares": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
         }
+      },
+      "arabic_parts": {
+        "Part_of_Fortune": 250.39152998050895
+      },
+      "harmonics": {
+        "Sun_H5": 305.10021803044947,
+        "Sun_H7": 283.140305242629,
+        "Moon_H5": 117.05786793299421,
+        "Moon_H7": 235.88101510619163,
+        "Mercury_H5": 283.58705640664584,
+        "Mercury_H7": 253.02187896930445,
+        "Venus_H5": 19.60312548662492,
+        "Venus_H7": 27.444375681274888,
+        "Mars_H5": 237.60082426393865,
+        "Mars_H7": 188.6411539695141,
+        "Jupiter_H5": 165.45638321661704,
+        "Jupiter_H7": 15.638936503263722,
+        "Saturn_H5": 13.82048348404892,
+        "Saturn_H7": 19.34867687766849,
+        "Uranus_H5": 289.7373787882843,
+        "Uranus_H7": 45.632330303597996,
+        "Neptune_H5": 6.793456743309807,
+        "Neptune_H7": 9.51083944063373,
+        "Pluto_H5": 83.77679387028547,
+        "Pluto_H7": 333.2875114183994
       }
     },
     {
-      "timestamp": "2026-03-10T14:10:14Z",
+      "timestamp": "2026-03-10T14:25:25Z",
       "objects": {
         "Sun": {
-          "ecl_lon_deg": 350.0088050657362,
-          "ecl_lat_deg": -0.00018306519481540022,
+          "ecl_lon_deg": 350.0193392782719,
+          "ecl_lat_deg": -0.00018305337241155163,
           "used_source": "swiss"
         },
         "Moon": {
-          "ecl_lon_deg": 251.1793931148122,
-          "ecl_lat_deg": -5.2673207204836805,
+          "ecl_lon_deg": 251.30462049890633,
+          "ecl_lat_deg": -5.266850971799703,
           "used_source": "swiss"
         },
         "Mercury": {
-          "ecl_lon_deg": 343.75235404412103,
-          "ecl_lat_deg": 3.2953717916849605,
+          "ecl_lon_deg": 343.7422979209125,
+          "ecl_lat_deg": 3.293740839024367,
           "used_source": "swiss"
         },
         "Venus": {
-          "ecl_lon_deg": 5.1503232504527565,
-          "ecl_lat_deg": -1.1658480089891154,
+          "ecl_lon_deg": 5.163425171848252,
+          "ecl_lat_deg": -1.1655856733325594,
           "used_source": "swiss"
         },
         "Mars": {
-          "ecl_lon_deg": 336.2995636404778,
-          "ecl_lat_deg": -1.0913653931866292,
+          "ecl_lon_deg": 336.3078688378353,
+          "ecl_lat_deg": -1.09135570303996,
           "used_source": "swiss"
         },
         "Jupiter": {
-          "ecl_lon_deg": 105.08787816359589,
-          "ecl_lat_deg": 0.3541558169933367,
+          "ecl_lon_deg": 105.08785920028087,
+          "ecl_lat_deg": 0.3541655801963133,
           "used_source": "swiss"
         },
         "Saturn": {
-          "ecl_lon_deg": 2.8854388771026023,
-          "ecl_lat_deg": -2.1249272367932526,
+          "ecl_lon_deg": 2.8867335341821625,
+          "ecl_lat_deg": -2.1249233127965854,
           "used_source": "swiss"
         },
         "Uranus": {
-          "ecl_lon_deg": 57.975958508174145,
-          "ecl_lat_deg": -0.1767143183695929,
+          "ecl_lon_deg": 57.97626608092008,
+          "ecl_lat_deg": -0.17671126330258322,
           "used_source": "swiss"
         },
         "Neptune": {
-          "ecl_lon_deg": 1.3955687268714052,
-          "ecl_lat_deg": -1.3057887769862464,
+          "ecl_lon_deg": 1.395962315896932,
+          "ecl_lat_deg": -1.305788357032053,
           "used_source": "swiss"
         },
         "Pluto": {
-          "ecl_lon_deg": 304.7795081615686,
-          "ecl_lat_deg": -3.8853647965363876,
+          "ecl_lon_deg": 304.77976387124744,
+          "ecl_lat_deg": -3.8853925785091983,
           "used_source": "swiss"
+        },
+        "Ceres": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Pallas": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Juno": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Vesta": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Chiron": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Eris": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Haumea": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Makemake": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Sedna": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Orcus": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Quaoar": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Pholus": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Nessus": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Ixion": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Regulus": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Spica": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Aldebaran": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Antares": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
         }
+      },
+      "arabic_parts": {
+        "Part_of_Fortune": 261.28528122063443
+      },
+      "harmonics": {
+        "Sun_H5": 310.0966963913595,
+        "Sun_H7": 290.1353749479031,
+        "Moon_H5": 176.5231024945317,
+        "Moon_H7": 319.13234349234426,
+        "Mercury_H5": 278.71148960456253,
+        "Mercury_H7": 246.19608544638777,
+        "Venus_H5": 25.817125859241262,
+        "Venus_H7": 36.143976202937765,
+        "Mars_H5": 241.53934418917652,
+        "Mars_H7": 194.15508186484703,
+        "Jupiter_H5": 165.4392960014044,
+        "Jupiter_H7": 15.615014401966164,
+        "Saturn_H5": 14.433667670910813,
+        "Saturn_H7": 20.207134739275137,
+        "Uranus_H5": 289.88133040460036,
+        "Uranus_H7": 45.83386256644053,
+        "Neptune_H5": 6.979811579484661,
+        "Neptune_H7": 9.771736211278524,
+        "Pluto_H5": 83.89881935623725,
+        "Pluto_H7": 333.45834709873225
       }
     },
     {
-      "timestamp": "2026-03-11T14:10:14Z",
+      "timestamp": "2026-03-11T14:25:25Z",
       "objects": {
         "Sun": {
-          "ecl_lon_deg": 351.00765475686313,
-          "ecl_lat_deg": -0.00017806116897576242,
+          "ecl_lon_deg": 351.01818418816475,
+          "ecl_lat_deg": -0.0001779668813341277,
           "used_source": "swiss"
         },
         "Moon": {
-          "ecl_lon_deg": 263.0650123428645,
-          "ecl_lat_deg": -5.11185261504763,
+          "ecl_lon_deg": 263.1905703720377,
+          "ecl_lat_deg": -5.1090255655939085,
           "used_source": "swiss"
         },
         "Mercury": {
-          "ecl_lon_deg": 342.82593010388547,
-          "ecl_lat_deg": 3.1284236036920254,
+          "ecl_lon_deg": 342.81648551741614,
+          "ecl_lat_deg": 3.1265376544142898,
           "used_source": "swiss"
         },
         "Venus": {
-          "ecl_lon_deg": 6.3927151776493165,
-          "ecl_lat_deg": -1.1404972006684007,
+          "ecl_lon_deg": 6.405812711046371,
+          "ecl_lat_deg": -1.140224859210739,
           "used_source": "swiss"
         },
         "Mars": {
-          "ecl_lon_deg": 337.0871978931888,
-          "ecl_lat_deg": -1.0903847419908654,
+          "ecl_lon_deg": 337.09550225813086,
+          "ecl_lat_deg": -1.0903737384437826,
           "used_source": "swiss"
         },
         "Jupiter": {
-          "ecl_lon_deg": 105.08769673483906,
-          "ecl_lat_deg": 0.35507509814715255,
+          "ecl_lon_deg": 105.08771222366133,
+          "ecl_lat_deg": 0.35508471987321827,
           "used_source": "swiss"
         },
         "Saturn": {
-          "ecl_lon_deg": 3.008367514667052,
-          "ecl_lat_deg": -2.1245793443630334,
+          "ecl_lon_deg": 3.0096651638326946,
+          "ecl_lat_deg": -2.124575937701327,
           "used_source": "swiss"
         },
         "Uranus": {
-          "ecl_lon_deg": 58.0055057609098,
-          "ecl_lat_deg": -0.1764250771735203,
+          "ecl_lon_deg": 58.00582134546089,
+          "ecl_lat_deg": -0.1764220329165154,
           "used_source": "swiss"
         },
         "Neptune": {
-          "ecl_lon_deg": 1.4329505021494662,
-          "ecl_lat_deg": -1.305754731176655,
+          "ecl_lon_deg": 1.4333452084886515,
+          "ecl_lat_deg": -1.3057544345842627,
           "used_source": "swiss"
         },
         "Pluto": {
-          "ecl_lon_deg": 304.80360320894664,
-          "ecl_lat_deg": -3.8880112865303236,
+          "ecl_lon_deg": 304.80385556361597,
+          "ecl_lat_deg": -3.888039315768713,
           "used_source": "swiss"
+        },
+        "Ceres": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Pallas": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Juno": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Vesta": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Chiron": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Eris": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Haumea": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Makemake": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Sedna": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Orcus": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Quaoar": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Pholus": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Nessus": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Ixion": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Regulus": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Spica": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Aldebaran": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Antares": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
         }
+      },
+      "arabic_parts": {
+        "Part_of_Fortune": 272.17238618387296
+      },
+      "harmonics": {
+        "Sun_H5": 315.0909209408237,
+        "Sun_H7": 297.1272893171531,
+        "Moon_H5": 235.9528518601885,
+        "Moon_H7": 42.33399260426404,
+        "Mercury_H5": 274.0824275870807,
+        "Mercury_H7": 239.71539862191275,
+        "Venus_H5": 32.02906355523186,
+        "Venus_H7": 44.8406889773246,
+        "Mars_H5": 245.47751129065432,
+        "Mars_H7": 199.66851580691582,
+        "Jupiter_H5": 165.43856111830667,
+        "Jupiter_H7": 15.613985565629264,
+        "Saturn_H5": 15.048325819163473,
+        "Saturn_H7": 21.067656146828863,
+        "Uranus_H5": 290.02910672730445,
+        "Uranus_H7": 46.0407494182262,
+        "Neptune_H5": 7.1667260424432575,
+        "Neptune_H7": 10.033416459420561,
+        "Pluto_H5": 84.0192778180799,
+        "Pluto_H7": 333.62698894531195
       }
     },
     {
-      "timestamp": "2026-03-12T14:10:14Z",
+      "timestamp": "2026-03-12T14:25:25Z",
       "objects": {
         "Sun": {
-          "ecl_lon_deg": 352.0060474479135,
-          "ecl_lat_deg": -0.00016536663893506107,
+          "ecl_lon_deg": 352.0165720179136,
+          "ecl_lat_deg": -0.00016519322567497345,
           "used_source": "swiss"
         },
         "Moon": {
-          "ecl_lon_deg": 275.0210794059802,
-          "ecl_lat_deg": -4.735250277743607,
+          "ecl_lon_deg": 275.1478008472057,
+          "ecl_lat_deg": -4.730124572506653,
           "used_source": "swiss"
         },
         "Mercury": {
-          "ecl_lon_deg": 341.9652452038576,
-          "ecl_lat_deg": 2.939119586594478,
+          "ecl_lon_deg": 341.95657175306803,
+          "ecl_lat_deg": 2.9370178742032564,
           "used_source": "swiss"
         },
         "Venus": {
-          "ecl_lon_deg": 7.634686783314573,
-          "ecl_lat_deg": -1.1142046896329336,
+          "ecl_lon_deg": 7.647779837230348,
+          "ecl_lat_deg": -1.1139224984713996,
           "used_source": "swiss"
         },
         "Mars": {
-          "ecl_lon_deg": 337.8747442810316,
-          "ecl_lat_deg": -1.0892795766091183,
+          "ecl_lon_deg": 337.8830476208674,
+          "ecl_lat_deg": -1.0892672609881542,
           "used_source": "swiss"
         },
         "Jupiter": {
-          "ecl_lon_deg": 105.09077919325274,
-          "ecl_lat_deg": 0.35598113539133797,
+          "ecl_lon_deg": 105.09082905498015,
+          "ecl_lat_deg": 0.3559906192349067,
           "used_source": "swiss"
         },
         "Saturn": {
-          "ecl_lon_deg": 3.1315686286169826,
-          "ecl_lat_deg": -2.1242805862566803,
+          "ecl_lon_deg": 3.1328690277683675,
+          "ecl_lat_deg": -2.124277698479762,
           "used_source": "swiss"
         },
         "Uranus": {
-          "ecl_lon_deg": 58.03580751089984,
-          "ecl_lat_deg": -0.1761368824060594,
+          "ecl_lon_deg": 58.036130991801656,
+          "ecl_lat_deg": -0.1761338494409245,
           "used_source": "swiss"
         },
         "Neptune": {
-          "ecl_lon_deg": 1.470432045636848,
-          "ecl_lat_deg": -1.3057324191997508,
+          "ecl_lon_deg": 1.4708277362097397,
+          "ecl_lat_deg": -1.305732246730877,
           "used_source": "swiss"
         },
         "Pluto": {
-          "ecl_lon_deg": 304.82737520201835,
-          "ecl_lat_deg": -3.8906810866630694,
+          "ecl_lon_deg": 304.8276240940351,
+          "ecl_lat_deg": -3.890709360098312,
           "used_source": "swiss"
+        },
+        "Ceres": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Pallas": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Juno": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Vesta": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Chiron": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Eris": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Haumea": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Makemake": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Sedna": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Orcus": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Quaoar": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Pholus": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Nessus": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Ixion": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Regulus": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Spica": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Aldebaran": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Antares": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
         }
+      },
+      "arabic_parts": {
+        "Part_of_Fortune": 283.1312288292921
+      },
+      "harmonics": {
+        "Sun_H5": 320.08286008956793,
+        "Sun_H7": 304.1160041253952,
+        "Moon_H5": 295.73900423602845,
+        "Moon_H7": 126.03460593043997,
+        "Mercury_H5": 269.7828587653403,
+        "Mercury_H7": 233.69600227147612,
+        "Venus_H5": 38.23889918615174,
+        "Venus_H7": 53.53445886061244,
+        "Mars_H5": 249.41523810433682,
+        "Mars_H7": 205.18133334607182,
+        "Jupiter_H5": 165.45414527490072,
+        "Jupiter_H7": 15.635803384860992,
+        "Saturn_H5": 15.664345138841838,
+        "Saturn_H7": 21.93008319437857,
+        "Uranus_H5": 290.1806549590083,
+        "Uranus_H7": 46.25291694261159,
+        "Neptune_H5": 7.354138681048699,
+        "Neptune_H7": 10.295794153468178,
+        "Pluto_H5": 84.13812047017564,
+        "Pluto_H7": 333.793368658246
       }
     },
     {
-      "timestamp": "2026-03-13T14:10:14Z",
+      "timestamp": "2026-03-13T14:25:25Z",
       "objects": {
         "Sun": {
-          "ecl_lon_deg": 353.0039743335258,
-          "ecl_lat_deg": -0.0001454574699540456,
+          "ecl_lon_deg": 353.01449393714284,
+          "ecl_lat_deg": -0.00014521170142353475,
           "used_source": "swiss"
         },
         "Moon": {
-          "ecl_lon_deg": 287.125729947381,
-          "ecl_lat_deg": -4.145214822414097,
+          "ecl_lon_deg": 287.2544211788939,
+          "ecl_lat_deg": -4.1378978611132835,
           "used_source": "swiss"
         },
         "Mercury": {
-          "ecl_lon_deg": 341.18392603731166,
-          "ecl_lat_deg": 2.731226560570111,
+          "ecl_lon_deg": 341.17615106128966,
+          "ecl_lat_deg": 2.7289489935209734,
           "used_source": "swiss"
         },
         "Venus": {
-          "ecl_lon_deg": 8.876228660381893,
-          "ecl_lat_deg": -1.0869856852293889,
+          "ecl_lon_deg": 8.889317128759117,
+          "ecl_lat_deg": -1.0866938090913323,
           "used_source": "swiss"
         },
         "Mars": {
-          "ecl_lon_deg": 338.6621838506681,
-          "ecl_lat_deg": -1.0880500985281256,
+          "ecl_lon_deg": 338.6704859592028,
+          "ecl_lat_deg": -1.0880364737888775,
           "used_source": "swiss"
         },
         "Jupiter": {
-          "ecl_lon_deg": 105.09711727244073,
-          "ecl_lat_deg": 0.35687423835336685,
+          "ecl_lon_deg": 105.0972014124608,
+          "ecl_lat_deg": 0.3568835872373671,
           "used_source": "swiss"
         },
         "Saturn": {
-          "ecl_lon_deg": 3.2550189499497804,
-          "ecl_lat_deg": -2.124031126174877,
+          "ecl_lon_deg": 3.256321851388266,
+          "ecl_lat_deg": -2.1240287591935254,
           "used_source": "swiss"
         },
         "Uranus": {
-          "ecl_lon_deg": 58.06685251891266,
-          "ecl_lat_deg": -0.1758497878435733,
+          "ecl_lon_deg": 58.0671837756146,
+          "ecl_lat_deg": -0.17584676682162712,
           "used_source": "swiss"
         },
         "Neptune": {
-          "ecl_lon_deg": 1.508000512179043,
-          "ecl_lat_deg": -1.3057219248755765,
+          "ecl_lon_deg": 1.5083970500186843,
+          "ecl_lat_deg": -1.3057218775557278,
           "used_source": "swiss"
         },
         "Pluto": {
-          "ecl_lon_deg": 304.8508139320175,
-          "ecl_lat_deg": -3.89337390522659,
+          "ecl_lon_deg": 304.85105925885983,
+          "ecl_lat_deg": -3.8934024198738166,
           "used_source": "swiss"
+        },
+        "Ceres": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Pallas": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Juno": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Vesta": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Chiron": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Eris": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Haumea": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Makemake": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Sedna": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Orcus": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Quaoar": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Pholus": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Nessus": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Ixion": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Regulus": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Spica": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Aldebaran": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Antares": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
         }
+      },
+      "arabic_parts": {
+        "Part_of_Fortune": 294.23992724175105
+      },
+      "harmonics": {
+        "Sun_H5": 325.07246968571417,
+        "Sun_H7": 311.10145755999974,
+        "Moon_H5": 356.2721058944694,
+        "Moon_H7": 210.7809482522573,
+        "Mercury_H5": 265.88075530644824,
+        "Mercury_H7": 228.23305742902767,
+        "Venus_H5": 44.446585643795586,
+        "Venus_H7": 62.22521990131382,
+        "Mars_H5": 253.3524297960139,
+        "Mars_H7": 210.69340171441945,
+        "Jupiter_H5": 165.486007062304,
+        "Jupiter_H7": 15.680409887225665,
+        "Saturn_H5": 16.28160925694133,
+        "Saturn_H7": 22.794252959717863,
+        "Uranus_H5": 290.335918878073,
+        "Uranus_H7": 46.470286429302234,
+        "Neptune_H5": 7.541985250093422,
+        "Neptune_H7": 10.55877935013079,
+        "Pluto_H5": 84.25529629429911,
+        "Pluto_H7": 333.95741481201867
       }
     },
     {
-      "timestamp": "2026-03-14T14:10:14Z",
+      "timestamp": "2026-03-14T14:25:25Z",
       "objects": {
         "Sun": {
-          "ecl_lon_deg": 354.00142437097463,
-          "ecl_lat_deg": -0.00011914332786761155,
+          "ecl_lon_deg": 354.01193888064,
+          "ecl_lat_deg": -0.00011883555411870135,
           "used_source": "swiss"
         },
         "Moon": {
-          "ecl_lon_deg": 299.4521524838573,
-          "ecl_lat_deg": -3.3551219720079524,
+          "ecl_lon_deg": 299.5835402343495,
+          "ecl_lat_deg": -3.34579398896437,
           "used_source": "swiss"
         },
         "Mercury": {
-          "ecl_lon_deg": 340.4925468402395,
-          "ecl_lat_deg": 2.5084958739137253,
+          "ecl_lon_deg": 340.48576587915244,
+          "ecl_lat_deg": 2.5060813976651444,
           "used_source": "swiss"
         },
         "Venus": {
-          "ecl_lon_deg": 10.117330156431825,
-          "ecl_lat_deg": -1.0588562174784761,
+          "ecl_lon_deg": 10.130413921117135,
+          "ecl_lat_deg": -1.0585548297560727,
           "used_source": "swiss"
         },
         "Mars": {
-          "ecl_lon_deg": 339.44949652376283,
-          "ecl_lat_deg": -1.086696666926946,
+          "ecl_lon_deg": 339.45779718435176,
+          "ecl_lat_deg": -1.0866817377081444,
           "used_source": "swiss"
         },
         "Jupiter": {
-          "ecl_lon_deg": 105.10670144903042,
-          "ecl_lat_deg": 0.3577546516273449,
+          "ecl_lon_deg": 105.10681976187696,
+          "ecl_lat_deg": 0.3577638677808787,
           "used_source": "swiss"
         },
         "Saturn": {
-          "ecl_lon_deg": 3.3786948578114235,
-          "ecl_lat_deg": -2.12383116426796,
+          "ecl_lon_deg": 3.380000011921886,
+          "ecl_lat_deg": -2.123829320397852,
           "used_source": "swiss"
         },
         "Uranus": {
-          "ecl_lon_deg": 58.098629226485095,
-          "ecl_lat_deg": -0.1755638635059088,
+          "ecl_lon_deg": 58.09896813659649,
+          "ecl_lat_deg": -0.1755608552535299,
           "used_source": "swiss"
         },
         "Neptune": {
-          "ecl_lon_deg": 1.545642883278715,
-          "ecl_lat_deg": -1.3057233620835094,
+          "ecl_lon_deg": 1.5460401315532135,
+          "ecl_lat_deg": -1.3057234413265522,
           "used_source": "swiss"
         },
         "Pluto": {
-          "ecl_lon_deg": 304.8739091344014,
-          "ecl_lat_deg": -3.8960894484977966,
+          "ecl_lon_deg": 304.87415078253747,
+          "ecl_lat_deg": -3.896118201157726,
           "used_source": "swiss"
+        },
+        "Ceres": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Pallas": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Juno": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Vesta": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Chiron": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Eris": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Haumea": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Makemake": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Sedna": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Orcus": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Quaoar": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Pholus": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Nessus": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Ixion": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Regulus": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Spica": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Aldebaran": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
+        },
+        "Antares": {
+          "ecl_lon_deg": null,
+          "ecl_lat_deg": null,
+          "used_source": "missing"
         }
+      },
+      "arabic_parts": {
+        "Part_of_Fortune": 305.5716013537095
+      },
+      "harmonics": {
+        "Sun_H5": 330.05969440319996,
+        "Sun_H7": 318.08357216447985,
+        "Moon_H5": 57.917701171747694,
+        "Moon_H7": 297.08478164044664,
+        "Mercury_H5": 262.42882939576225,
+        "Mercury_H7": 223.400361154067,
+        "Venus_H5": 50.65206960558568,
+        "Venus_H7": 70.91289744781994,
+        "Mars_H5": 257.2889859217589,
+        "Mars_H7": 216.20458029046222,
+        "Jupiter_H5": 165.53409880938477,
+        "Jupiter_H7": 15.747738333138727,
+        "Saturn_H5": 16.90000005960943,
+        "Saturn_H7": 23.660000083453202,
+        "Uranus_H5": 290.49484068298244,
+        "Uranus_H7": 46.69277695617541,
+        "Neptune_H5": 7.730200657766067,
+        "Neptune_H7": 10.822280920872494,
+        "Pluto_H5": 84.3707539126874,
+        "Pluto_H7": 334.11905547776223
       }
     }
   ]
