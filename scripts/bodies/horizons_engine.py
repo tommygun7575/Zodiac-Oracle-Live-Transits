@@ -1,54 +1,74 @@
-from astroquery.jplhorizons import Horizons
-import math
+import requests
+import re
+
+HORIZONS_URL = "https://ssd.jpl.nasa.gov/api/horizons.api"
+
+
+def _parse(text):
+
+    # Horizons ecliptic longitude / latitude pattern
+    m = re.search(r"EclLon\s*=\s*([-0-9.]+).*?EclLat\s*=\s*([-0-9.]+)", text)
+
+    if not m:
+        return None
+
+    lon = float(m.group(1))
+    lat = float(m.group(2))
+
+    return lon, lat
 
 
 def fetch(body, jd):
 
+    params = {
+        "format": "text",
+        "COMMAND": body,
+        "EPHEM_TYPE": "OBSERVER",
+        "CENTER": "500@399",
+        "TLIST": jd,
+        "QUANTITIES": "1,2"
+    }
+
     try:
 
-        obj = Horizons(
-            id=body,
-            location="500@10",
-            epochs=jd
-        )
+        r = requests.get(HORIZONS_URL, params=params, timeout=10)
 
-        vec = obj.vectors()
+        parsed = _parse(r.text)
 
-        x = float(vec["x"][0])
-        y = float(vec["y"][0])
-        z = float(vec["z"][0])
+        if not parsed:
+            return None
 
-        lon = math.degrees(math.atan2(y, x)) % 360
-        lat = math.degrees(math.atan2(z, (x*x+y*y)**0.5))
+        lon, lat = parsed
 
         return lon, lat, "horizons"
 
-    except Exception:
-
+    except:
         return None
 
 
 def fetch_numbered(number, jd):
 
+    params = {
+        "format": "text",
+        "COMMAND": str(number),
+        "EPHEM_TYPE": "OBSERVER",
+        "CENTER": "500@399",
+        "TLIST": jd,
+        "QUANTITIES": "1,2"
+    }
+
     try:
 
-        obj = Horizons(
-            id=f"{number};",
-            location="500@10",
-            epochs=jd
-        )
+        r = requests.get(HORIZONS_URL, params=params, timeout=10)
 
-        vec = obj.vectors()
+        parsed = _parse(r.text)
 
-        x = float(vec["x"][0])
-        y = float(vec["y"][0])
-        z = float(vec["z"][0])
+        if not parsed:
+            return None
 
-        lon = math.degrees(math.atan2(y, x)) % 360
-        lat = math.degrees(math.atan2(z, (x*x+y*y)**0.5))
+        lon, lat = parsed
 
         return lon, lat, "horizons"
 
-    except Exception:
-
+    except:
         return None
