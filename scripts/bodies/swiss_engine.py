@@ -1,8 +1,7 @@
 import swisseph as swe
 from datetime import datetime, timedelta
 
-
-BODY_CODES = {
+PLANETS = {
     "Sun": swe.SUN,
     "Moon": swe.MOON,
     "Mercury": swe.MERCURY,
@@ -12,18 +11,17 @@ BODY_CODES = {
     "Saturn": swe.SATURN,
     "Uranus": swe.URANUS,
     "Neptune": swe.NEPTUNE,
-    "Pluto": swe.PLUTO,
+    "Pluto": swe.PLUTO
 }
-
 
 def fetch_swiss(body, start, stop):
 
-    if body not in BODY_CODES:
-        raise RuntimeError(f"Swiss ephemeris unsupported body {body}")
+    if body not in PLANETS:
+        raise RuntimeError("unsupported body")
 
     start_dt = datetime.strptime(start, "%Y-%m-%d")
 
-    results = []
+    vectors = []
 
     for i in range(7):
 
@@ -31,8 +29,11 @@ def fetch_swiss(body, start, stop):
 
         jd = swe.julday(day.year, day.month, day.day)
 
-        lon, lat, dist = swe.calc_ut(jd, BODY_CODES[body])[0]
+        pos, flags = swe.calc_ut(jd, PLANETS[body])
 
-        results.append((lon, lat))
+        lon = float(pos[0])
+        lat = float(pos[1])
 
-    return results
+        vectors.append((lon, lat))
+
+    return vectors
