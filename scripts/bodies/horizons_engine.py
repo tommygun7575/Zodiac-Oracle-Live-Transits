@@ -1,102 +1,67 @@
 import requests
-import time
+import numpy as np
 
-HORIZONS_URL = "https://ssd.jpl.nasa.gov/api/horizons.api"
+HORIZONS_API = "https://ssd.jpl.nasa.gov/api/horizons.api"
 
-NAIF_IDS = {
-    "Sun": "10",
-    "Moon": "301",
-    "Mercury": "199",
-    "Venus": "299",
-    "Mars": "499",
-    "Jupiter": "599",
-    "Saturn": "699",
-    "Uranus": "799",
-    "Neptune": "899",
-    "Pluto": "999"
-}
 
-def _parse(text):
+def fetch_batch(body_id, start, stop):
 
-    lines = text.splitlines()
+    params = {
+        "format": "json",
+        "COMMAND": body_id,
+        "EPHEM_TYPE": "OBSERVER",
+        "CENTER": "500@399",
+        "START_TIME": start,
+        "STOP_TIME": stop,
+        "STEP_SIZE": "1 d",
+        "QUANTITIES": "18,20",
+        "CSV_FORMAT": "YES"
+    }
 
-    start = None
-    for i,l in enumerate(lines):
-        if "$$SOE" in l:
-            start = i+1
+    r = requests.get(HORIZONS_API, params=params, timeout=60)
+
+    if r.status_code != 200:
+        raise RuntimeError("Horizons request failed")
+
+    data = r.json()
+
+    if "result" not in data:
+        raise RuntimeError("Horizons returned no result")
+
+    return parse_ephemeris(data["result"])
+
+
+def parse_ephemeris(text):
+
+    rows = []
+    active = False
+
+    for line in text.splitlines():
+
+        if "$$SOE" in line:
+            active = True
+            continue
+
+        if "$$EOE" in line:
             break
 
-    if start is None:
-        return None
+        if not active:
+            continue
 
-    row = lines[start].split(",")
+        parts = line.split(",")
 
-    try:
-        lon = float(row[5])
-        lat = float(row[6])
-        return lon, lat
-    except:
-        return None
+        if len(parts) < 5:
+            continue
 
+        try:
+            lon = float(parts[3])
+            lat = float(parts[4])
+        except:
+            continue
 
-def fetch(body, jd):
+        rows.append((lon, lat))
 
-    if body not in NAIF_IDS:
-        return None
+    if len(rows) == 0:
+        raise RuntimeError("No ephemeris parsed")
 
-    params = {
-        "format": "text",
-        "COMMAND": NAIF_IDS[body],
-        "EPHEM_TYPE": "OBSERVER",
-        "CENTER": "500@399",
-        "TLIST": jd,
-        "QUANTITIES": "18,19"
-    }
-
-    try:
-
-        r = requests.get(HORIZONS_URL, params=params, timeout=20)
-
-        parsed = _parse(r.text)
-
-        if not parsed:
-            return None
-
-        lon, lat = parsed
-
-        time.sleep(0.4)
-
-        return lon, lat, "jpl"
-
-    except:
-        return None
-
-
-def fetch_numbered(number, jd):
-
-    params = {
-        "format": "text",
-        "COMMAND": str(number),
-        "EPHEM_TYPE": "OBSERVER",
-        "CENTER": "500@399",
-        "TLIST": jd,
-        "QUANTITIES": "18,19"
-    }
-
-    try:
-
-        r = requests.get(HORIZONS_URL, params=params, timeout=20)
-
-        parsed = _parse(r.text)
-
-        if not parsed:
-            return None
-
-        lon, lat = parsed
-
-        time.sleep(0.4)
-
-        return lon, lat, "jpl"
-
-    except:
-        return None
+    return np.array(rows)
