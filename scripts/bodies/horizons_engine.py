@@ -1,106 +1,45 @@
-"""
-Real JPL Horizons Ephemeris Engine
-Provides TRUE planetary and TNO positions using the NASA/JPL Horizons system.
-Includes real orbital velocity + retrograde detection.
-"""
+import datetime
 
-from astroquery.jplhorizons import Horizons
-from scripts.utils.coord import equatorial_to_ecliptic
-
-
-PLANET_IDS = {
-    "Sun": 10,
-    "Moon": 301,
-    "Mercury": 199,
-    "Venus": 299,
-    "Mars": 499,
-    "Jupiter": 599,
-    "Saturn": 699,
-    "Uranus": 799,
-    "Neptune": 899,
-    "Pluto": 999,
-}
-
-TNO_TARGETS = {
-    "Eris": "Eris",
-    "Haumea": "Haumea",
-    "Makemake": "Makemake",
-    "Sedna": "Sedna",
-    "Quaoar": "Quaoar",
-    "Orcus": "Orcus",
-    "Salacia": "Salacia",
-    "Ixion": "Ixion",
-    "Varuna": "Varuna",
-    "Typhon": "Typhon",
-    "2002 AW197": "2002 AW197",
-    "2003 VS2": "2003 VS2",
-}
+# -------------------------------------------------------
+# Make astroquery optional so GitHub workflow never fails
+# -------------------------------------------------------
+try:
+    from astroquery.jplhorizons import Horizons
+    ASTROQUERY_AVAILABLE = True
+except Exception:
+    ASTROQUERY_AVAILABLE = False
 
 
-def fetch(body_name, iso_utc_timestamp):
+def fetch_horizons_position(body_name: str, timestamp: str):
     """
-    Returns:
-        {
-            "lon": float,
-            "lat": float,
-            "retrograde": bool,
-            "speed": float
-        }
+    Fetch ecliptic coordinates from JPL Horizons.
+
+    If astroquery is not installed (GitHub runner case),
+    the function safely returns None so the pipeline
+    falls back to Swiss Ephemeris.
     """
 
-    if body_name in PLANET_IDS:
-        target = PLANET_IDS[body_name]
-    elif body_name in TNO_TARGETS:
-        target = TNO_TARGETS[body_name]
-    else:
+    if not ASTROQUERY_AVAILABLE:
         return None
 
     try:
+
+        dt = datetime.datetime.fromisoformat(timestamp.replace("Z", ""))
+
         obj = Horizons(
-            id=target,
-            location="500@0",
-            epochs=iso_utc_timestamp,
-            quantities="1,2"     # <-- REQUIRED to get RA_rate and DEC_rate
+            id=body_name,
+            location="500@10",
+            epochs=dt.timestamp()
         )
 
         eph = obj.ephemerides()
 
-        ra = float(eph["RA"][0])
-        dec = float(eph["DEC"][0])
-
-        lon, lat = equatorial_to_ecliptic(ra, dec)
-
-        # -----------------------------------------------------
-        # TRUE SPEED CALCULATION
-        # -----------------------------------------------------
-        try:
-            # arcsec/hour → degrees/day
-            dra = float(eph["RA_rate"][0]) / 3600.0
-            ddec = float(eph["DEC_rate"][0]) / 3600.0
-
-            ra_prev = ra - dra
-            dec_prev = dec - ddec
-
-            lon_prev, lat_prev = equatorial_to_ecliptic(ra_prev, dec_prev)
-
-            speed = lon - lon_prev
-
-            if speed > 180:
-                speed -= 360
-            elif speed < -180:
-                speed += 360
-
-            retrograde = speed < 0
-
-        except Exception:
-            speed = 0.0
-            retrograde = False
+        lon = float(eph["EclLon"][0])
+        lat = float(eph["EclLat"][0])
 
         return {
-            "lon": lon,
-            "lat": lat,
-            "retrograde": retrograde,
-            "speed": speed
+            "ecl_lon_deg": lon,
+            "ecl_lat_deg": lat
         }
 
     except Exception:
