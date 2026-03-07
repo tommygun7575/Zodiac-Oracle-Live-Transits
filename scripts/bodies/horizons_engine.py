@@ -1,12 +1,8 @@
 from datetime import datetime, timedelta
-from typing import Optional, Tuple
-
 import numpy as np
 from astroquery.jplhorizons import Horizons
-import swisseph as swe
 
-
-MAJOR_BODIES = {
+BODY_IDS = {
     "Sun": "10",
     "Moon": "301",
     "Mercury": "199",
@@ -16,11 +12,7 @@ MAJOR_BODIES = {
     "Saturn": "699",
     "Uranus": "799",
     "Neptune": "899",
-    "Pluto": "999"
-}
-
-
-SMALL_BODIES = {
+    "Pluto": "999",
     "Ceres": "1",
     "Pallas": "2",
     "Juno": "3",
@@ -35,65 +27,28 @@ SMALL_BODIES = {
 }
 
 
-BODY_IDS = {**MAJOR_BODIES, **SMALL_BODIES}
+def _fetch_one(body, when):
 
+    body_id = BODY_IDS[body]
 
-def _fetch_one(body: str, when: datetime) -> Optional[Tuple[float, float]]:
+    obj = Horizons(
+        id=body_id,
+        location="500@399",
+        epochs=when
+    )
 
-    try:
+    eph = obj.ephemerides(quantities="1,3")
 
-        body_id = BODY_IDS[body]
-
-        jd = swe.julday(
-            when.year,
-            when.month,
-            when.day,
-            when.hour + when.minute/60 + when.second/3600
-        )
-
-        if body in MAJOR_BODIES:
-
-            obj = Horizons(
-                id=body_id,
-                location="500@399",
-                epochs=[jd],
-                id_type="majorbody"
-            )
-
-        else:
-
-            obj = Horizons(
-                id=body_id,
-                location="500@399",
-                epochs=[jd],
-                id_type="smallbody"
-            )
-
-        eph = obj.ephemerides()
-
-        lon = None
-        lat = None
-
-        for key in ("EclLon", "EclipticLon", "ELON"):
-            if key in eph.colnames:
-                lon = float(eph[key][0])
-                break
-
-        for key in ("EclLat", "EclipticLat", "ELAT"):
-            if key in eph.colnames:
-                lat = float(eph[key][0])
-                break
-
-        if lon is None or lat is None:
-            return None
-
-        return lon % 360, lat
-
-    except Exception:
+    if len(eph) == 0:
         return None
 
+    lon = float(eph["EclLon"][0])
+    lat = float(eph["EclLat"][0])
 
-def fetch_batch(body: str, start: str, end: str):
+    return lon % 360, lat
+
+
+def fetch_batch(body, start, end):
 
     start_dt = datetime.fromisoformat(start)
     end_dt = datetime.fromisoformat(end)
@@ -106,7 +61,9 @@ def fetch_batch(body: str, start: str, end: str):
 
         t = start_dt + timedelta(days=i)
 
-        lonlat = _fetch_one(body, t)
+        jd = t.timestamp() / 86400.0 + 2440587.5
+
+        lonlat = _fetch_one(body, jd)
 
         if lonlat is None:
             raise RuntimeError(f"Horizons returned no coordinates for {body}")
