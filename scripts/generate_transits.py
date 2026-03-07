@@ -2,11 +2,11 @@ import requests
 import json
 from datetime import datetime, timedelta
 import os
+import time
 
 HORIZONS_URL = "https://ssd.jpl.nasa.gov/api/horizons.api"
 
-# JPL Horizons body IDs
-BODIES = {
+PLANETS = {
     "Sun": "10",
     "Moon": "301",
     "Mercury": "199",
@@ -34,40 +34,34 @@ TNO = {
     "Sedna": "90377"
 }
 
-ALL_BODIES = {**BODIES, **ASTEROIDS, **TNO}
+ALL_BODIES = {**PLANETS, **ASTEROIDS, **TNO}
 
 ASPECTS = {
-    "conjunction": {"angle":0,"orb":8},
-    "opposition": {"angle":180,"orb":8},
-    "square": {"angle":90,"orb":6},
-    "trine": {"angle":120,"orb":6},
-    "sextile": {"angle":60,"orb":4}
+    "conjunction": {"angle": 0, "orb": 8},
+    "opposition": {"angle": 180, "orb": 8},
+    "square": {"angle": 90, "orb": 6},
+    "trine": {"angle": 120, "orb": 6},
+    "sextile": {"angle": 60, "orb": 4}
 }
 
 
 def zodiac_sign(lon):
-
     signs = [
         "Aries","Taurus","Gemini","Cancer",
         "Leo","Virgo","Libra","Scorpio",
         "Sagittarius","Capricorn","Aquarius","Pisces"
     ]
-
-    return signs[int(lon//30)]
+    return signs[int(lon // 30)]
 
 
 def degree_in_sign(lon):
+    return round(lon % 30, 4)
 
-    return round(lon % 30,3)
 
-
-def angle_diff(a,b):
-
-    d = abs(a-b) % 360
-
+def angle_diff(a, b):
+    d = abs(a - b) % 360
     if d > 180:
-        d = 360-d
-
+        d = 360 - d
     return d
 
 
@@ -84,165 +78,172 @@ def fetch_horizons(body_id, timestamp):
         "QUANTITIES": "1"
     }
 
-    r = requests.get(HORIZONS_URL, params=params)
+    try:
+        r = requests.get(HORIZONS_URL, params=params, timeout=30)
+        data = r.json()
 
-    data = r.json()
+        if "result" not in data:
+            return None
 
-    text = data["result"]
+        text = data["result"]
 
-    for line in text.split("\n"):
-        if "Ecl. Lon." in line:
-            lon = float(line.split()[-1])
-            return lon
+        for line in text.split("\n"):
+            if "Ecl. Lon." in line:
+                return float(line.split()[-1])
+
+    except Exception:
+        return None
 
     return None
-
-
-def get_next_sunday(now):
-
-    days = (6-now.weekday())%7
-
-    if days == 0:
-        days = 7
-
-    return now + timedelta(days=days)
 
 
 def compute_positions(timestamp):
 
     positions = {}
 
-    for name,body_id in ALL_BODIES.items():
+    for name, body_id in ALL_BODIES.items():
 
-        lon = fetch_horizons(body_id,timestamp)
+        lon = fetch_horizons(body_id, timestamp)
 
         if lon is None:
             continue
 
         positions[name] = {
-            "lon":lon,
-            "lat":0,
-            "retrograde":False,
-            "speed":0,
-            "sign":zodiac_sign(lon),
-            "deg":degree_in_sign(lon)
+            "lon": lon,
+            "lat": 0,
+            "retrograde": False,
+            "speed": 0,
+            "sign": zodiac_sign(lon),
+            "deg": degree_in_sign(lon)
         }
+
+        time.sleep(0.2)
 
     return positions
 
 
 def detect_aspects(days):
 
-    events=[]
+    events = []
 
-    bodies=list(BODIES.keys())
+    bodies = list(PLANETS.keys())
 
     for i in range(len(bodies)):
-        for j in range(i+1,len(bodies)):
+        for j in range(i + 1, len(bodies)):
 
-            b1=bodies[i]
-            b2=bodies[j]
+            b1 = bodies[i]
+            b2 = bodies[j]
 
-            for asp,conf in ASPECTS.items():
+            for asp, conf in ASPECTS.items():
 
-                angle=conf["angle"]
-                orb=conf["orb"]
+                angle = conf["angle"]
+                orb = conf["orb"]
 
-                active=False
-                start=None
-                exact=None
-                best=999
+                active = False
+                start = None
+                exact = None
+                best = 999
 
                 for d in days:
 
-                    lon1=d["positions"][b1]["lon"]
-                    lon2=d["positions"][b2]["lon"]
+                    if b1 not in d["positions"]:
+                        continue
 
-                    diff=angle_diff(lon1,lon2)
-                    delta=abs(diff-angle)
+                    if b2 not in d["positions"]:
+                        continue
 
-                    if delta<=orb:
+                    lon1 = d["positions"][b1]["lon"]
+                    lon2 = d["positions"][b2]["lon"]
+
+                    diff = angle_diff(lon1, lon2)
+                    delta = abs(diff - angle)
+
+                    if delta <= orb:
 
                         if not active:
-                            start=d["timestamp"]
-                            active=True
+                            start = d["timestamp"]
+                            active = True
 
-                        if delta<best:
-                            best=delta
-                            exact=d["timestamp"]
+                        if delta < best:
+                            best = delta
+                            exact = d["timestamp"]
 
                     else:
 
                         if active:
 
                             events.append({
-                                "bodies":[b1,b2],
-                                "aspect":asp,
-                                "start":start,
-                                "exact":exact,
-                                "end":d["timestamp"]
+                                "bodies": [b1, b2],
+                                "aspect": asp,
+                                "start": start,
+                                "exact": exact,
+                                "end": d["timestamp"]
                             })
 
-                            active=False
-                            best=999
+                            active = False
+                            best = 999
 
                 if active:
 
                     events.append({
-                        "bodies":[b1,b2],
-                        "aspect":asp,
-                        "start":start,
-                        "exact":exact,
-                        "end":days[-1]["timestamp"]
+                        "bodies": [b1, b2],
+                        "aspect": asp,
+                        "start": start,
+                        "exact": exact,
+                        "end": days[-1]["timestamp"]
                     })
 
     return events
 
 
-def write_json(path,data):
+def next_sunday(now):
 
-    os.makedirs(os.path.dirname(path),exist_ok=True)
+    days = (6 - now.weekday()) % 7
+    if days == 0:
+        days = 7
 
-    with open(path,"w") as f:
-        json.dump(data,f,indent=2)
+    return now + timedelta(days=days)
 
 
 def generate_week():
 
-    now=datetime.utcnow()
+    now = datetime.utcnow()
 
-    start=get_next_sunday(now)
+    start = next_sunday(now)
 
-    days=[]
+    days = []
 
     for i in range(7):
 
-        t=start+timedelta(days=i)
+        t = start + timedelta(days=i)
+        ts = t.isoformat() + "Z"
 
-        ts=t.isoformat()+"Z"
-
-        pos=compute_positions(ts)
+        positions = compute_positions(ts)
 
         days.append({
-            "timestamp":ts,
-            "positions":pos
+            "timestamp": ts,
+            "positions": positions
         })
 
-    aspects=detect_aspects(days)
+    aspects = detect_aspects(days)
 
-    data={
-        "version":"oracle-live-ephemeris",
-        "week_start":days[0]["timestamp"],
-        "days":days,
-        "aspect_events":aspects
+    data = {
+        "version": "oracle-live-ephemeris",
+        "week_start": days[0]["timestamp"],
+        "days": days,
+        "aspect_events": aspects
     }
 
-    write_json("docs/current_week.json",data)
+    os.makedirs("docs", exist_ok=True)
 
-    write_json("docs/_meta.json",{
-        "generated_utc":datetime.utcnow().isoformat()+"Z"
-    })
+    with open("docs/current_week.json", "w") as f:
+        json.dump(data, f, indent=2)
+
+    with open("docs/_meta.json", "w") as f:
+        json.dump({
+            "generated_utc": datetime.utcnow().isoformat() + "Z"
+        }, f, indent=2)
 
 
-if __name__=="__main__":
+if __name__ == "__main__":
     generate_week()
