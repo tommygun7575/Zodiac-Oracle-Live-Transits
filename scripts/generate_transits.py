@@ -2,7 +2,7 @@ import requests
 import json
 from datetime import datetime, timedelta
 import swisseph as swe
-import math
+import time
 
 HORIZONS_URL = "https://ssd.jpl.nasa.gov/api/horizons.api"
 MIRIADE_URL = "https://ssp.imcce.fr/webservices/miriade/api/ephemcc.php"
@@ -35,34 +35,47 @@ SWISS_MAP = {
 
 
 def parse_horizons(text):
+    """Parse Horizons CSV output."""
+    lines = text.splitlines()
 
-    rows = []
-    reading = False
-
-    for line in text.splitlines():
-
+    start = None
+    end = None
+    for i, line in enumerate(lines):
         if "$$SOE" in line:
-            reading = True
-            continue
-
+            start = i + 1
         if "$$EOE" in line:
+            end = i
             break
 
-        if reading:
-            parts = [x.strip() for x in line.split(",")]
+    header_line = None
+    for line in lines:
+        if "EclLon" in line and "EclLat" in line:
+            header_line = line
+            break
 
-            try:
-                lon = float(parts[3])
-                lat = float(parts[4])
-                rows.append((lon, lat))
-            except:
-                continue
+    if not header_line:
+        raise RuntimeError("Could not locate Horizons header")
+
+    headers = [h.strip() for h in header_line.split(",")]
+
+    lon_index = headers.index("EclLon")
+    lat_index = headers.index("EclLat")
+
+    rows = []
+    for line in lines[start:end]:
+        parts = [p.strip() for p in line.split(",")]
+        try:
+            lon = float(parts[lon_index])
+            lat = float(parts[lat_index])
+            rows.append((lon, lat))
+        except:
+            continue
 
     return rows
 
 
 def fetch_jpl(body_id, start, stop):
-
+    """Fetch data from JPL Horizons."""
     params = {
         "format": "json",
         "COMMAND": body_id,
@@ -75,23 +88,23 @@ def fetch_jpl(body_id, start, stop):
         "CSV_FORMAT": "YES"
     }
 
-    r = requests.get(HORIZONS_URL, params=params, timeout=30)
+    retries = 3
+    for _ in range(retries):
+        r = requests.get(HORIZONS_URL, params=params, timeout=30)
+        if r.status_code == 200:
+            data = r.json()
+            text = data.get("result")
+            if not text:
+                raise RuntimeError("Malformed JPL response")
+            return parse_horizons(text)
 
-    if r.status_code != 200:
-        raise RuntimeError("JPL request failed")
+        time.sleep(2)
 
-    data = r.json()
-
-    rows = parse_horizons(data["result"])
-
-    if not rows:
-        raise RuntimeError("JPL returned empty")
-
-    return rows
+    raise RuntimeError("JPL request failed")
 
 
 def fetch_miriade(body, date):
-
+    """Fetch data from Miriade."""
     params = {
         "name": body,
         "type": "p",
@@ -102,12 +115,10 @@ def fetch_miriade(body, date):
     r = requests.get(MIRIADE_URL, params=params, timeout=30)
 
     if r.status_code != 200:
-        raise RuntimeError("Miriade failed")
+        raise RuntimeError("Miriade request failed")
 
     data = r.json()
-
     eph = data["ephemerides"][0]
-
     lon = float(eph["lambda"])
     lat = float(eph["beta"])
 
@@ -115,16 +126,15 @@ def fetch_miriade(body, date):
 
 
 def fetch_swiss(body, date):
-
+    """Fetch data from Swiss Ephemeris."""
     swe.set_ephe_path(".")
 
     dt = datetime.fromisoformat(date)
     jd = swe.julday(dt.year, dt.month, dt.day)
 
     planet = SWISS_MAP.get(body)
-
     if planet is None:
-        raise RuntimeError("Swiss unsupported")
+        raise RuntimeError("Swiss unsupported body")
 
     pos, _ = swe.calc_ut(jd, planet)
 
@@ -132,88 +142,54 @@ def fetch_swiss(body, date):
 
 
 def resolve_body(body, start_date):
-
+    """Resolve ephemeris data for a body."""
     start = start_date.strftime("%Y-%m-%d")
     stop = (start_date + timedelta(days=6)).strftime("%Y-%m-%d")
 
     try:
-
         rows = fetch_jpl(BODIES[body], start, stop)
-
-        return [
-            {"lon": lon, "lat": lat, "source": "JPL"}
-            for lon, lat in rows
-        ]
-
+        return [{"lon": lon, "lat": lat, "source": "JPL"} for lon, lat in rows]
     except Exception as e:
-
         print(f"[WARN] JPL failed for {body}: {e}")
 
     results = []
-
     for i in range(7):
-
         date = (start_date + timedelta(days=i)).strftime("%Y-%m-%d")
-
         try:
-
             lon, lat = fetch_miriade(body, date)
-
-            results.append({
-                "lon": lon,
-                "lat": lat,
-                "source": "Miriade"
-            })
-
-        except:
-
+            results.append({"lon": lon, "lat": lat, "source": "Miriade"})
+        except Exception:
             lon, lat = fetch_swiss(body, date)
-
-            results.append({
-                "lon": lon,
-                "lat": lat,
-                "source": "Swiss"
-            })
+            results.append({"lon": lon, "lat": lat, "source": "Swiss"})
 
     return results
 
 
 def calc_arabic_parts(data):
-
+    """Calculate Arabic Parts."""
     parts = []
-
     for i in range(7):
-
         sun = data["Sun"][i]["lon"]
         moon = data["Moon"][i]["lon"]
-
         fortune = (moon - sun) % 360
-
-        parts.append({
-            "part_of_fortune": fortune
-        })
-
+        parts.append({"part_of_fortune": fortune})
     return parts
 
 
 def calc_harmonics(data):
-
+    """Calculate Harmonics."""
     harmonics = []
-
     for i in range(7):
-
         sun = data["Sun"][i]["lon"]
-
         harmonics.append({
             "sun_h5": (sun * 5) % 360,
             "sun_h7": (sun * 7) % 360
         })
-
     return harmonics
 
 
 def calc_fixed_stars():
-
+    """Calculate fixed stars."""
     return {
         "Regulus": 150.0,
         "Spica": 204.0,
@@ -223,15 +199,12 @@ def calc_fixed_stars():
 
 
 def main():
-
+    """Main function to generate the weekly ephemeris."""
     start_date = datetime.utcnow()
-
     bodies = {}
 
     for body in BODIES:
-
-        print("Resolving", body)
-
+        print(f"Resolving {body}")
         bodies[body] = resolve_body(body, start_date)
 
     data = {
@@ -239,19 +212,19 @@ def main():
         "bodies": bodies
     }
 
+    # Calculate additional astrology layers
     data["arabic_parts"] = calc_arabic_parts(bodies)
-
     data["harmonics"] = calc_harmonics(bodies)
-
     data["fixed_stars"] = calc_fixed_stars()
 
+    # Placeholder sections (expand with your future logic)
     data["tnos"] = {}
     data["asteroids"] = {}
     data["minor_bodies"] = {}
     data["aether_planets"] = {}
 
+    # Write to output JSON
     with open("docs/current_week.json", "w") as f:
-
         json.dump(data, f, indent=2)
 
     print("current_week.json written")
