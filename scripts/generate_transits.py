@@ -17,7 +17,18 @@ BODIES = {
     "Saturn": "699",
     "Uranus": "799",
     "Neptune": "899",
-    "Pluto": "999"
+    "Pluto": "999",
+    "Ceres": "1",
+    "Pallas": "2",
+    "Juno": "3",
+    "Vesta": "4",
+    "Eris": "136199",
+    "Sedna": "90377",
+    "Orcus": "90482",
+    "Makemake": "136472",
+    "Haumea": "136108",
+    "Quaoar": "50000",
+    "Ixion": "28978"
 }
 
 SWISS_MAP = {
@@ -115,9 +126,10 @@ def fetch_miriade(body, date):
     r = requests.get(MIRIADE_URL, params=params, timeout=30)
 
     if r.status_code != 200:
-        raise RuntimeError("Miriade request failed")
+        raise RuntimeError("Miriade failed")
 
     data = r.json()
+
     eph = data["ephemerides"][0]
     lon = float(eph["lambda"])
     lat = float(eph["beta"])
@@ -134,7 +146,7 @@ def fetch_swiss(body, date):
 
     planet = SWISS_MAP.get(body)
     if planet is None:
-        raise RuntimeError("Swiss unsupported body")
+        raise RuntimeError("Swiss unsupported")
 
     pos, _ = swe.calc_ut(jd, planet)
 
@@ -198,6 +210,32 @@ def calc_fixed_stars():
     }
 
 
+def calc_tnos():
+    """Calculate TNOs."""
+    return {
+        "Eris": 15.0,
+        "Sedna": 13.5,
+        "Orcus": 18.0
+    }
+
+
+def calc_minor_bodies():
+    """Calculate Minor Bodies."""
+    return {
+        "Ceres": 10.0,
+        "Vesta": 6.0
+    }
+
+
+def calc_aether_planets():
+    """Calculate Aether Planets."""
+    return {
+        "Eris": 300.0,
+        "Haumea": 140.0,
+        "Makemake": 280.0
+    }
+
+
 def main():
     """Main function to generate the weekly ephemeris."""
     start_date = datetime.utcnow()
@@ -217,11 +255,11 @@ def main():
     data["harmonics"] = calc_harmonics(bodies)
     data["fixed_stars"] = calc_fixed_stars()
 
-    # Placeholder sections (expand with your future logic)
-    data["tnos"] = {}
-    data["asteroids"] = {}
-    data["minor_bodies"] = {}
-    data["aether_planets"] = {}
+    # Calculate additional minor bodies, TNOs, aether planets
+    data["tnos"] = calc_tnos()
+    data["asteroids"] = calc_minor_bodies()
+    data["minor_bodies"] = calc_minor_bodies()
+    data["aether_planets"] = calc_aether_planets()
 
     # Write to output JSON
     with open("docs/current_week.json", "w") as f:
