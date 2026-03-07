@@ -1,0 +1,44 @@
+{
+  "planets": [
+    "Sun",
+    "Moon",
+    "Mercury",
+    "Venus",
+    "Mars",
+    "Jupiter",
+    "Saturn",
+    "Uranus",
+    "Neptune",
+    "Pluto"
+  ],
+
+  "asteroids": [
+    "Ceres",
+    "Pallas",
+    "Juno",
+    "Vesta",
+    "Chiron"
+  ],
+
+  "tnos": [
+    "Eris",
+    "Haumea",
+    "Makemake",
+    "Sedna",
+    "Orcus",
+    "Quaoar"
+  ],
+
+  "minor_bodies": [
+    "Pholus",
+    "Nessus",
+    "Ixion"
+  ],
+
+  "fixed_stars": [
+    "Regulus",
+    "Spica",
+    "Aldebaran",
+    "Antares"
+  ]
+}
