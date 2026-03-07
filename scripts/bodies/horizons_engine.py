@@ -31,13 +31,11 @@ BODY_IDS = {
 def fetch_batch(body, start, stop):
 
     if body not in BODY_IDS:
-        raise RuntimeError(f"Unknown Horizons body: {body}")
-
-    command = BODY_IDS[body]
+        raise RuntimeError(f"Unknown body {body}")
 
     params = {
-        "format": "text",
-        "COMMAND": command,
+        "format": "json",
+        "COMMAND": BODY_IDS[body],
         "EPHEM_TYPE": "OBSERVER",
         "CENTER": "500@399",
         "START_TIME": start,
@@ -53,4 +51,57 @@ def fetch_batch(body, start, stop):
 
         try:
 
-            response = requests.get(HORIZONS_URL, params
+            r = requests.get(HORIZONS_URL, params=params, timeout=60)
+
+            if r.status_code == 200:
+
+                data = r.json()
+
+                if "result" not in data:
+                    raise RuntimeError("Horizons malformed response")
+
+                return parse_ephemeris(data["result"])
+
+            time.sleep(2)
+
+        except Exception:
+
+            time.sleep(2)
+
+    raise RuntimeError(f"Horizons request failed for {body}")
+
+
+def parse_ephemeris(text):
+
+    rows = []
+    reading = False
+
+    for line in text.splitlines():
+
+        if "$$SOE" in line:
+            reading = True
+            continue
+
+        if "$$EOE" in line:
+            break
+
+        if reading:
+
+            parts = [p.strip() for p in line.split(",")]
+
+            if len(parts) < 5:
+                rows.append((None, None))
+                continue
+
+            try:
+
+                lon = float(parts[3])
+                lat = float(parts[4])
+
+                rows.append((lon, lat))
+
+            except Exception:
+
+                rows.append((None, None))
+
+    return rows
