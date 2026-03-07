@@ -1,971 +1,392 @@
 {
-  "version": "ephemeris-v2",
-  "week_start": "2026-03-08T12:55:50.258894Z",
+  "version": "oracle-weekly-transits",
+  "generated_at": "2026-03-07T14:10:30.401788Z",
+  "week_start": "2026-03-08T14:10:14Z",
   "days": [
     {
-      "timestamp": "2026-03-08T12:55:50.258894Z",
-      "positions": {
+      "timestamp": "2026-03-08T14:10:14Z",
+      "objects": {
         "Sun": {
-          "lon": 80,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
+          "ecl_lon_deg": 348.0097569805014,
+          "ecl_lat_deg": -0.00016963654823637427,
+          "used_source": "swiss"
         },
         "Moon": {
-          "lon": 315,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
+          "ecl_lon_deg": 227.30998529008852,
+          "ecl_lat_deg": -4.90331942018968,
+          "used_source": "swiss"
         },
         "Mercury": {
-          "lon": 313,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
+          "ecl_lon_deg": 345.73316161837283,
+          "ecl_lat_deg": 3.5480921555409157,
+          "used_source": "swiss"
         },
         "Venus": {
-          "lon": 234,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
+          "ecl_lon_deg": 2.6643079792413733,
+          "ecl_lat_deg": -1.2136677504379167,
+          "used_source": "swiss"
         },
         "Mars": {
-          "lon": 34,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
+          "ecl_lon_deg": 334.7240995814073,
+          "ecl_lat_deg": -1.0929530849546283,
+          "used_source": "swiss"
         },
         "Jupiter": {
-          "lon": 31,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
+          "ecl_lon_deg": 105.0980572474735,
+          "ecl_lat_deg": 0.3522759816819415,
+          "used_source": "swiss"
         },
         "Saturn": {
-          "lon": 153,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
+          "ecl_lon_deg": 2.640488132297922,
+          "ecl_lat_deg": -2.125769930838134,
+          "used_source": "swiss"
         },
         "Uranus": {
-          "lon": 159,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
+          "ecl_lon_deg": 57.91916863803614,
+          "ecl_lat_deg": -0.17729579968792542,
+          "used_source": "swiss"
         },
         "Neptune": {
-          "lon": 265,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
+          "ecl_lon_deg": 1.3211526619785272,
+          "ecl_lat_deg": -1.3058918298752613,
+          "used_source": "swiss"
         },
         "Pluto": {
-          "lon": 319,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
-        },
-        "Chiron": {
-          "lon": 48,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
-        },
-        "Ceres": {
-          "lon": 248,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
-        },
-        "Pallas": {
-          "lon": 241,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
-        },
-        "Juno": {
-          "lon": 114,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
-        },
-        "Vesta": {
-          "lon": 201,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
-        },
-        "Eris": {
-          "lon": 340,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
-        },
-        "Sedna": {
-          "lon": 162,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
-        },
-        "Haumea": {
-          "lon": 110,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
-        },
-        "Makemake": {
-          "lon": 67,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
+          "ecl_lon_deg": 304.73038705475153,
+          "ecl_lat_deg": -3.8801429030894345,
+          "used_source": "swiss"
         }
       }
     },
     {
-      "timestamp": "2026-03-09T12:55:50.258894Z",
-      "positions": {
+      "timestamp": "2026-03-09T14:10:14Z",
+      "objects": {
         "Sun": {
-          "lon": 80,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
+          "ecl_lon_deg": 349.00950466450354,
+          "ecl_lat_deg": -0.00018021572175920268,
+          "used_source": "swiss"
         },
         "Moon": {
-          "lon": 315,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
+          "ecl_lon_deg": 239.28586425069489,
+          "ecl_lat_deg": -5.197892566312956,
+          "used_source": "swiss"
         },
         "Mercury": {
-          "lon": 313,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
+          "ecl_lon_deg": 344.72788865405346,
+          "ecl_lat_deg": 3.4363513740762115,
+          "used_source": "swiss"
         },
         "Venus": {
-          "lon": 234,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
+          "ecl_lon_deg": 3.907518861705064,
+          "ecl_lat_deg": -1.1902427209056625,
+          "used_source": "swiss"
         },
         "Mars": {
-          "lon": 34,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
+          "ecl_lon_deg": 335.51185899809064,
+          "ecl_lat_deg": -1.0922214783399677,
+          "used_source": "swiss"
         },
         "Jupiter": {
-          "lon": 31,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
+          "ecl_lon_deg": 105.0913301190282,
+          "ecl_lat_deg": 0.3532229208057779,
+          "used_source": "swiss"
         },
         "Saturn": {
-          "lon": 153,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
+          "ecl_lon_deg": 2.762805264588752,
+          "ecl_lat_deg": -2.1253241326700394,
+          "used_source": "swiss"
         },
         "Uranus": {
-          "lon": 159,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
+          "ecl_lon_deg": 57.94717630349528,
+          "ecl_lat_deg": -0.17700456741644022,
+          "used_source": "swiss"
         },
         "Neptune": {
-          "lon": 265,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
+          "ecl_lon_deg": 1.3582990021049954,
+          "ecl_lat_deg": -1.3058344929371344,
+          "used_source": "swiss"
         },
         "Pluto": {
-          "lon": 319,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
-        },
-        "Chiron": {
-          "lon": 48,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
-        },
-        "Ceres": {
-          "lon": 248,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
-        },
-        "Pallas": {
-          "lon": 241,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
-        },
-        "Juno": {
-          "lon": 114,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
-        },
-        "Vesta": {
-          "lon": 201,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
-        },
-        "Eris": {
-          "lon": 340,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
-        },
-        "Sedna": {
-          "lon": 162,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
-        },
-        "Haumea": {
-          "lon": 110,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
-        },
-        "Makemake": {
-          "lon": 67,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
+          "ecl_lon_deg": 304.7550998095614,
+          "ecl_lat_deg": -3.882741906346654,
+          "used_source": "swiss"
         }
       }
     },
     {
-      "timestamp": "2026-03-10T12:55:50.258894Z",
-      "positions": {
+      "timestamp": "2026-03-10T14:10:14Z",
+      "objects": {
         "Sun": {
-          "lon": 80,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
+          "ecl_lon_deg": 350.0088050657362,
+          "ecl_lat_deg": -0.00018306519481540022,
+          "used_source": "swiss"
         },
         "Moon": {
-          "lon": 315,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
+          "ecl_lon_deg": 251.1793931148122,
+          "ecl_lat_deg": -5.2673207204836805,
+          "used_source": "swiss"
         },
         "Mercury": {
-          "lon": 313,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
+          "ecl_lon_deg": 343.75235404412103,
+          "ecl_lat_deg": 3.2953717916849605,
+          "used_source": "swiss"
         },
         "Venus": {
-          "lon": 234,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
+          "ecl_lon_deg": 5.1503232504527565,
+          "ecl_lat_deg": -1.1658480089891154,
+          "used_source": "swiss"
         },
         "Mars": {
-          "lon": 34,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
+          "ecl_lon_deg": 336.2995636404778,
+          "ecl_lat_deg": -1.0913653931866292,
+          "used_source": "swiss"
         },
         "Jupiter": {
-          "lon": 31,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
+          "ecl_lon_deg": 105.08787816359589,
+          "ecl_lat_deg": 0.3541558169933367,
+          "used_source": "swiss"
         },
         "Saturn": {
-          "lon": 153,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
+          "ecl_lon_deg": 2.8854388771026023,
+          "ecl_lat_deg": -2.1249272367932526,
+          "used_source": "swiss"
         },
         "Uranus": {
-          "lon": 159,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
+          "ecl_lon_deg": 57.975958508174145,
+          "ecl_lat_deg": -0.1767143183695929,
+          "used_source": "swiss"
         },
         "Neptune": {
-          "lon": 265,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
+          "ecl_lon_deg": 1.3955687268714052,
+          "ecl_lat_deg": -1.3057887769862464,
+          "used_source": "swiss"
         },
         "Pluto": {
-          "lon": 319,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
-        },
-        "Chiron": {
-          "lon": 48,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
-        },
-        "Ceres": {
-          "lon": 248,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
-        },
-        "Pallas": {
-          "lon": 241,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
-        },
-        "Juno": {
-          "lon": 114,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
-        },
-        "Vesta": {
-          "lon": 201,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
-        },
-        "Eris": {
-          "lon": 340,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
-        },
-        "Sedna": {
-          "lon": 162,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
-        },
-        "Haumea": {
-          "lon": 110,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
-        },
-        "Makemake": {
-          "lon": 67,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
+          "ecl_lon_deg": 304.7795081615686,
+          "ecl_lat_deg": -3.8853647965363876,
+          "used_source": "swiss"
         }
       }
     },
     {
-      "timestamp": "2026-03-11T12:55:50.258894Z",
-      "positions": {
+      "timestamp": "2026-03-11T14:10:14Z",
+      "objects": {
         "Sun": {
-          "lon": 80,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
+          "ecl_lon_deg": 351.00765475686313,
+          "ecl_lat_deg": -0.00017806116897576242,
+          "used_source": "swiss"
         },
         "Moon": {
-          "lon": 315,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
+          "ecl_lon_deg": 263.0650123428645,
+          "ecl_lat_deg": -5.11185261504763,
+          "used_source": "swiss"
         },
         "Mercury": {
-          "lon": 313,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
+          "ecl_lon_deg": 342.82593010388547,
+          "ecl_lat_deg": 3.1284236036920254,
+          "used_source": "swiss"
         },
         "Venus": {
-          "lon": 234,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
+          "ecl_lon_deg": 6.3927151776493165,
+          "ecl_lat_deg": -1.1404972006684007,
+          "used_source": "swiss"
         },
         "Mars": {
-          "lon": 34,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
+          "ecl_lon_deg": 337.0871978931888,
+          "ecl_lat_deg": -1.0903847419908654,
+          "used_source": "swiss"
         },
         "Jupiter": {
-          "lon": 31,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
+          "ecl_lon_deg": 105.08769673483906,
+          "ecl_lat_deg": 0.35507509814715255,
+          "used_source": "swiss"
         },
         "Saturn": {
-          "lon": 153,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
+          "ecl_lon_deg": 3.008367514667052,
+          "ecl_lat_deg": -2.1245793443630334,
+          "used_source": "swiss"
         },
         "Uranus": {
-          "lon": 159,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
+          "ecl_lon_deg": 58.0055057609098,
+          "ecl_lat_deg": -0.1764250771735203,
+          "used_source": "swiss"
         },
         "Neptune": {
-          "lon": 265,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
+          "ecl_lon_deg": 1.4329505021494662,
+          "ecl_lat_deg": -1.305754731176655,
+          "used_source": "swiss"
         },
         "Pluto": {
-          "lon": 319,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
-        },
-        "Chiron": {
-          "lon": 48,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
-        },
-        "Ceres": {
-          "lon": 248,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
-        },
-        "Pallas": {
-          "lon": 241,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
-        },
-        "Juno": {
-          "lon": 114,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
-        },
-        "Vesta": {
-          "lon": 201,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
-        },
-        "Eris": {
-          "lon": 340,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
-        },
-        "Sedna": {
-          "lon": 162,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
-        },
-        "Haumea": {
-          "lon": 110,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
-        },
-        "Makemake": {
-          "lon": 67,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
+          "ecl_lon_deg": 304.80360320894664,
+          "ecl_lat_deg": -3.8880112865303236,
+          "used_source": "swiss"
         }
       }
     },
     {
-      "timestamp": "2026-03-12T12:55:50.258894Z",
-      "positions": {
+      "timestamp": "2026-03-12T14:10:14Z",
+      "objects": {
         "Sun": {
-          "lon": 80,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
+          "ecl_lon_deg": 352.0060474479135,
+          "ecl_lat_deg": -0.00016536663893506107,
+          "used_source": "swiss"
         },
         "Moon": {
-          "lon": 315,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
+          "ecl_lon_deg": 275.0210794059802,
+          "ecl_lat_deg": -4.735250277743607,
+          "used_source": "swiss"
         },
         "Mercury": {
-          "lon": 313,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
+          "ecl_lon_deg": 341.9652452038576,
+          "ecl_lat_deg": 2.939119586594478,
+          "used_source": "swiss"
         },
         "Venus": {
-          "lon": 234,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
+          "ecl_lon_deg": 7.634686783314573,
+          "ecl_lat_deg": -1.1142046896329336,
+          "used_source": "swiss"
         },
         "Mars": {
-          "lon": 34,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
+          "ecl_lon_deg": 337.8747442810316,
+          "ecl_lat_deg": -1.0892795766091183,
+          "used_source": "swiss"
         },
         "Jupiter": {
-          "lon": 31,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
+          "ecl_lon_deg": 105.09077919325274,
+          "ecl_lat_deg": 0.35598113539133797,
+          "used_source": "swiss"
         },
         "Saturn": {
-          "lon": 153,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
+          "ecl_lon_deg": 3.1315686286169826,
+          "ecl_lat_deg": -2.1242805862566803,
+          "used_source": "swiss"
         },
         "Uranus": {
-          "lon": 159,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
+          "ecl_lon_deg": 58.03580751089984,
+          "ecl_lat_deg": -0.1761368824060594,
+          "used_source": "swiss"
         },
         "Neptune": {
-          "lon": 265,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
+          "ecl_lon_deg": 1.470432045636848,
+          "ecl_lat_deg": -1.3057324191997508,
+          "used_source": "swiss"
         },
         "Pluto": {
-          "lon": 319,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
-        },
-        "Chiron": {
-          "lon": 48,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
-        },
-        "Ceres": {
-          "lon": 248,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
-        },
-        "Pallas": {
-          "lon": 241,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
-        },
-        "Juno": {
-          "lon": 114,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
-        },
-        "Vesta": {
-          "lon": 201,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
-        },
-        "Eris": {
-          "lon": 340,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
-        },
-        "Sedna": {
-          "lon": 162,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
-        },
-        "Haumea": {
-          "lon": 110,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
-        },
-        "Makemake": {
-          "lon": 67,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
+          "ecl_lon_deg": 304.82737520201835,
+          "ecl_lat_deg": -3.8906810866630694,
+          "used_source": "swiss"
         }
       }
     },
     {
-      "timestamp": "2026-03-13T12:55:50.258894Z",
-      "positions": {
+      "timestamp": "2026-03-13T14:10:14Z",
+      "objects": {
         "Sun": {
-          "lon": 80,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
+          "ecl_lon_deg": 353.0039743335258,
+          "ecl_lat_deg": -0.0001454574699540456,
+          "used_source": "swiss"
         },
         "Moon": {
-          "lon": 315,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
+          "ecl_lon_deg": 287.125729947381,
+          "ecl_lat_deg": -4.145214822414097,
+          "used_source": "swiss"
         },
         "Mercury": {
-          "lon": 313,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
+          "ecl_lon_deg": 341.18392603731166,
+          "ecl_lat_deg": 2.731226560570111,
+          "used_source": "swiss"
         },
         "Venus": {
-          "lon": 234,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
+          "ecl_lon_deg": 8.876228660381893,
+          "ecl_lat_deg": -1.0869856852293889,
+          "used_source": "swiss"
         },
         "Mars": {
-          "lon": 34,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
+          "ecl_lon_deg": 338.6621838506681,
+          "ecl_lat_deg": -1.0880500985281256,
+          "used_source": "swiss"
         },
         "Jupiter": {
-          "lon": 31,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
+          "ecl_lon_deg": 105.09711727244073,
+          "ecl_lat_deg": 0.35687423835336685,
+          "used_source": "swiss"
         },
         "Saturn": {
-          "lon": 153,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
+          "ecl_lon_deg": 3.2550189499497804,
+          "ecl_lat_deg": -2.124031126174877,
+          "used_source": "swiss"
         },
         "Uranus": {
-          "lon": 159,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
+          "ecl_lon_deg": 58.06685251891266,
+          "ecl_lat_deg": -0.1758497878435733,
+          "used_source": "swiss"
         },
         "Neptune": {
-          "lon": 265,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
+          "ecl_lon_deg": 1.508000512179043,
+          "ecl_lat_deg": -1.3057219248755765,
+          "used_source": "swiss"
         },
         "Pluto": {
-          "lon": 319,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
-        },
-        "Chiron": {
-          "lon": 48,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
-        },
-        "Ceres": {
-          "lon": 248,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
-        },
-        "Pallas": {
-          "lon": 241,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
-        },
-        "Juno": {
-          "lon": 114,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
-        },
-        "Vesta": {
-          "lon": 201,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
-        },
-        "Eris": {
-          "lon": 340,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
-        },
-        "Sedna": {
-          "lon": 162,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
-        },
-        "Haumea": {
-          "lon": 110,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
-        },
-        "Makemake": {
-          "lon": 67,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
+          "ecl_lon_deg": 304.8508139320175,
+          "ecl_lat_deg": -3.89337390522659,
+          "used_source": "swiss"
         }
       }
     },
     {
-      "timestamp": "2026-03-14T12:55:50.258894Z",
-      "positions": {
+      "timestamp": "2026-03-14T14:10:14Z",
+      "objects": {
         "Sun": {
-          "lon": 80,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
+          "ecl_lon_deg": 354.00142437097463,
+          "ecl_lat_deg": -0.00011914332786761155,
+          "used_source": "swiss"
         },
         "Moon": {
-          "lon": 315,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
+          "ecl_lon_deg": 299.4521524838573,
+          "ecl_lat_deg": -3.3551219720079524,
+          "used_source": "swiss"
         },
         "Mercury": {
-          "lon": 313,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
+          "ecl_lon_deg": 340.4925468402395,
+          "ecl_lat_deg": 2.5084958739137253,
+          "used_source": "swiss"
         },
         "Venus": {
-          "lon": 234,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
+          "ecl_lon_deg": 10.117330156431825,
+          "ecl_lat_deg": -1.0588562174784761,
+          "used_source": "swiss"
         },
         "Mars": {
-          "lon": 34,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
+          "ecl_lon_deg": 339.44949652376283,
+          "ecl_lat_deg": -1.086696666926946,
+          "used_source": "swiss"
         },
         "Jupiter": {
-          "lon": 31,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
+          "ecl_lon_deg": 105.10670144903042,
+          "ecl_lat_deg": 0.3577546516273449,
+          "used_source": "swiss"
         },
         "Saturn": {
-          "lon": 153,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
+          "ecl_lon_deg": 3.3786948578114235,
+          "ecl_lat_deg": -2.12383116426796,
+          "used_source": "swiss"
         },
         "Uranus": {
-          "lon": 159,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
+          "ecl_lon_deg": 58.098629226485095,
+          "ecl_lat_deg": -0.1755638635059088,
+          "used_source": "swiss"
         },
         "Neptune": {
-          "lon": 265,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
+          "ecl_lon_deg": 1.545642883278715,
+          "ecl_lat_deg": -1.3057233620835094,
+          "used_source": "swiss"
         },
         "Pluto": {
-          "lon": 319,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
-        },
-        "Chiron": {
-          "lon": 48,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
-        },
-        "Ceres": {
-          "lon": 248,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
-        },
-        "Pallas": {
-          "lon": 241,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
-        },
-        "Juno": {
-          "lon": 114,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
-        },
-        "Vesta": {
-          "lon": 201,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
-        },
-        "Eris": {
-          "lon": 340,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
-        },
-        "Sedna": {
-          "lon": 162,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
-        },
-        "Haumea": {
-          "lon": 110,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
-        },
-        "Makemake": {
-          "lon": 67,
-          "lat": 0,
-          "retrograde": false,
-          "speed": 1
+          "ecl_lon_deg": 304.8739091344014,
+          "ecl_lat_deg": -3.8960894484977966,
+          "used_source": "swiss"
         }
       }
-    }
-  ],
-  "aspect_events": [
-    {
-      "bodies": [
-        "Sun",
-        "Moon"
-      ],
-      "aspect": "trine",
-      "start": "2026-03-08T12:55:50.258894Z",
-      "exact": "2026-03-08T12:55:50.258894Z",
-      "end": "2026-03-14T12:55:50.258894Z"
-    },
-    {
-      "bodies": [
-        "Sun",
-        "Neptune"
-      ],
-      "aspect": "opposition",
-      "start": "2026-03-08T12:55:50.258894Z",
-      "exact": "2026-03-08T12:55:50.258894Z",
-      "end": "2026-03-14T12:55:50.258894Z"
-    },
-    {
-      "bodies": [
-        "Sun",
-        "Pluto"
-      ],
-      "aspect": "trine",
-      "start": "2026-03-08T12:55:50.258894Z",
-      "exact": "2026-03-08T12:55:50.258894Z",
-      "end": "2026-03-14T12:55:50.258894Z"
-    },
-    {
-      "bodies": [
-        "Moon",
-        "Mercury"
-      ],
-      "aspect": "conjunction",
-      "start": "2026-03-08T12:55:50.258894Z",
-      "exact": "2026-03-08T12:55:50.258894Z",
-      "end": "2026-03-14T12:55:50.258894Z"
-    },
-    {
-      "bodies": [
-        "Moon",
-        "Pluto"
-      ],
-      "aspect": "conjunction",
-      "start": "2026-03-08T12:55:50.258894Z",
-      "exact": "2026-03-08T12:55:50.258894Z",
-      "end": "2026-03-14T12:55:50.258894Z"
-    },
-    {
-      "bodies": [
-        "Mercury",
-        "Pluto"
-      ],
-      "aspect": "conjunction",
-      "start": "2026-03-08T12:55:50.258894Z",
-      "exact": "2026-03-08T12:55:50.258894Z",
-      "end": "2026-03-14T12:55:50.258894Z"
-    },
-    {
-      "bodies": [
-        "Venus",
-        "Pluto"
-      ],
-      "aspect": "square",
-      "start": "2026-03-08T12:55:50.258894Z",
-      "exact": "2026-03-08T12:55:50.258894Z",
-      "end": "2026-03-14T12:55:50.258894Z"
-    },
-    {
-      "bodies": [
-        "Mars",
-        "Jupiter"
-      ],
-      "aspect": "conjunction",
-      "start": "2026-03-08T12:55:50.258894Z",
-      "exact": "2026-03-08T12:55:50.258894Z",
-      "end": "2026-03-14T12:55:50.258894Z"
-    },
-    {
-      "bodies": [
-        "Mars",
-        "Saturn"
-      ],
-      "aspect": "trine",
-      "start": "2026-03-08T12:55:50.258894Z",
-      "exact": "2026-03-08T12:55:50.258894Z",
-      "end": "2026-03-14T12:55:50.258894Z"
-    },
-    {
-      "bodies": [
-        "Mars",
-        "Uranus"
-      ],
-      "aspect": "trine",
-      "start": "2026-03-08T12:55:50.258894Z",
-      "exact": "2026-03-08T12:55:50.258894Z",
-      "end": "2026-03-14T12:55:50.258894Z"
-    },
-    {
-      "bodies": [
-        "Jupiter",
-        "Saturn"
-      ],
-      "aspect": "trine",
-      "start": "2026-03-08T12:55:50.258894Z",
-      "exact": "2026-03-08T12:55:50.258894Z",
-      "end": "2026-03-14T12:55:50.258894Z"
-    },
-    {
-      "bodies": [
-        "Jupiter",
-        "Neptune"
-      ],
-      "aspect": "trine",
-      "start": "2026-03-08T12:55:50.258894Z",
-      "exact": "2026-03-08T12:55:50.258894Z",
-      "end": "2026-03-14T12:55:50.258894Z"
-    },
-    {
-      "bodies": [
-        "Saturn",
-        "Uranus"
-      ],
-      "aspect": "conjunction",
-      "start": "2026-03-08T12:55:50.258894Z",
-      "exact": "2026-03-08T12:55:50.258894Z",
-      "end": "2026-03-14T12:55:50.258894Z"
     }
   ]
 }
