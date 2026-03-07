@@ -3,9 +3,9 @@ import sys
 import json
 from datetime import datetime, timedelta, timezone
 
-# -------------------------------------------------------
-# FIX: allow GitHub runner to locate project modules
-# -------------------------------------------------------
+# ---------------------------------------------------
+# allow imports when running inside GitHub runner
+# ---------------------------------------------------
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
 
@@ -31,8 +31,14 @@ MAJOR_BODIES = [
 ]
 
 
+# ---------------------------------------------------
+# BODY RESOLUTION ORDER
+# JPL → Swiss → Miriade
+# ---------------------------------------------------
+
 def resolve_body(body, timestamp):
 
+    # JPL Horizons (PRIMARY SOURCE)
     try:
         result = fetch_horizons_position(body, timestamp)
         if result:
@@ -41,6 +47,7 @@ def resolve_body(body, timestamp):
     except Exception:
         pass
 
+    # Swiss Ephemeris (fallback)
     try:
         result = fetch_swiss_position(body, timestamp)
         if result:
@@ -49,6 +56,7 @@ def resolve_body(body, timestamp):
     except Exception:
         pass
 
+    # Miriade (final fallback)
     try:
         result = fetch_miriade_position(body, timestamp)
         if result:
@@ -63,6 +71,10 @@ def resolve_body(body, timestamp):
         "used_source": "missing"
     }
 
+
+# ---------------------------------------------------
+# COMPUTE ONE DAY OF TRANSITS
+# ---------------------------------------------------
 
 def compute_day(timestamp):
 
@@ -84,6 +96,10 @@ def compute_day(timestamp):
     }
 
 
+# ---------------------------------------------------
+# FIND NEXT SUNDAY (UTC)
+# ---------------------------------------------------
+
 def next_sunday():
 
     now = datetime.now(timezone.utc)
@@ -95,6 +111,10 @@ def next_sunday():
 
     return now + timedelta(days=days)
 
+
+# ---------------------------------------------------
+# GENERATE WEEKLY TRANSIT DATA
+# ---------------------------------------------------
 
 def generate_week():
 
@@ -112,6 +132,10 @@ def generate_week():
 
     return week
 
+
+# ---------------------------------------------------
+# MAIN
+# ---------------------------------------------------
 
 def main():
 
