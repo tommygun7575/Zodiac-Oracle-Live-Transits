@@ -1,28 +1,27 @@
 import requests
-import math
 
+MIRIADE_URL = "https://ssp.imcce.fr/webservices/miriade/api/ephemcc.php"
 
-def fetch(body, jd):
+def fetch_miriade(body, jd):
+
+    params = {
+        "name": body,
+        "type": "object",
+        "epoch": jd,
+        "center": "500@399",
+        "output": "json"
+    }
 
     try:
 
-        url = "https://ssp.imcce.fr/webservices/miriade/api/ephemcc.php"
-
-        params = {
-            "name": body,
-            "type": "planet",
-            "ep": jd
-        }
-
-        r = requests.get(url, params=params, timeout=10)
+        r = requests.get(MIRIADE_URL, params=params, timeout=20)
 
         data = r.json()
 
-        lon = float(data["longitude"])
-        lat = float(data["latitude"])
+        lon = float(data["data"][0]["EclLon"])
+        lat = float(data["data"][0]["EclLat"])
 
         return lon, lat, "miriade"
 
-    except Exception:
-
+    except:
         return None
