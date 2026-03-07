@@ -1,6 +1,13 @@
 import os
+import sys
 import json
 from datetime import datetime, timedelta, timezone
+
+# -------------------------------------------------------
+# FIX: allow GitHub runner to locate project modules
+# -------------------------------------------------------
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, ROOT)
 
 from scripts.bodies.horizons_engine import fetch_horizons_position
 from scripts.bodies.swiss_engine import fetch_swiss_position
@@ -25,12 +32,6 @@ MAJOR_BODIES = [
 
 
 def resolve_body(body, timestamp):
-    """
-    Resolution order:
-    1. JPL Horizons
-    2. Swiss Ephemeris
-    3. IMCCE Miriade
-    """
 
     try:
         result = fetch_horizons_position(body, timestamp)
@@ -87,12 +88,12 @@ def next_sunday():
 
     now = datetime.now(timezone.utc)
 
-    days_ahead = (6 - now.weekday()) % 7
+    days = (6 - now.weekday()) % 7
 
-    if days_ahead == 0:
-        days_ahead = 7
+    if days == 0:
+        days = 7
 
-    return now + timedelta(days=days_ahead)
+    return now + timedelta(days=days)
 
 
 def generate_week():
