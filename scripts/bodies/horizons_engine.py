@@ -16,7 +16,7 @@ NAIF_IDS = {
     "Pluto": "999"
 }
 
-def _parse_lonlat(text):
+def _parse(text):
 
     lines = text.splitlines()
 
@@ -57,14 +57,14 @@ def fetch(body, jd):
 
         r = requests.get(HORIZONS_URL, params=params, timeout=20)
 
-        parsed = _parse_lonlat(r.text)
+        parsed = _parse(r.text)
 
         if not parsed:
             return None
 
         lon, lat = parsed
 
-        time.sleep(0.5)
+        time.sleep(0.4)
 
         return lon, lat, "jpl"
 
@@ -87,14 +87,14 @@ def fetch_numbered(number, jd):
 
         r = requests.get(HORIZONS_URL, params=params, timeout=20)
 
-        parsed = _parse_lonlat(r.text)
+        parsed = _parse(r.text)
 
         if not parsed:
             return None
 
         lon, lat = parsed
 
-        time.sleep(0.5)
+        time.sleep(0.4)
 
         return lon, lat, "jpl"
 
