@@ -1,8 +1,8 @@
 import swisseph as swe
+from datetime import datetime, timedelta
 
-swe.set_ephe_path(".")
 
-PLANETS = {
+BODY_CODES = {
     "Sun": swe.SUN,
     "Moon": swe.MOON,
     "Mercury": swe.MERCURY,
@@ -12,33 +12,27 @@ PLANETS = {
     "Saturn": swe.SATURN,
     "Uranus": swe.URANUS,
     "Neptune": swe.NEPTUNE,
-    "Pluto": swe.PLUTO
+    "Pluto": swe.PLUTO,
 }
 
-def get_planet(body, jd):
 
-    if body not in PLANETS:
-        return None
+def fetch_swiss(body, start, stop):
 
-    try:
+    if body not in BODY_CODES:
+        raise RuntimeError(f"Swiss ephemeris unsupported body {body}")
 
-        lon, lat, _ = swe.calc_ut(jd, PLANETS[body])
+    start_dt = datetime.strptime(start, "%Y-%m-%d")
 
-        return lon, lat
+    results = []
 
-    except:
+    for i in range(7):
 
-        return None
+        day = start_dt + timedelta(days=i)
 
+        jd = swe.julday(day.year, day.month, day.day)
 
-def get_asteroid(number, jd):
+        lon, lat, dist = swe.calc_ut(jd, BODY_CODES[body])[0]
 
-    try:
+        results.append((lon, lat))
 
-        lon, lat, _ = swe.calc_ut(jd, number + swe.AST_OFFSET)
-
-        return lon, lat
-
-    except:
-
-        return None
+    return results
