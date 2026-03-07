@@ -10,27 +10,32 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: write
+
     steps:
 
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+          cache: "pip"
 
       - name: Install dependencies
         run: |
           pip install numpy requests
 
       - name: Run generator
-        run: python scripts/generate_transits.py
+        run: |
+          python scripts/generate_transits.py
 
-      - name: Commit output
+      - name: Commit updated transit feeds
         run: |
           git config --global user.name "oracle-bot"
           git config --global user.email "oracle@bot"
           git add docs/
-          git commit -m "update transit feeds" || echo "no changes"
+          git diff --cached --quiet || git commit -m "update transit feeds"
           git push
