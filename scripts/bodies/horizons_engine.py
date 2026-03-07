@@ -4,7 +4,7 @@ import time
 
 HORIZONS_URL = "https://ssd.jpl.nasa.gov/api/horizons.api"
 
-MAX_RETRIES = 3
+MAX_RETRIES = 4
 RETRY_DELAY = 2
 
 session = requests.Session()
@@ -12,9 +12,11 @@ session = requests.Session()
 
 def fetch_batch(body_id: str, start: str, stop: str):
     """
-    Fetch ephemeris data from JPL Horizons.
-    Returns numpy array of (longitude, latitude).
-    Automatically retries transient Horizons failures.
+    Fetch weekly ephemeris from JPL Horizons.
+
+    Returns:
+        numpy array of shape (N,2) containing
+        [longitude, latitude] for each timestep
     """
 
     params = {
@@ -32,6 +34,7 @@ def fetch_batch(body_id: str, start: str, stop: str):
     for attempt in range(MAX_RETRIES):
 
         try:
+
             response = session.get(
                 HORIZONS_URL,
                 params=params,
@@ -43,12 +46,12 @@ def fetch_batch(body_id: str, start: str, stop: str):
                 data = response.json()
 
                 if "result" not in data:
-                    raise RuntimeError("Horizons response missing 'result'")
+                    raise RuntimeError("Horizons returned malformed payload")
 
                 return parse_ephemeris(data["result"])
 
-            # transient server errors
             if response.status_code in (500, 502, 503, 504):
+
                 time.sleep(RETRY_DELAY)
                 continue
 
@@ -57,16 +60,13 @@ def fetch_batch(body_id: str, start: str, stop: str):
             )
 
         except requests.exceptions.RequestException:
+
             time.sleep(RETRY_DELAY)
 
     raise RuntimeError("Horizons unavailable after retries")
 
 
 def parse_ephemeris(text: str):
-    """
-    Parse Horizons CSV block between $$SOE and $$EOE.
-    Returns numpy array of (lon, lat).
-    """
 
     rows = []
     reading = False
@@ -89,14 +89,16 @@ def parse_ephemeris(text: str):
             continue
 
         try:
+
             lon = float(parts[3])
             lat = float(parts[4])
+
+            rows.append((lon, lat))
+
         except ValueError:
             continue
 
-        rows.append((lon, lat))
-
     if not rows:
-        raise RuntimeError("No ephemeris rows parsed from Horizons")
+        raise RuntimeError("Horizons ephemeris parse produced no rows")
 
     return np.array(rows, dtype=float)
