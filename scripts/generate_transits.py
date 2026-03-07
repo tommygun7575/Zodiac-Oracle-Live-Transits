@@ -1,6 +1,12 @@
+import os
+import sys
 import json
 import numpy as np
 from datetime import datetime, timedelta
+
+# ensure repo root is importable
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(ROOT)
 
 from scripts.bodies.horizons_engine import fetch_batch
 from scripts.bodies.harmonics_engine import compute_harmonics
@@ -40,11 +46,12 @@ def generate_week():
 
     body_vectors = {}
 
-    for body_name, body_id in BODY_REGISTRY.items():
+    # batch ephemeris queries
+    for name, body_id in BODY_REGISTRY.items():
 
         vec = fetch_batch(body_id, start, end)
 
-        body_vectors[body_name] = vec
+        body_vectors[name] = vec
 
     days = []
 
@@ -98,6 +105,8 @@ def generate_week():
 def main():
 
     data = generate_week()
+
+    os.makedirs("docs", exist_ok=True)
 
     with open("docs/weekly_overlay.json", "w") as f:
         json.dump(data, f, indent=2)
