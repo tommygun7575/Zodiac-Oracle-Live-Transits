@@ -11,17 +11,15 @@ from scripts.bodies.horizons_engine import fetch_horizons_position
 from scripts.bodies.swiss_engine import fetch_swiss_position
 from scripts.bodies.miriade_engine import fetch_miriade_position
 
-REGISTRY = "data/body_registry.json"
-OUTPUT = "docs/current_week.json"
+REGISTRY_PATH = "data/body_registry.json"
+OUTPUT_FILE = "docs/current_week.json"
 
 
 def load_registry():
-
-    with open(REGISTRY) as f:
+    with open(REGISTRY_PATH) as f:
         data = json.load(f)
 
     bodies = []
-
     for group in data.values():
         bodies.extend(group)
 
@@ -31,23 +29,23 @@ def load_registry():
 def resolve_body(body, timestamp):
 
     try:
-        r = fetch_horizons_position(body, timestamp)
-        r["used_source"] = "jpl"
-        return r
+        pos = fetch_horizons_position(body, timestamp)
+        pos["used_source"] = "jpl"
+        return pos
     except:
         pass
 
     try:
-        r = fetch_swiss_position(body, timestamp)
-        r["used_source"] = "swiss"
-        return r
+        pos = fetch_swiss_position(body, timestamp)
+        pos["used_source"] = "swiss"
+        return pos
     except:
         pass
 
     try:
-        r = fetch_miriade_position(body, timestamp)
-        r["used_source"] = "miriade"
-        return r
+        pos = fetch_miriade_position(body, timestamp)
+        pos["used_source"] = "miriade"
+        return pos
     except:
         pass
 
@@ -68,10 +66,7 @@ def compute_arabic_parts(objects):
         moon = objects["Moon"]["ecl_lon_deg"]
 
         if sun is not None and moon is not None:
-
-            fortune = (moon - sun) % 360
-
-            parts["Part_of_Fortune"] = fortune
+            parts["Part_of_Fortune"] = (moon - sun) % 360
 
     return parts
 
@@ -99,19 +94,17 @@ def compute_day(bodies, timestamp):
 
     for body in bodies:
 
-        pos = resolve_body(body, timestamp)
-
-        objects[body] = pos
+        objects[body] = resolve_body(body, timestamp)
 
         time.sleep(0.1)
 
-    parts = compute_arabic_parts(objects)
+    arabic_parts = compute_arabic_parts(objects)
     harmonics = compute_harmonics(objects)
 
     return {
         "timestamp": timestamp,
         "objects": objects,
-        "arabic_parts": parts,
+        "arabic_parts": arabic_parts,
         "harmonics": harmonics
     }
 
@@ -140,7 +133,7 @@ def generate_week():
 
         t = start + timedelta(days=i)
 
-        iso = t.replace(microsecond=0).isoformat().replace("+00:00","Z")
+        iso = t.replace(microsecond=0).isoformat().replace("+00:00", "Z")
 
         week.append(compute_day(bodies, iso))
 
@@ -149,18 +142,18 @@ def generate_week():
 
 def main():
 
-    week = generate_week()
+    week_data = generate_week()
 
     output = {
         "version": "oracle-weekly-transits",
-        "generated_at": datetime.now(timezone.utc).isoformat().replace("+00:00","Z"),
-        "week_start": week[0]["timestamp"],
-        "days": week
+        "generated_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+        "week_start": week_data[0]["timestamp"],
+        "days": week_data
     }
 
     os.makedirs("docs", exist_ok=True)
 
-    with open(OUTPUT,"w") as f:
+    with open(OUTPUT_FILE, "w") as f:
         json.dump(output, f, indent=2)
 
     print("Weekly transit file generated")
