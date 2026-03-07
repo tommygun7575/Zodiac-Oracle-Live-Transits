@@ -1,10 +1,9 @@
-from datetime import datetime, timedelta
+import math
 import numpy as np
 from astroquery.jplhorizons import Horizons
-import math
-import time
 
-BODY_IDS = {
+
+HORIZONS_IDS = {
     "Sun": "10",
     "Moon": "301",
     "Mercury": "199",
@@ -28,78 +27,62 @@ BODY_IDS = {
     "Ixion": "28978"
 }
 
-OBLIQUITY = math.radians(23.439291)
 
+def fetch_batch(body, start, stop):
 
-def radec_to_ecliptic(ra_deg, dec_deg):
-    ra = math.radians(ra_deg)
-    dec = math.radians(dec_deg)
+    try:
 
-    lon = math.atan2(
-        math.sin(ra) * math.cos(OBLIQUITY) + math.tan(dec) * math.sin(OBLIQUITY),
-        math.cos(ra)
-    )
+        body_id = HORIZONS_IDS.get(body)
 
-    lat = math.asin(
-        math.sin(dec) * math.cos(OBLIQUITY) -
-        math.cos(dec) * math.sin(OBLIQUITY) * math.sin(ra)
-    )
+        if body_id is None:
+            raise RuntimeError(f"No Horizons ID for {body}")
 
-    return math.degrees(lon) % 360, math.degrees(lat)
+        obj = Horizons(
+            id=body_id,
+            location="500@399",
+            epochs={
+                "start": start,
+                "stop": stop,
+                "step": "1d"
+            }
+        )
 
+        eph = obj.ephemerides()
 
-def fetch_single(body, jd):
+        if eph is None or len(eph) == 0:
+            raise RuntimeError(f"Horizons returned empty ephemeris for {body}")
 
-    for attempt in range(5):
+        vectors = []
 
-        try:
+        for row in eph:
 
-            obj = Horizons(
-                id=BODY_IDS[body],
-                location="500@399",
-                epochs=jd
-            )
+            lon = row["EclLon"]
+            lat = row["EclLat"]
 
-            eph = obj.ephemerides()
+            if lon is None or lat is None:
+                continue
 
-            if len(eph) == 0:
-                raise RuntimeError("empty ephemeris")
+            if isinstance(lon, np.ma.core.MaskedConstant):
+                continue
 
-            if "EclLon" in eph.colnames and "EclLat" in eph.colnames:
-                return float(eph["EclLon"][0]) % 360, float(eph["EclLat"][0])
+            if isinstance(lat, np.ma.core.MaskedConstant):
+                continue
 
-            if "RA" in eph.colnames and "DEC" in eph.colnames:
-                return radec_to_ecliptic(
-                    float(eph["RA"][0]),
-                    float(eph["DEC"][0])
-                )
+            lon = float(lon)
+            lat = float(lat)
 
-            raise RuntimeError("no coordinate columns")
+            if math.isnan(lon) or math.isnan(lat):
+                continue
 
-        except Exception:
-            time.sleep(2)
+            lon = lon % 360
 
-    return None
+            vectors.append((lon, lat))
 
+        if len(vectors) == 0:
+            raise RuntimeError(f"Horizons returned no usable coordinates for {body}")
 
-def fetch_batch(body, start, end):
+        return vectors
 
-    start_dt = datetime.fromisoformat(start)
-    end_dt = datetime.fromisoformat(end)
+    except Exception as e:
 
-    days = (end_dt - start_dt).days + 1
-    results = []
-
-    for i in range(days):
-
-        t = start_dt + timedelta(days=i)
-        jd = t.timestamp() / 86400.0 + 2440587.5
-
-        coords = fetch_single(body, jd)
-
-        if coords is None:
-            raise RuntimeError(f"Horizons returned no coordinates for {body}")
-
-        results.append(coords)
-
-    return np.array(results)
+        raise RuntimeError(str(e))
