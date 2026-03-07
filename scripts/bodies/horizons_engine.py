@@ -1,105 +1,99 @@
-import requests
+from datetime import datetime, timedelta
+from typing import Optional, Tuple
+
 import numpy as np
-import time
-
-HORIZONS_URL = "https://ssd.jpl.nasa.gov/api/horizons.api"
-
-MAX_RETRIES = 6
-RETRY_DELAY = 3
-
-session = requests.Session()
+from astroquery.jplhorizons import Horizons
+import swisseph as swe
 
 
-def fetch_batch(body_id: str, start: str, stop: str):
-
-    params = {
-        "format": "json",
-        "COMMAND": body_id,
-        "EPHEM_TYPE": "OBSERVER",
-        "CENTER": "500@399",
-        "REF_SYSTEM": "ICRF",
-        "START_TIME": start,
-        "STOP_TIME": stop,
-        "STEP_SIZE": "1 d",
-        "QUANTITIES": "18,20",
-        "CSV_FORMAT": "YES"
-    }
-
-    last_error = None
-
-    for attempt in range(MAX_RETRIES):
-
-        try:
-
-            r = session.get(HORIZONS_URL, params=params, timeout=60)
-
-            if r.status_code != 200:
-                raise RuntimeError(f"Horizons HTTP {r.status_code}")
-
-            data = r.json()
-
-            if "result" not in data:
-                raise RuntimeError("Horizons malformed payload")
-
-            text = data["result"]
-
-            if "$$SOE" not in text:
-                raise RuntimeError("Horizons returned no ephemeris block")
-
-            rows = parse_ephemeris(text)
-
-            if len(rows) == 0:
-                raise RuntimeError("Empty ephemeris")
-
-            return np.array(rows, dtype=float)
-
-        except Exception as e:
-
-            last_error = e
-
-            if attempt < MAX_RETRIES - 1:
-                time.sleep(RETRY_DELAY)
-            else:
-                raise RuntimeError(f"Horizons fetch failed: {e}")
-
-    raise RuntimeError(last_error)
+BODY_IDS = {
+    "Sun": "10",
+    "Moon": "301",
+    "Mercury": "199",
+    "Venus": "299",
+    "Mars": "499",
+    "Jupiter": "599",
+    "Saturn": "699",
+    "Uranus": "799",
+    "Neptune": "899",
+    "Pluto": "999",
+    "Ceres": "1;",
+    "Pallas": "2;",
+    "Juno": "3;",
+    "Vesta": "4;",
+    "Eris": "136199",
+    "Haumea": "136108",
+    "Makemake": "136472",
+    "Sedna": "90377",
+    "Orcus": "90482",
+    "Quaoar": "50000",
+    "Ixion": "28978"
+}
 
 
-def parse_ephemeris(text: str):
+def _get_lonlat(target: str, when_iso: str) -> Optional[Tuple[float, float]]:
 
-    rows = []
-    reading = False
+    try:
 
-    for raw in text.splitlines():
+        body_id = BODY_IDS.get(target, target)
 
-        line = raw.strip()
+        dt = datetime.fromisoformat(when_iso)
 
-        if line.startswith("$$SOE"):
-            reading = True
-            continue
+        jd = swe.julday(
+            dt.year,
+            dt.month,
+            dt.day,
+            dt.hour + dt.minute/60 + dt.second/3600
+        )
 
-        if line.startswith("$$EOE"):
-            break
+        obj = Horizons(
+            id=body_id,
+            location="500@399",
+            epochs=[jd]
+        )
 
-        if not reading:
-            continue
+        eph = obj.ephemerides()
 
-        parts = [p.strip() for p in line.split(",")]
+        lon = None
+        lat = None
 
-        if len(parts) < 4:
-            continue
+        for key in ("EclLon", "EclipticLon", "ELON"):
+            if key in eph.colnames:
+                lon = float(eph[key][0])
+                break
 
-        try:
+        for key in ("EclLat", "EclipticLat", "ELAT"):
+            if key in eph.colnames:
+                lat = float(eph[key][0])
+                break
 
-            lon = float(parts[3]) % 360.0
-            lat = float(parts[4])
+        if lon is None or lat is None:
+            return None
 
-            rows.append([lon, lat])
+        return (lon % 360, lat)
 
-        except Exception:
-            continue
+    except Exception:
+        return None
 
-    if len(rows) == 0:
-        raise RuntimeError("Horizons ephemeris parse produced no rows")
 
-    return rows
+def fetch_batch(body_name: str, start: str, end: str):
+
+    start_dt = datetime.fromisoformat(start)
+    end_dt = datetime.fromisoformat(end)
+
+    days = (end_dt - start_dt).days + 1
+
+    results = []
+
+    for i in range(days):
+
+        t = start_dt + timedelta(days=i)
+
+        lonlat = _get_lonlat(body_name, t.isoformat())
+
+        if lonlat is None:
+            raise RuntimeError(f"Horizons returned no coordinates for {body_name}")
+
+        results.append(lonlat)
+
+    return np.array(results)
