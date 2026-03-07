@@ -1,18 +1,9 @@
-import os
-import sys
 import json
+import os
 import numpy as np
 from datetime import datetime, timedelta
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-# ------------------------------------------------
-# FIX PYTHON IMPORT PATH FOR GITHUB ACTIONS
-# ------------------------------------------------
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-if ROOT not in sys.path:
-    sys.path.insert(0, ROOT)
-
-# now internal modules resolve correctly
 from scripts.bodies.horizons_engine import fetch_batch
 from scripts.bodies.harmonics_engine import compute_harmonics
 from scripts.fixed_stars import detect_star_hits
@@ -57,8 +48,8 @@ def generate_week():
     with ThreadPoolExecutor(max_workers=4) as executor:
 
         futures = [
-            executor.submit(fetch_body, body, start, stop)
-            for body in BODY_REGISTRY
+            executor.submit(fetch_body, b, start, stop)
+            for b in BODY_REGISTRY
         ]
 
         for f in as_completed(futures):
@@ -106,6 +97,7 @@ def generate_week():
 
         part_of_fortune = float((moon - sun) % 360)
 
+
         days.append({
 
             "timestamp": (now + timedelta(days=i)).isoformat(),
@@ -143,12 +135,12 @@ def main():
 
     os.makedirs("docs", exist_ok=True)
 
-    output = os.path.join("docs", "weekly_overlay.json")
+    output_file = os.path.join("docs", "weekly_overlay.json")
 
-    with open(output, "w") as f:
+    with open(output_file, "w") as f:
         json.dump(data, f, indent=2)
 
-    print("Weekly overlay written:", output)
+    print("Weekly overlay written:", output_file)
 
 
 if __name__ == "__main__":
