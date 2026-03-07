@@ -37,7 +37,6 @@ BODY_REGISTRY = {
     "Ixion": "28978"
 }
 
-
 CACHE_DIR = "cache"
 
 SLOW_OBJECTS = {
@@ -57,6 +56,7 @@ def load_cache(name):
         return None
 
     try:
+
         with open(path) as f:
             data = json.load(f)
 
@@ -75,9 +75,7 @@ def save_cache(name, data):
 
     os.makedirs(CACHE_DIR, exist_ok=True)
 
-    path = os.path.join(CACHE_DIR, f"{name}.json")
-
-    with open(path, "w") as f:
+    with open(os.path.join(CACHE_DIR, f"{name}.json"), "w") as f:
         json.dump(data.tolist(), f)
 
 
@@ -129,9 +127,9 @@ def generate_week():
                 executor.submit(fetch_body_safe, name, body_id, start, end)
             )
 
-        for future in as_completed(futures):
+        for f in as_completed(futures):
 
-            name, vec = future.result()
+            name, vec = f.result()
 
             if vec is not None:
                 body_vectors[name] = vec
@@ -144,7 +142,6 @@ def generate_week():
     for i in range(7):
 
         objects = {}
-
         longitudes = []
 
         for body, vec in body_vectors.items():
@@ -163,42 +160,31 @@ def generate_week():
             longitudes.append(float(lon))
 
         harmonics = compute_harmonics(longitudes)
-
         stars = detect_star_hits(longitudes)
 
         sun = objects["Sun"]["ecl_lon_deg"]
-
         moon = objects["Moon"]["ecl_lon_deg"]
 
         part_of_fortune = (moon - sun) % 360
 
         days.append({
-
             "timestamp": (now + timedelta(days=i)).isoformat(),
-
             "objects": objects,
-
             "arabic_parts": {
                 "Part_of_Fortune": part_of_fortune
             },
-
             "harmonics": {
                 "h5": harmonics["h5"].tolist(),
                 "h7": harmonics["h7"].tolist(),
                 "h9": harmonics["h9"].tolist()
             },
-
             "fixed_star_hits": stars
         })
 
     return {
-
         "version": "oracle-weekly-transits",
-
         "generated_at": datetime.utcnow().isoformat(),
-
         "week_start": now.isoformat(),
-
         "days": days
     }
 
@@ -211,12 +197,10 @@ def main():
 
     os.makedirs("docs", exist_ok=True)
 
-    output_path = os.path.join("docs", "weekly_overlay.json")
-
-    with open(output_path, "w") as f:
+    with open("docs/weekly_overlay.json", "w") as f:
         json.dump(data, f, indent=2)
 
-    print("Weekly overlay written:", output_path)
+    print("Weekly overlay written")
 
 
 if __name__ == "__main__":
