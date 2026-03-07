@@ -1,9 +1,18 @@
 import os
+import sys
 import json
 import numpy as np
 from datetime import datetime, timedelta
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
+# ------------------------------------------------
+# FIX PYTHON IMPORT PATH FOR GITHUB ACTIONS
+# ------------------------------------------------
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if ROOT not in sys.path:
+    sys.path.insert(0, ROOT)
+
+# now internal modules resolve correctly
 from scripts.bodies.horizons_engine import fetch_batch
 from scripts.bodies.harmonics_engine import compute_harmonics
 from scripts.fixed_stars import detect_star_hits
@@ -18,11 +27,11 @@ BODY_REGISTRY = [
 ]
 
 
-def fetch_body(body, start, end):
+def fetch_body(body, start, stop):
 
     try:
 
-        vec = fetch_batch(body, start, end)
+        vec = fetch_batch(body, start, stop)
 
         if vec is None or len(vec) < 7:
             raise RuntimeError("vector incomplete")
@@ -41,16 +50,15 @@ def generate_week():
     now = datetime.utcnow()
 
     start = now.strftime("%Y-%m-%d")
-
-    end = (now + timedelta(days=6)).strftime("%Y-%m-%d")
+    stop = (now + timedelta(days=6)).strftime("%Y-%m-%d")
 
     body_vectors = {}
 
     with ThreadPoolExecutor(max_workers=4) as executor:
 
         futures = [
-            executor.submit(fetch_body, b, start, end)
-            for b in BODY_REGISTRY
+            executor.submit(fetch_body, body, start, stop)
+            for body in BODY_REGISTRY
         ]
 
         for f in as_completed(futures):
@@ -70,7 +78,6 @@ def generate_week():
     for i in range(7):
 
         objects = {}
-
         longitudes = []
 
         for body, vec in body_vectors.items():
@@ -92,14 +99,12 @@ def generate_week():
         longitudes_np = np.array(longitudes)
 
         harmonics = compute_harmonics(longitudes_np)
-
         stars = detect_star_hits(longitudes_np)
 
         sun = objects["Sun"]["ecl_lon_deg"]
         moon = objects["Moon"]["ecl_lon_deg"]
 
         part_of_fortune = float((moon - sun) % 360)
-
 
         days.append({
 
@@ -138,10 +143,12 @@ def main():
 
     os.makedirs("docs", exist_ok=True)
 
-    with open("docs/weekly_overlay.json", "w") as f:
+    output = os.path.join("docs", "weekly_overlay.json")
+
+    with open(output, "w") as f:
         json.dump(data, f, indent=2)
 
-    print("Weekly overlay written")
+    print("Weekly overlay written:", output)
 
 
 if __name__ == "__main__":
