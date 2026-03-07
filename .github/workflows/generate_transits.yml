@@ -6,7 +6,9 @@ on:
   workflow_dispatch:
 
 jobs:
+
   build:
+
     runs-on: ubuntu-latest
 
     steps:
@@ -14,28 +16,42 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install numpy
-          pip install astroquery
-          pip install pyswisseph
-          pip install python-dateutil
-          pip install requests
 
-      - name: Run generator
+      - name: Install system libraries (required for pyswisseph)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential
+
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip wheel setuptools
+          pip install \
+            numpy \
+            astroquery \
+            pyswisseph \
+            python-dateutil \
+            requests
+
+
+      - name: Run weekly transit generator
         run: |
           python scripts/generate_transits.py
 
-      - name: Commit updated weekly feed
+
+      - name: Commit updated weekly overlay
         run: |
           git config --global user.name "transit-bot"
           git config --global user.email "bot@github.com"
+
           git add docs/weekly_overlay.json
+
           git commit -m "update weekly transits" || echo "no changes"
+
           git push
