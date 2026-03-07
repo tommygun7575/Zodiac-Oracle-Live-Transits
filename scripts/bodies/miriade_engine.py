@@ -7,7 +7,7 @@ def fetch_miriade(body, start, stop):
 
     start_dt = datetime.strptime(start, "%Y-%m-%d")
 
-    vectors = []
+    results = []
 
     for i in range(7):
 
@@ -31,6 +31,9 @@ def fetch_miriade(body, start, stop):
         lon = float(data["data"][0]["EclLon"])
         lat = float(data["data"][0]["EclLat"])
 
-        vectors.append((lon, lat))
+        results.append({
+            "lon": lon,
+            "lat": lat
+        })
 
-    return vectors
+    return results
