@@ -1,12 +1,6 @@
-import os
 import swisseph as swe
 
-EPHE_PATH = os.getenv("SWISSEPH_EPHE_PATH", "ephe")
-
-os.makedirs(EPHE_PATH, exist_ok=True)
-swe.set_ephe_path(EPHE_PATH)
-
-PLANET_MAP = {
+PLANETS = {
     "Sun": swe.SUN,
     "Moon": swe.MOON,
     "Mercury": swe.MERCURY,
@@ -16,35 +10,53 @@ PLANET_MAP = {
     "Saturn": swe.SATURN,
     "Uranus": swe.URANUS,
     "Neptune": swe.NEPTUNE,
-    "Pluto": swe.PLUTO,
+    "Pluto": swe.PLUTO
 }
 
-def get_planet(body, jd):
+ASTEROID_IDS = {
+    "Ceres": 1,
+    "Pallas": 2,
+    "Juno": 3,
+    "Vesta": 4,
+    "Chiron": 2060,
+    "Pholus": 5145,
+    "Nessus": 7066,
+    "Quaoar": 50000,
+    "Orcus": 90482,
+    "Sedna": 90377,
+    "Ixion": 28978
+}
+
+
+def get_planet(name, jd):
 
     try:
-        code = PLANET_MAP[body]
 
-        pos, _ = swe.calc_ut(jd, code)
+        pid = PLANETS[name]
+
+        pos, _ = swe.calc_ut(jd, pid)
 
         lon = pos[0]
         lat = pos[1]
 
         return lon, lat, "swiss"
 
-    except Exception:
+    except:
         return None
 
 
-def get_asteroid(number, jd):
+def get_asteroid(name, jd):
 
     try:
 
-        pos, _ = swe.calc_ut(jd, swe.AST_OFFSET + number)
+        aid = ASTEROID_IDS[name]
+
+        pos, _ = swe.calc_ut(jd, swe.AST_OFFSET + aid)
 
         lon = pos[0]
         lat = pos[1]
 
         return lon, lat, "swiss"
 
-    except Exception:
+    except:
         return None
