@@ -8,31 +8,30 @@ from scripts.bodies.swiss_engine import fetch_swiss
 
 
 BODIES = [
-    "Sun",
-    "Moon",
-    "Mercury",
-    "Venus",
-    "Mars",
-    "Jupiter",
-    "Saturn",
-    "Uranus",
-    "Neptune",
-    "Pluto",
-    "Ceres",
-    "Pallas",
-    "Juno",
-    "Vesta",
-    "Eris",
-    "Sedna",
-    "Orcus",
-    "Makemake",
-    "Haumea",
-    "Quaoar",
-    "Ixion"
+    "Sun","Moon","Mercury","Venus","Mars","Jupiter","Saturn",
+    "Uranus","Neptune","Pluto",
+    "Ceres","Pallas","Juno","Vesta",
+    "Eris","Sedna","Orcus","Makemake",
+    "Haumea","Quaoar","Ixion"
 ]
 
 
-def merge_vectors(primary, fallback):
+def normalize(vec):
+
+    result = []
+
+    for item in vec:
+
+        try:
+            lon, lat = item
+            result.append({"lon": lon, "lat": lat})
+        except Exception:
+            result.append({"lon": None, "lat": None})
+
+    return result
+
+
+def merge(primary, fallback):
 
     merged = []
 
@@ -44,132 +43,92 @@ def merge_vectors(primary, fallback):
         lon = p.get("lon") if p.get("lon") is not None else f.get("lon")
         lat = p.get("lat") if p.get("lat") is not None else f.get("lat")
 
-        merged.append({
-            "lon": lon,
-            "lat": lat
-        })
+        merged.append({"lon": lon, "lat": lat})
 
     return merged
 
 
-def normalize_jpl(vec):
-
-    normalized = []
-
-    for day in vec:
-
-        try:
-            lon, lat = day
-            normalized.append({"lon": float(lon), "lat": float(lat)})
-        except Exception:
-            normalized.append({"lon": None, "lat": None})
-
-    return normalized
-
-
 def generate_week():
 
-    today = datetime.utcnow()
+    now = datetime.utcnow()
 
-    start = today.strftime("%Y-%m-%d")
-    stop = (today + timedelta(days=6)).strftime("%Y-%m-%d")
-
-    print("Generating current week transits...")
+    start = now.strftime("%Y-%m-%d")
+    stop = (now + timedelta(days=6)).strftime("%Y-%m-%d")
 
     body_vectors = {}
 
+    print("Generating weekly overlay")
+
     for body in BODIES:
 
-        jpl_data = None
-        miriade_data = None
-        swiss_data = None
+        jpl = None
+        miriade = None
+        swiss = None
 
         try:
-
-            vec = fetch_jpl(body, start, stop)
-            jpl_data = normalize_jpl(vec)
-
+            jpl = normalize(fetch_jpl(body, start, stop))
             print(f"[OK] {body} via JPL")
-
         except Exception as e:
-
             print(f"[WARN] JPL failed for {body}: {e}")
 
         try:
-
-            miriade_data = fetch_miriade(body, start, stop)
-
+            miriade = fetch_miriade(body, start, stop)
             print(f"[OK] {body} via Miriade")
-
         except Exception as e:
-
             print(f"[WARN] Miriade failed for {body}: {e}")
 
         try:
-
-            swiss_data = fetch_swiss(body, start, stop)
-
+            swiss = fetch_swiss(body, start, stop)
             print(f"[OK] {body} via Swiss")
-
         except Exception as e:
-
             print(f"[WARN] Swiss failed for {body}: {e}")
 
-        data = jpl_data
+        data = jpl
 
-        if data is None and miriade_data:
+        if data is None and miriade:
+            data = miriade
+        elif data and miriade:
+            data = merge(data, miriade)
 
-            data = miriade_data
-
-        elif data and miriade_data:
-
-            data = merge_vectors(data, miriade_data)
-
-        if data and swiss_data:
-
-            data = merge_vectors(data, swiss_data)
+        if data and swiss:
+            data = merge(data, swiss)
 
         if data is None:
-
             print(f"[FAIL] no data for {body}")
             continue
 
         body_vectors[body] = data
 
     if "Sun" not in body_vectors:
-
-        raise RuntimeError("Sun ephemeris missing after all providers")
+        raise RuntimeError("Sun missing after all providers")
 
     if "Moon" not in body_vectors:
-
-        raise RuntimeError("Moon ephemeris missing after all providers")
+        raise RuntimeError("Moon missing after all providers")
 
     return body_vectors
 
 
-def write_json(data):
+def write_output(data):
 
     os.makedirs("docs", exist_ok=True)
 
-    output = {
+    payload = {
         "generated": datetime.utcnow().isoformat(),
         "bodies": data
     }
 
-    with open("docs/current_week.json", "w") as f:
+    with open("docs/current_week.json","w") as f:
+        json.dump(payload,f,indent=2)
 
-        json.dump(output, f, indent=2)
-
-    print("current_week.json generated")
+    print("current_week.json written")
 
 
 def main():
 
     data = generate_week()
 
-    write_json(data)
+    write_output(data)
 
 
 if __name__ == "__main__":
-
     main()
