@@ -1,10 +1,9 @@
 import requests
-import re
 import time
 
 HORIZONS_URL = "https://ssd.jpl.nasa.gov/api/horizons.api"
 
-BODY_IDS = {
+NAIF_IDS = {
     "Sun": "10",
     "Moon": "301",
     "Mercury": "199",
@@ -17,16 +16,14 @@ BODY_IDS = {
     "Pluto": "999"
 }
 
-
-def _parse(text):
-
-    start = None
+def _parse_lonlat(text):
 
     lines = text.splitlines()
 
+    start = None
     for i,l in enumerate(lines):
         if "$$SOE" in l:
-            start = i + 1
+            start = i+1
             break
 
     if start is None:
@@ -44,14 +41,12 @@ def _parse(text):
 
 def fetch(body, jd):
 
-    body_id = BODY_IDS.get(body)
-
-    if not body_id:
+    if body not in NAIF_IDS:
         return None
 
     params = {
         "format": "text",
-        "COMMAND": body_id,
+        "COMMAND": NAIF_IDS[body],
         "EPHEM_TYPE": "OBSERVER",
         "CENTER": "500@399",
         "TLIST": jd,
@@ -60,9 +55,9 @@ def fetch(body, jd):
 
     try:
 
-        r = requests.get(HORIZONS_URL, params=params, timeout=15)
+        r = requests.get(HORIZONS_URL, params=params, timeout=20)
 
-        parsed = _parse(r.text)
+        parsed = _parse_lonlat(r.text)
 
         if not parsed:
             return None
@@ -90,9 +85,9 @@ def fetch_numbered(number, jd):
 
     try:
 
-        r = requests.get(HORIZONS_URL, params=params, timeout=15)
+        r = requests.get(HORIZONS_URL, params=params, timeout=20)
 
-        parsed = _parse(r.text)
+        parsed = _parse_lonlat(r.text)
 
         if not parsed:
             return None
