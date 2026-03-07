@@ -34,7 +34,7 @@ jobs:
         run: |
           python scripts/generate_transits.py
 
-      - name: Commit updated transit feeds
+      - name: Commit updated weekly feed
         run: |
           git config --global user.name "transit-bot"
           git config --global user.email "bot@github.com"
