@@ -13,98 +13,47 @@ from scripts.bodies.harmonics_engine import compute_harmonics
 from scripts.fixed_stars import detect_star_hits
 
 
-BODY_REGISTRY = {
-    "Sun": "10",
-    "Moon": "301",
-    "Mercury": "199",
-    "Venus": "299",
-    "Mars": "499",
-    "Jupiter": "599",
-    "Saturn": "699",
-    "Uranus": "799",
-    "Neptune": "899",
-    "Pluto": "999",
-    "Ceres": "1",
-    "Pallas": "2",
-    "Juno": "3",
-    "Vesta": "4",
-    "Eris": "136199",
-    "Haumea": "136108",
-    "Makemake": "136472",
-    "Sedna": "90377",
-    "Orcus": "90482",
-    "Quaoar": "50000",
-    "Ixion": "28978"
-}
-
-CACHE_DIR = "cache"
-
-SLOW_OBJECTS = {
-    "Sedna",
+BODY_REGISTRY = [
+    "Sun",
+    "Moon",
+    "Mercury",
+    "Venus",
+    "Mars",
+    "Jupiter",
+    "Saturn",
+    "Uranus",
+    "Neptune",
+    "Pluto",
+    "Ceres",
+    "Pallas",
+    "Juno",
+    "Vesta",
     "Eris",
     "Haumea",
     "Makemake",
-    "Orcus"
-}
+    "Sedna",
+    "Orcus",
+    "Quaoar",
+    "Ixion"
+]
 
 
-def load_cache(name):
-
-    path = os.path.join(CACHE_DIR, f"{name}.json")
-
-    if not os.path.exists(path):
-        return None
+def fetch_body(body, start, end):
 
     try:
 
-        with open(path) as f:
-            data = json.load(f)
-
-        arr = np.array(data)
-
-        if arr.shape[0] < 7:
-            return None
-
-        return arr
-
-    except Exception:
-        return None
-
-
-def save_cache(name, data):
-
-    os.makedirs(CACHE_DIR, exist_ok=True)
-
-    with open(os.path.join(CACHE_DIR, f"{name}.json"), "w") as f:
-        json.dump(data.tolist(), f)
-
-
-def fetch_body_safe(name, body_id, start, end):
-
-    try:
-
-        if name in SLOW_OBJECTS:
-
-            cached = load_cache(name)
-
-            if cached is not None:
-                return name, cached
-
-        vec = fetch_batch(body_id, start, end)
+        vec = fetch_batch(body, start, end)
 
         if vec is None or len(vec) < 7:
-            raise RuntimeError("Vector incomplete")
+            raise RuntimeError("vector incomplete")
 
-        if name in SLOW_OBJECTS:
-            save_cache(name, vec)
-
-        return name, vec
+        return body, vec
 
     except Exception as e:
 
-        print(f"[WARN] skipping {name}: {e}")
+        print(f"[WARN] skipping {body}: {e}")
 
-        return name, None
+        return body, None
 
 
 def generate_week():
@@ -117,22 +66,19 @@ def generate_week():
 
     body_vectors = {}
 
-    futures = []
+    with ThreadPoolExecutor(max_workers=4) as executor:
 
-    with ThreadPoolExecutor(max_workers=3) as executor:
-
-        for name, body_id in BODY_REGISTRY.items():
-
-            futures.append(
-                executor.submit(fetch_body_safe, name, body_id, start, end)
-            )
+        futures = [
+            executor.submit(fetch_body, b, start, end)
+            for b in BODY_REGISTRY
+        ]
 
         for f in as_completed(futures):
 
-            name, vec = f.result()
+            body, vec = f.result()
 
             if vec is not None:
-                body_vectors[name] = vec
+                body_vectors[body] = vec
 
     if "Sun" not in body_vectors or "Moon" not in body_vectors:
         raise RuntimeError("Critical bodies missing from ephemeris")
@@ -142,12 +88,10 @@ def generate_week():
     for i in range(7):
 
         objects = {}
+
         longitudes = []
 
         for body, vec in body_vectors.items():
-
-            if i >= len(vec):
-                continue
 
             lon, lat = vec[i]
 
@@ -157,9 +101,10 @@ def generate_week():
                 "used_source": "jpl_horizons"
             }
 
-            longitudes.append(float(lon))
+            longitudes.append(lon)
 
         harmonics = compute_harmonics(longitudes)
+
         stars = detect_star_hits(longitudes)
 
         sun = objects["Sun"]["ecl_lon_deg"]
