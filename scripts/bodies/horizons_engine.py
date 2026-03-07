@@ -5,8 +5,8 @@ import time
 
 HORIZONS_URL = "https://ssd.jpl.nasa.gov/api/horizons.api"
 
-MAX_RETRIES = 5
-RETRY_DELAY = 2
+MAX_RETRIES = 6
+RETRY_DELAY = 3
 
 
 session = requests.Session()
@@ -17,13 +17,12 @@ def fetch_batch(body_id: str, start: str, stop: str):
     params = {
         "format": "json",
         "COMMAND": body_id,
-        "EPHEM_TYPE": "OBSERVER",
-        "CENTER": "500@399",
+        "EPHEM_TYPE": "VECTORS",
+        "CENTER": "500@10",
+        "REF_PLANE": "ECLIPTIC",
         "START_TIME": start,
         "STOP_TIME": stop,
-        "STEP_SIZE": "1 d",
-        "QUANTITIES": "18,20",
-        "CSV_FORMAT": "YES"
+        "STEP_SIZE": "1 d"
     }
 
     last_error = None
@@ -51,10 +50,10 @@ def fetch_batch(body_id: str, start: str, stop: str):
             if "$$SOE" not in text:
                 raise RuntimeError("Horizons returned no ephemeris block")
 
-            rows = parse_ephemeris(text)
+            rows = parse_vectors(text)
 
             if len(rows) == 0:
-                raise RuntimeError("Ephemeris returned empty")
+                raise RuntimeError("Empty vector output")
 
             return np.array(rows, dtype=float)
 
@@ -70,7 +69,7 @@ def fetch_batch(body_id: str, start: str, stop: str):
     raise RuntimeError(f"Horizons failure: {last_error}")
 
 
-def parse_ephemeris(text: str):
+def parse_vectors(text: str):
 
     rows = []
 
@@ -79,9 +78,6 @@ def parse_ephemeris(text: str):
     for raw in text.splitlines():
 
         line = raw.strip()
-
-        if not line:
-            continue
 
         if line.startswith("$$SOE"):
             reading = True
@@ -93,28 +89,25 @@ def parse_ephemeris(text: str):
         if not reading:
             continue
 
-        parts = [p.strip() for p in line.split(",")]
+        if "X =" in line and "Y =" in line and "Z =" in line:
 
-        if len(parts) < 2:
-            continue
+            parts = line.replace("=", " ").replace(",", " ").split()
 
-        numeric = []
-
-        for p in parts:
             try:
-                numeric.append(float(p))
-            except ValueError:
+
+                x = float(parts[parts.index("X") + 1])
+                y = float(parts[parts.index("Y") + 1])
+                z = float(parts[parts.index("Z") + 1])
+
+                lon = np.degrees(np.arctan2(y, x)) % 360
+                lat = np.degrees(np.arctan2(z, np.sqrt(x*x + y*y)))
+
+                rows.append([lon, lat])
+
+            except Exception:
                 continue
 
-        if len(numeric) < 2:
-            continue
-
-        lon = numeric[0] % 360.0
-        lat = numeric[1]
-
-        rows.append([lon, lat])
-
     if len(rows) == 0:
-        raise RuntimeError("Horizons ephemeris parse produced no rows")
+        raise RuntimeError("Horizons vector parse produced no rows")
 
     return rows
