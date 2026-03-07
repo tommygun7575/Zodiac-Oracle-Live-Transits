@@ -11,13 +11,6 @@ session = requests.Session()
 
 
 def fetch_batch(body_id: str, start: str, stop: str):
-    """
-    Fetch weekly ephemeris from JPL Horizons.
-
-    Returns:
-        numpy array of shape (N,2) containing
-        [longitude, latitude] for each timestep
-    """
 
     params = {
         "format": "json",
@@ -34,33 +27,29 @@ def fetch_batch(body_id: str, start: str, stop: str):
     for attempt in range(MAX_RETRIES):
 
         try:
-
-            response = session.get(
-                HORIZONS_URL,
-                params=params,
-                timeout=60
-            )
+            response = session.get(HORIZONS_URL, params=params, timeout=60)
 
             if response.status_code == 200:
 
                 data = response.json()
 
                 if "result" not in data:
-                    raise RuntimeError("Horizons returned malformed payload")
+                    raise RuntimeError("Horizons malformed payload")
 
-                return parse_ephemeris(data["result"])
+                text = data["result"]
+
+                if "$$SOE" not in text:
+                    raise RuntimeError("Horizons returned no ephemeris block")
+
+                return parse_ephemeris(text)
 
             if response.status_code in (500, 502, 503, 504):
-
                 time.sleep(RETRY_DELAY)
                 continue
 
-            raise RuntimeError(
-                f"Horizons request failed {response.status_code}"
-            )
+            raise RuntimeError(f"Horizons request failed {response.status_code}")
 
         except requests.exceptions.RequestException:
-
             time.sleep(RETRY_DELAY)
 
     raise RuntimeError("Horizons unavailable after retries")
@@ -71,34 +60,45 @@ def parse_ephemeris(text: str):
     rows = []
     reading = False
 
-    for line in text.splitlines():
+    for raw in text.splitlines():
 
-        if "$$SOE" in line:
+        line = raw.strip()
+
+        if line.startswith("$$SOE"):
             reading = True
             continue
 
-        if "$$EOE" in line:
+        if line.startswith("$$EOE"):
             break
 
         if not reading:
             continue
 
-        parts = line.split(",")
-
-        if len(parts) < 5:
+        if not line:
             continue
 
-        try:
+        parts = [p.strip() for p in line.split(",")]
 
-            lon = float(parts[3])
-            lat = float(parts[4])
-
-            rows.append((lon, lat))
-
-        except ValueError:
+        if len(parts) < 3:
             continue
 
-    if not rows:
+        floats = []
+
+        for p in parts:
+            try:
+                floats.append(float(p))
+            except:
+                continue
+
+        if len(floats) < 2:
+            continue
+
+        lon = floats[0]
+        lat = floats[1]
+
+        rows.append((lon, lat))
+
+    if len(rows) == 0:
         raise RuntimeError("Horizons ephemeris parse produced no rows")
 
     return np.array(rows, dtype=float)
