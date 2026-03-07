@@ -1,5 +1,6 @@
 import os
 import sys
+import json
 
 # -------------------------------------------------
 # FIX 1: allow GitHub runner to resolve repo imports
@@ -7,21 +8,20 @@ import sys
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
 
-import json
-import math
 from datetime import datetime, timedelta, timezone
 from typing import Dict, Any
 from math import fmod
 
 import swisseph as swe
 from dateutil import parser
-import pytz
 
-from scripts.sources import horizons_client, swiss_client, miriade_client
-from scripts.utils.coords import ra_dec_to_ecl
+try:
+    from scripts.bodies import horizons_engine
+except ImportError:
+    horizons_engine = None
+from scripts.bodies import miriade_engine, swiss_engine
+from scripts.fixed_stars import FIXED_STARS
 
-
-DATA = os.path.join(ROOT, "data")
 EPHE = os.path.join(ROOT, "ephe")
 
 # -------------------------------------------------
@@ -36,13 +36,36 @@ NAME_ALIASES = {
 }
 
 
-def load_json(path: str) -> dict:
-    with open(path, "r", encoding="utf-8") as f:
-        return json.load(f)
-
-
 def normalize(deg: float) -> float:
     return fmod(deg + 360.0, 360.0)
+
+
+def create_engine_wrapper(engine):
+    """
+    Normalize engine.fetch → (lon, lat) tuple or None.
+    """
+    def fetch_lonlat(name, when_iso):
+        if engine is None:
+            return None
+        try:
+            res = engine.fetch(name, when_iso)
+        except Exception as exc:
+            engine_name = getattr(engine, "__name__", str(engine))
+            print(f"[WARN] {engine_name} fetch failed for {name} at {when_iso}: {exc}", file=sys.stderr)
+            return None
+        if not res:
+            return None
+        lon = res.get("lon")
+        lat = res.get("lat")
+        if lon is None or lat is None:
+            return None
+        return float(lon), float(lat)
+    return fetch_lonlat
+
+
+HORIZONS_LONLAT = create_engine_wrapper(horizons_engine)
+SWISS_LONLAT = create_engine_wrapper(swiss_engine)
+MIRIADE_LONLAT = create_engine_wrapper(miriade_engine)
 
 
 def iso_now() -> str:
@@ -222,14 +245,16 @@ def compute_positions(when_iso, lat, lon):
         "Vulcan","Persephone","Hades","Proserpina","Isis"
     ]
 
+    sources_major = []
+    if horizons_engine is not None:
+        sources_major.append(("jpl", HORIZONS_LONLAT))
+    sources_major.append(("swiss", SWISS_LONLAT))
+    sources_major.append(("miriade", MIRIADE_LONLAT))
+
     # Sun (primary issue previously)
     out["Sun"] = resolve_body(
         "Sun",
-        [
-            ("jpl", horizons_client.get_ecliptic_lonlat),
-            ("swiss", swiss_client.get_ecliptic_lonlat),
-            ("miriade", miriade_client.get_ecliptic_lonlat)
-        ],
+        sources_major,
         when_iso,
         force_fallback=True
     )
@@ -241,11 +266,7 @@ def compute_positions(when_iso, lat, lon):
 
         out[name] = resolve_body(
             name,
-            [
-                ("jpl", horizons_client.get_ecliptic_lonlat),
-                ("swiss", swiss_client.get_ecliptic_lonlat),
-                ("miriade", miriade_client.get_ecliptic_lonlat)
-            ],
+            sources_major,
             when_iso,
             force_fallback=True
         )
@@ -254,11 +275,7 @@ def compute_positions(when_iso, lat, lon):
 
         out[name] = resolve_body(
             name,
-            [
-                ("jpl", horizons_client.get_ecliptic_lonlat),
-                ("swiss", swiss_client.get_ecliptic_lonlat),
-                ("miriade", miriade_client.get_ecliptic_lonlat)
-            ],
+            sources_major,
             when_iso,
             force_fallback=True
         )
@@ -267,11 +284,7 @@ def compute_positions(when_iso, lat, lon):
 
         out[name] = resolve_body(
             name,
-            [
-                ("jpl", horizons_client.get_ecliptic_lonlat),
-                ("swiss", swiss_client.get_ecliptic_lonlat),
-                ("miriade", miriade_client.get_ecliptic_lonlat)
-            ],
+            sources_major,
             when_iso,
             force_fallback=True
         )
@@ -280,20 +293,17 @@ def compute_positions(when_iso, lat, lon):
 
         out[name] = resolve_body(
             name,
-            [("swiss", swiss_client.get_ecliptic_lonlat)],
+            [("swiss", SWISS_LONLAT)],
             when_iso,
             force_fallback=True
         )
 
-    stars = load_json(os.path.join(DATA, "fixed_stars.json"))["stars"]
+    # Fixed stars from FIXED_STARS include longitudes only; latitude is set to 0 because downstream consumers ignore it.
+    for star_name, ecl_lon in FIXED_STARS.items():
 
-    for s in stars:
-
-        lam, bet = ra_dec_to_ecl(s["ra_deg"], s["dec_deg"], when_iso)
-
-        out[s["id"]] = {
-            "ecl_lon_deg": lam,
-            "ecl_lat_deg": bet,
+        out[star_name] = {
+            "ecl_lon_deg": float(ecl_lon),
+            "ecl_lat_deg": 0.0,
             "used_source": "fixed"
         }
 

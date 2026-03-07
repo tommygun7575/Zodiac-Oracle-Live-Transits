@@ -5,6 +5,14 @@ Updated automatically via GitHub Actions
 
 The Zodiac Oracle Live Transits Engine generates astronomy-accurate planetary, asteroid, TNO, and fixed-star ephemeris feeds for consumption by the Zodiac Oracle mobile app and any external services requiring precise daily and weekly transit data.
 
+## Local setup
+
+Install the Swiss Ephemeris and supporting libraries before running the generator:
+
+```bash
+pip install -r requirements.txt
+```
+
 This repository produces four public JSON feeds:
 
 feed_now.json — real-time snapshot
