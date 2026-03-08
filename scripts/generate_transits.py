@@ -21,18 +21,9 @@ PLANETS = [
 
 
 SIGNS = [
-    "Aries",
-    "Taurus",
-    "Gemini",
-    "Cancer",
-    "Leo",
-    "Virgo",
-    "Libra",
-    "Scorpio",
-    "Sagittarius",
-    "Capricorn",
-    "Aquarius",
-    "Pisces"
+    "Aries","Taurus","Gemini","Cancer",
+    "Leo","Virgo","Libra","Scorpio",
+    "Sagittarius","Capricorn","Aquarius","Pisces"
 ]
 
 
@@ -53,32 +44,23 @@ def generate():
     start = today.isoformat()
     stop = week_later.isoformat()
 
-    print(f"Generating weekly transits {start} → {stop}")
-
     bodies = {}
 
     for planet in PLANETS:
 
         try:
 
-            print(f"Requesting {planet} from Horizons")
+            print(f"Fetching {planet}")
 
             data = fetch_horizons(planet, start, stop)
 
-            # prevent JPL API rate limit
             time.sleep(1)
 
-            if not data or len(data) == 0:
+            if not data:
                 print(f"{planet} returned no data")
                 continue
 
-            lon = data[0].get("lon")
-
-            if lon is None:
-                print(f"{planet} longitude missing")
-                continue
-
-            lon = lon % 360
+            lon = data[0]["lon"] % 360
 
             sign, degree = zodiac(lon)
 
@@ -88,13 +70,11 @@ def generate():
                 "degree": round(degree, 6)
             }
 
-            print(f"{planet} OK")
-
         except Exception as e:
 
             print(f"{planet} failed: {e}")
-
             continue
+
 
     output = {
         "generated_utc": datetime.datetime.utcnow().isoformat(),
@@ -103,12 +83,10 @@ def generate():
 
     os.makedirs("docs", exist_ok=True)
 
-    output_path = "docs/current_week.json"
-
-    with open(output_path, "w") as f:
+    with open("docs/current_week.json", "w") as f:
         json.dump(output, f, indent=2)
 
-    print(f"Weekly overlay written to {output_path}")
+    print("Generated docs/current_week.json")
 
 
 if __name__ == "__main__":
