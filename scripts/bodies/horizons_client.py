@@ -1,6 +1,6 @@
 import requests
 
-HORIZONS_URL = "https://ssd.jpl.nasa.gov/api/horizons.api"
+HORIZONS_URL = "https://ssd.jpl.nasa.gov/horizons_batch.cgi"
 
 BODY_IDS = {
     "Sun": "10",
@@ -15,15 +15,17 @@ BODY_IDS = {
     "Pluto": "999"
 }
 
+
 def fetch_horizons(body, start, stop):
 
     body_id = BODY_IDS[body]
 
     params = {
-        "format": "json",
+        "batch": 1,
         "COMMAND": body_id,
-        "EPHEM_TYPE": "OBSERVER",
         "CENTER": "500@399",
+        "MAKE_EPHEM": "YES",
+        "TABLE_TYPE": "OBSERVER",
         "START_TIME": start,
         "STOP_TIME": stop,
         "STEP_SIZE": "1 d",
@@ -36,14 +38,7 @@ def fetch_horizons(body, start, stop):
     if r.status_code != 200:
         raise RuntimeError("Horizons request failed")
 
-    payload = r.json()
-
-    if "result" not in payload:
-        raise RuntimeError("Horizons response malformed")
-
-    text = payload["result"]
-
-    return parse_ephemeris(text)
+    return parse_ephemeris(r.text)
 
 
 def parse_ephemeris(text):
@@ -67,12 +62,9 @@ def parse_ephemeris(text):
 
         try:
 
-            date = parts[0].strip()
-            lon = float(parts[4])
-
             rows.append({
-                "date": date,
-                "lon": lon
+                "date": parts[0].strip(),
+                "lon": float(parts[4])
             })
 
         except ValueError:
