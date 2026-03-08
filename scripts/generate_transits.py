@@ -1,273 +1,208 @@
 import json
-from datetime import datetime, timedelta
-from concurrent.futures import ThreadPoolExecutor, as_completed
+import datetime
+import os
+import swisseph as swe
 
-from scripts.bodies.horizons_engine import fetch_batch
-from scripts.bodies.miriade_engine import fetch_miriade
-from scripts.bodies.swiss_engine import fetch_swiss
+from scripts.bodies.horizons_client import fetch_horizons
+from scripts.bodies.miriade_client import fetch_miriade
 from scripts.bodies.mpc_client import fetch_mpc
-from scripts.bodies.harmonics_engine import compute_harmonics
-from scripts.fixed_stars import get_fixed_star_catalog
 
 
-BODIES = [
-    "Sun","Moon","Mercury","Venus","Mars","Jupiter","Saturn",
-    "Uranus","Neptune","Pluto",
-    "Ceres","Pallas","Juno","Vesta",
-    "Eris","Sedna","Orcus","Makemake","Haumea","Quaoar","Ixion"
+PLANETS = [
+    "Sun","Moon","Mercury","Venus","Mars",
+    "Jupiter","Saturn","Uranus","Neptune","Pluto"
+]
+
+EXTENDED = [
+    "Ceres","Chiron","Pallas","Juno","Vesta"
+]
+
+TNO = [
+    "Eris","Haumea","Makemake","Sedna","Quaoar","Orcus"
 ]
 
 
-JPL_CACHE = {}
+FIXED_STARS = {
+    "Regulus":150.0,
+    "Spica":204.0,
+    "Antares":249.5,
+    "Aldebaran":69.0,
+    "Fomalhaut":334.0
+}
 
 
-def batch_fetch_horizons(start, stop):
+ASPECTS = [0,60,90,120,180]
 
-    cache = {}
 
-    for body in BODIES:
+def normalize(lon):
+    return lon % 360
 
-        try:
 
-            rows = fetch_batch(body, start, stop)
+def zodiac_position(lon):
 
-            cache[body] = rows
+    signs = [
+        "Aries","Taurus","Gemini","Cancer",
+        "Leo","Virgo","Libra","Scorpio",
+        "Sagittarius","Capricorn","Aquarius","Pisces"
+    ]
 
-        except Exception:
+    sign = int(lon/30)
+    degree = lon % 30
 
-            cache[body] = None
+    return signs[sign], degree
 
-    return cache
 
+def compute_harmonics(lon):
 
-def missing_indices(rows):
+    harmonics = {}
 
-    return [i for i,r in enumerate(rows) if r["lon"] is None]
+    for h in [3,5,7,9]:
+        harmonics[f"h{h}"] = (lon*h) % 360
 
+    return harmonics
 
-def resolve_body(body, start_date):
 
-    start = start_date.strftime("%Y-%m-%d")
-    stop = (start_date + timedelta(days=6)).strftime("%Y-%m-%d")
+def detect_star_contacts(body,lon):
 
-    results = [{"lon":None,"lat":None,"source":"none"} for _ in range(7)]
+    contacts=[]
 
-    if body in JPL_CACHE and JPL_CACHE[body]:
+    for star,star_lon in FIXED_STARS.items():
 
-        for i,(lon,lat) in enumerate(JPL_CACHE[body][:7]):
+        orb = abs(lon-star_lon)
+        orb = min(orb,360-orb)
 
-            if lon is not None:
-                results[i] = {"lon":lon,"lat":lat,"source":"JPL"}
+        if orb < 1.0:
 
-    missing = missing_indices(results)
-
-    if missing:
-
-        try:
-
-            rows = fetch_miriade(body,start,stop)
-
-            for i,row in enumerate(rows):
-
-                if i in missing and row["lon"] is not None:
-
-                    results[i] = {
-                        "lon":row["lon"],
-                        "lat":row["lat"],
-                        "source":"Miriade"
-                    }
-
-        except Exception as e:
-
-            print(f"[WARN] Miriade failed for {body}: {e}")
-
-    missing = missing_indices(results)
-
-    if missing:
-
-        try:
-
-            rows = fetch_mpc(body,start,stop)
-
-            for i,row in enumerate(rows):
-
-                if i in missing and row["lon"] is not None:
-
-                    results[i] = {
-                        "lon":row["lon"],
-                        "lat":row["lat"],
-                        "source":"MPC"
-                    }
-
-        except Exception as e:
-
-            print(f"[WARN] MPC propagation failed for {body}: {e}")
-
-    missing = missing_indices(results)
-
-    if missing:
-
-        try:
-
-            rows = fetch_swiss(body,start,stop)
-
-            for i,row in enumerate(rows):
-
-                if i in missing and row["lon"] is not None:
-
-                    results[i] = {
-                        "lon":row["lon"],
-                        "lat":row["lat"],
-                        "source":"Swiss"
-                    }
-
-        except Exception as e:
-
-            print(f"[WARN] Swiss fallback failed for {body}: {e}")
-
-    return results
-
-
-def calc_arabic_parts(data):
-
-    parts=[]
-
-    for i in range(7):
-
-        try:
-
-            sun=data["Sun"][i]["lon"]
-            moon=data["Moon"][i]["lon"]
-
-            if sun is None or moon is None:
-
-                parts.append({"part_of_fortune":None})
-
-            else:
-
-                parts.append({"part_of_fortune":(moon-sun)%360})
-
-        except:
-
-            parts.append({"part_of_fortune":None})
-
-    return parts
-
-
-def calc_harmonics(data):
-
-    results=[]
-
-    for i in range(7):
-
-        try:
-
-            sun=data["Sun"][i]["lon"]
-
-            if sun is None:
-                results.append({})
-                continue
-
-            h=compute_harmonics([sun])
-
-            results.append({
-                "sun_h5":float(h["h5"][0]),
-                "sun_h7":float(h["h7"][0]),
-                "sun_h9":float(h["h9"][0])
+            contacts.append({
+                "body":body,
+                "star":star,
+                "orb":round(orb,3)
             })
 
-        except:
-            results.append({})
-
-    return results
+    return contacts
 
 
-def compute_fixed_star_conjunctions(data):
+def compute_aspects(bodies):
 
-    stars=get_fixed_star_catalog()
+    aspects=[]
+    names=list(bodies.keys())
 
-    results=[]
+    for i in range(len(names)):
+        for j in range(i+1,len(names)):
 
-    for i in range(7):
+            lon1=bodies[names[i]]["lon"]
+            lon2=bodies[names[j]]["lon"]
 
-        hits=[]
+            diff=abs(lon1-lon2)
+            diff=min(diff,360-diff)
 
-        for body in data:
+            for asp in ASPECTS:
 
-            lon=data[body][i]["lon"]
+                if abs(diff-asp)<1:
 
-            if lon is None:
-                continue
-
-            for star,star_lon in stars.items():
-
-                diff=abs((lon-star_lon+180)%360-180)
-
-                if diff<1:
-
-                    hits.append({
-                        "body":body,
-                        "star":star,
-                        "orb":round(diff,3)
+                    aspects.append({
+                        "a":names[i],
+                        "b":names[j],
+                        "type":asp,
+                        "orb":round(abs(diff-asp),3)
                     })
 
-        results.append(hits)
-
-    return results
+    return aspects
 
 
-def main():
+def compute_arabic_parts(sun,moon):
 
-    start_date=datetime.utcnow()
+    fortune=(moon-sun)%360
+    spirit=(sun-moon)%360
 
-    start=start_date.strftime("%Y-%m-%d")
-    stop=(start_date+timedelta(days=6)).strftime("%Y-%m-%d")
-
-    global JPL_CACHE
-
-    print("Fetching JPL ephemeris batch")
-
-    JPL_CACHE=batch_fetch_horizons(start,stop)
-
-    bodies={}
-
-    with ThreadPoolExecutor(max_workers=6) as executor:
-
-        futures={}
-
-        for body in BODIES:
-
-            futures[executor.submit(resolve_body,body,start_date)]=body
-
-        for future in as_completed(futures):
-
-            body=futures[future]
-
-            try:
-                bodies[body]=future.result()
-
-            except Exception as e:
-
-                print(f"[ERROR] Failed resolving {body}: {e}")
-
-                bodies[body]=[]
-
-    data={
-        "generated":datetime.utcnow().isoformat(),
-        "bodies":bodies
+    return {
+        "fortune":fortune,
+        "spirit":spirit
     }
 
-    data["arabic_parts"]=calc_arabic_parts(bodies)
 
-    data["harmonics"]=calc_harmonics(bodies)
+def fetch_body(body):
 
-    data["fixed_star_conjunctions"]=compute_fixed_star_conjunctions(bodies)
+    try:
+        return fetch_horizons(body)
+    except Exception:
+        pass
 
-    with open("docs/current_week.json","w") as f:
-        json.dump(data,f,indent=2)
+    try:
+        return fetch_miriade(body)
+    except Exception:
+        pass
 
-    print("current_week.json written")
+    try:
+        return fetch_mpc(body)
+    except Exception:
+        pass
+
+    return None
+
+
+def get_week_filename():
+
+    now=datetime.datetime.utcnow()
+
+    year,week,_=now.isocalendar()
+
+    return f"weekly_overlay_{year}_W{week}.json"
+
+
+def generate():
+
+    bodies={}
+    star_contacts=[]
+
+    all_bodies=PLANETS+EXTENDED+TNO
+
+    for body in all_bodies:
+
+        result=fetch_body(body)
+
+        if not result:
+            continue
+
+        lon=normalize(result["lon"])
+
+        sign,degree=zodiac_position(lon)
+
+        bodies[body]={
+            "lon":lon,
+            "sign":sign,
+            "degree":degree,
+            "harmonics":compute_harmonics(lon)
+        }
+
+        star_contacts+=detect_star_contacts(body,lon)
+
+    aspects=compute_aspects(bodies)
+
+    sun=bodies["Sun"]["lon"]
+    moon=bodies["Moon"]["lon"]
+
+    arabic_parts=compute_arabic_parts(sun,moon)
+
+    output={
+        "timestamp":datetime.datetime.utcnow().isoformat(),
+        "bodies":bodies,
+        "aspects":aspects,
+        "star_contacts":star_contacts,
+        "arabic_parts":arabic_parts
+    }
+
+    filename=get_week_filename()
+
+    os.makedirs("overlays",exist_ok=True)
+
+    filepath=f"overlays/{filename}"
+
+    with open(filepath,"w") as f:
+        json.dump(output,f,indent=2)
+
+    print(f"Weekly overlay generated: {filepath}")
 
 
 if __name__=="__main__":
-    main()
+    generate()
