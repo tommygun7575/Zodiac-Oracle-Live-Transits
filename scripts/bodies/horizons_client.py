@@ -11,7 +11,7 @@ def fetch_ephemeris(body_id: str, start: str, stop: str) -> str:
         "CENTER": "500@399",
         "START_TIME": start,
         "STOP_TIME": stop,
-        "STEP_SIZE": "1 d",
+        "STEP_SIZE": "1d",
         "ANG_FORMAT": "DEG"
     }
 
