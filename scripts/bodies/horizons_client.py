@@ -15,10 +15,8 @@ BODY_IDS = {
     "Pluto": "999"
 }
 
-def fetch_horizons(body, start, stop):
 
-    if body not in BODY_IDS:
-        raise ValueError(f"Unknown body: {body}")
+def fetch_horizons(body, start, stop):
 
     body_id = BODY_IDS[body]
 
@@ -37,20 +35,23 @@ def fetch_horizons(body, start, stop):
     r = requests.get(HORIZONS_URL, params=params, timeout=60)
 
     if r.status_code != 200:
-        raise RuntimeError(f"Horizons request failed: {r.status_code}")
+        raise RuntimeError("Horizons request failed")
 
     data = r.json()
 
     if "result" not in data:
-        raise RuntimeError("Horizons returned malformed response")
+        raise RuntimeError("Malformed Horizons response")
 
     return parse_ephemeris(data["result"])
 
 
 def parse_ephemeris(text):
 
-    rows = []
     reading = False
+    header = None
+    lon_index = None
+
+    rows = []
 
     for line in text.splitlines():
 
@@ -61,20 +62,31 @@ def parse_ephemeris(text):
         if "$$EOE" in line:
             break
 
-        if reading:
+        if not reading:
+
+            if "Date__(UT)__HR:MN" in line or "Date__(UT)__HR:MN:SC" in line:
+
+                header = [h.strip() for h in line.split(",")]
+
+                for i, col in enumerate(header):
+
+                    if "EclLon" in col or "Lon" in col:
+                        lon_index = i
+
+        else:
 
             parts = line.split(",")
 
-            if len(parts) > 4:
+            if lon_index is not None and len(parts) > lon_index:
 
                 try:
 
                     rows.append({
                         "date": parts[0].strip(),
-                        "lon": float(parts[4])
+                        "lon": float(parts[lon_index])
                     })
 
-                except ValueError:
-                    continue
+                except:
+                    pass
 
     return rows
