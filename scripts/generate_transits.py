@@ -2,18 +2,30 @@ import json
 from datetime import datetime, timedelta
 
 from scripts.bodies.horizons_engine import get_body_week
-from scripts.bodies.miriade_engine import get_miriade_week
-from scripts.bodies.mpc_engine import get_mpc_week
-from scripts.bodies.swiss_engine import get_swiss_week
+
+# Safe optional imports (prevents crash if engine not implemented yet)
+try:
+    from scripts.bodies.miriade_engine import get_miriade_week
+except ImportError:
+    get_miriade_week = None
+
+try:
+    from scripts.bodies.mpc_engine import get_mpc_week
+except ImportError:
+    get_mpc_week = None
+
+try:
+    from scripts.bodies.swiss_engine import get_swiss_week
+except ImportError:
+    get_swiss_week = None
 
 
 COVERAGE_THRESHOLD = 0.92
 HARMONIC_MIN = 2
-HARMONIC_MAX = 12  # dynamic range (change freely)
+HARMONIC_MAX = 12
 
-# Curated master registry (expand carefully)
+
 ALL_BODIES = {
-    # Planets
     "10": "Sun",
     "301": "Moon",
     "199": "Mercury",
@@ -24,21 +36,15 @@ ALL_BODIES = {
     "799": "Uranus",
     "899": "Neptune",
     "999": "Pluto",
-
-    # Dwarf / TNO
     "136199": "Eris",
     "136108": "Haumea",
     "136472": "Makemake",
     "90377": "Sedna",
     "50000": "Quaoar",
     "90482": "Orcus",
-
-    # Centaurs
     "2060": "Chiron",
     "10199": "Chariklo",
     "5145": "Pholus",
-
-    # Key Asteroids
     "1": "Ceres",
     "2": "Pallas",
     "3": "Juno",
@@ -48,7 +54,7 @@ ALL_BODIES = {
     "1221": "Amor"
 }
 
-# Fixed star catalog (curated)
+
 FIXED_STARS = {
     "Regulus": 150.0,
     "Spica": 204.0,
@@ -56,7 +62,7 @@ FIXED_STARS = {
     "Antares": 249.0
 }
 
-ORB = 1.0  # degree orb
+ORB = 1.0
 
 
 def resolve_body(body_id, name, start, stop):
@@ -66,37 +72,39 @@ def resolve_body(body_id, name, start, stop):
     except:
         pass
 
-    try:
-        return get_miriade_week(body_id, name, start, stop), "miriade"
-    except:
-        pass
+    if get_miriade_week:
+        try:
+            return get_miriade_week(body_id, name, start, stop), "miriade"
+        except:
+            pass
 
-    try:
-        return get_mpc_week(body_id, name, start, stop), "mpc"
-    except:
-        pass
+    if get_mpc_week:
+        try:
+            return get_mpc_week(body_id, name, start, stop), "mpc"
+        except:
+            pass
 
-    try:
-        return get_swiss_week(body_id, name, start, stop), "swiss"
-    except:
-        pass
+    if get_swiss_week:
+        try:
+            return get_swiss_week(body_id, name, start, stop), "swiss"
+        except:
+            pass
 
     return None, None
 
 
 def compute_arabic_parts(bodies):
+
     parts = {}
 
     try:
         sun = float(bodies["Sun"]["data"][0]["longitude_deg"])
         moon = float(bodies["Moon"]["data"][0]["longitude_deg"])
 
-        # Placeholder ASC (real ASC requires location + time calc)
         asc = (sun + 90) % 360
-
         fortune = (asc + moon - sun) % 360
-        parts["Part_of_Fortune"] = fortune
 
+        parts["Part_of_Fortune"] = fortune
     except:
         pass
 
@@ -104,6 +112,7 @@ def compute_arabic_parts(bodies):
 
 
 def compute_harmonics(bodies, h_min, h_max):
+
     harmonic_output = {}
 
     for h in range(h_min, h_max + 1):
@@ -119,6 +128,7 @@ def compute_harmonics(bodies, h_min, h_max):
 
 
 def compute_fixed_star_conjunctions(bodies):
+
     results = {}
 
     for body_name, obj in bodies.items():
@@ -145,6 +155,8 @@ def generate_week():
 
     total_targets = len(ALL_BODIES)
 
+    print(f"Attempting resolution for {total_targets} bodies")
+
     for body_id, name in ALL_BODIES.items():
         result, source = resolve_body(body_id, name, start, stop)
 
@@ -158,7 +170,6 @@ def generate_week():
             missing.append(name)
 
     coverage = len(bodies) / total_targets
-
     print(f"Coverage: {coverage * 100:.2f}%")
 
     if coverage < COVERAGE_THRESHOLD:
