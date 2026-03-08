@@ -1,347 +1,1242 @@
 {
-  "generated_utc": "2026-03-08T23:11:53.756062",
+  "generated_utc": "2026-03-08T23:27:28.164934",
   "week_start": "2026-03-08",
   "week_end": "2026-03-15",
+  "engine_version": "ZodiacOracle.Curated.vFinal",
+  "coverage": 0.9615384615384616,
+  "resolved": 25,
+  "total_targets": 26,
+  "missing": [
+    "Juno"
+  ],
   "bodies": {
-    "Sun": [
-      {
-        "date": "2026-Mar-08",
-        "longitude_deg": "-5.11108"
-      },
-      {
-        "date": "2026-Mar-09",
-        "longitude_deg": "-4.72129"
-      },
-      {
-        "date": "2026-Mar-10",
-        "longitude_deg": "-4.33046"
-      },
-      {
-        "date": "2026-Mar-11",
-        "longitude_deg": "-3.93867"
-      },
-      {
-        "date": "2026-Mar-12",
-        "longitude_deg": "-3.54605"
-      },
-      {
-        "date": "2026-Mar-13",
-        "longitude_deg": "-3.15269"
-      },
-      {
-        "date": "2026-Mar-14",
-        "longitude_deg": "-2.75870"
-      },
-      {
-        "date": "2026-Mar-15",
-        "longitude_deg": "-2.36418"
-      }
-    ],
-    "Moon": [
-      {
-        "date": "2026-Mar-08",
-        "longitude_deg": "-19.13246"
-      },
-      {
-        "date": "2026-Mar-09",
-        "longitude_deg": "-23.10244"
-      },
-      {
-        "date": "2026-Mar-10",
-        "longitude_deg": "-26.06297"
-      },
-      {
-        "date": "2026-Mar-11",
-        "longitude_deg": "-27.86606"
-      },
-      {
-        "date": "2026-Mar-12",
-        "longitude_deg": "-28.39748"
-      },
-      {
-        "date": "2026-Mar-13",
-        "longitude_deg": "-27.59647"
-      },
-      {
-        "date": "2026-Mar-14",
-        "longitude_deg": "-25.46993"
-      },
-      {
-        "date": "2026-Mar-15",
-        "longitude_deg": "-22.09407"
-      }
-    ],
-    "Mercury": [
-      {
-        "date": "2026-Mar-08",
-        "longitude_deg": "-2.21419"
-      },
-      {
-        "date": "2026-Mar-09",
-        "longitude_deg": "-2.68967"
-      },
-      {
-        "date": "2026-Mar-10",
-        "longitude_deg": "-3.18556"
-      },
-      {
-        "date": "2026-Mar-11",
-        "longitude_deg": "-3.69128"
-      },
-      {
-        "date": "2026-Mar-12",
-        "longitude_deg": "-4.19687"
-      },
-      {
-        "date": "2026-Mar-13",
-        "longitude_deg": "-4.69336"
-      },
-      {
-        "date": "2026-Mar-14",
-        "longitude_deg": "-5.17289"
-      },
-      {
-        "date": "2026-Mar-15",
-        "longitude_deg": "-5.62888"
-      }
-    ],
-    "Venus": [
-      {
-        "date": "2026-Mar-08",
-        "longitude_deg": "-0.50257"
-      },
-      {
-        "date": "2026-Mar-09",
-        "longitude_deg": "0.01245"
-      },
-      {
-        "date": "2026-Mar-10",
-        "longitude_deg": "0.52769"
-      },
-      {
-        "date": "2026-Mar-11",
-        "longitude_deg": "1.04294"
-      },
-      {
-        "date": "2026-Mar-12",
-        "longitude_deg": "1.55800"
-      },
-      {
-        "date": "2026-Mar-13",
-        "longitude_deg": "2.07267"
-      },
-      {
-        "date": "2026-Mar-14",
-        "longitude_deg": "2.58674"
-      },
-      {
-        "date": "2026-Mar-15",
-        "longitude_deg": "3.10000"
-      }
-    ],
-    "Mars": [
-      {
-        "date": "2026-Mar-08",
-        "longitude_deg": "-11.09710"
-      },
-      {
-        "date": "2026-Mar-09",
-        "longitude_deg": "-10.80901"
-      },
-      {
-        "date": "2026-Mar-10",
-        "longitude_deg": "-10.51924"
-      },
-      {
-        "date": "2026-Mar-11",
-        "longitude_deg": "-10.22782"
-      },
-      {
-        "date": "2026-Mar-12",
-        "longitude_deg": "-9.93484"
-      },
-      {
-        "date": "2026-Mar-13",
-        "longitude_deg": "-9.64033"
-      },
-      {
-        "date": "2026-Mar-14",
-        "longitude_deg": "-9.34435"
-      },
-      {
-        "date": "2026-Mar-15",
-        "longitude_deg": "-9.04698"
-      }
-    ],
-    "Jupiter": [
-      {
-        "date": "2026-Mar-08",
-        "longitude_deg": "22.97135"
-      },
-      {
-        "date": "2026-Mar-09",
-        "longitude_deg": "22.97325"
-      },
-      {
-        "date": "2026-Mar-10",
-        "longitude_deg": "22.97477"
-      },
-      {
-        "date": "2026-Mar-11",
-        "longitude_deg": "22.97592"
-      },
-      {
-        "date": "2026-Mar-12",
-        "longitude_deg": "22.97669"
-      },
-      {
-        "date": "2026-Mar-13",
-        "longitude_deg": "22.97710"
-      },
-      {
-        "date": "2026-Mar-14",
-        "longitude_deg": "22.97713"
-      },
-      {
-        "date": "2026-Mar-15",
-        "longitude_deg": "22.97680"
-      }
-    ],
-    "Saturn": [
-      {
-        "date": "2026-Mar-08",
-        "longitude_deg": "-1.07382"
-      },
-      {
-        "date": "2026-Mar-09",
-        "longitude_deg": "-1.02489"
-      },
-      {
-        "date": "2026-Mar-10",
-        "longitude_deg": "-0.97588"
-      },
-      {
-        "date": "2026-Mar-11",
-        "longitude_deg": "-0.92679"
-      },
-      {
-        "date": "2026-Mar-12",
-        "longitude_deg": "-0.87765"
-      },
-      {
-        "date": "2026-Mar-13",
-        "longitude_deg": "-0.82846"
-      },
-      {
-        "date": "2026-Mar-14",
-        "longitude_deg": "-0.77922"
-      },
-      {
-        "date": "2026-Mar-15",
-        "longitude_deg": "-0.72994"
-      }
-    ],
-    "Uranus": [
-      {
-        "date": "2026-Mar-08",
-        "longitude_deg": "19.43448"
-      },
-      {
-        "date": "2026-Mar-09",
-        "longitude_deg": "19.44101"
-      },
-      {
-        "date": "2026-Mar-10",
-        "longitude_deg": "19.44771"
-      },
-      {
-        "date": "2026-Mar-11",
-        "longitude_deg": "19.45458"
-      },
-      {
-        "date": "2026-Mar-12",
-        "longitude_deg": "19.46161"
-      },
-      {
-        "date": "2026-Mar-13",
-        "longitude_deg": "19.46880"
-      },
-      {
-        "date": "2026-Mar-14",
-        "longitude_deg": "19.47615"
-      },
-      {
-        "date": "2026-Mar-15",
-        "longitude_deg": "19.48366"
-      }
-    ],
-    "Neptune": [
-      {
-        "date": "2026-Mar-08",
-        "longitude_deg": "-0.82574"
-      },
-      {
-        "date": "2026-Mar-09",
-        "longitude_deg": "-0.81095"
-      },
-      {
-        "date": "2026-Mar-10",
-        "longitude_deg": "-0.79612"
-      },
-      {
-        "date": "2026-Mar-11",
-        "longitude_deg": "-0.78126"
-      },
-      {
-        "date": "2026-Mar-12",
-        "longitude_deg": "-0.76637"
-      },
-      {
-        "date": "2026-Mar-13",
-        "longitude_deg": "-0.75146"
-      },
-      {
-        "date": "2026-Mar-14",
-        "longitude_deg": "-0.73652"
-      },
-      {
-        "date": "2026-Mar-15",
-        "longitude_deg": "-0.72156"
-      }
-    ],
-    "Pluto": [
-      {
-        "date": "2026-Mar-08",
-        "longitude_deg": "-22.93398"
-      },
-      {
-        "date": "2026-Mar-09",
-        "longitude_deg": "-22.93048"
-      },
-      {
-        "date": "2026-Mar-10",
-        "longitude_deg": "-22.92706"
-      },
-      {
-        "date": "2026-Mar-11",
-        "longitude_deg": "-22.92373"
-      },
-      {
-        "date": "2026-Mar-12",
-        "longitude_deg": "-22.92048"
-      },
-      {
-        "date": "2026-Mar-13",
-        "longitude_deg": "-22.91734"
-      },
-      {
-        "date": "2026-Mar-14",
-        "longitude_deg": "-22.91432"
-      },
-      {
-        "date": "2026-Mar-15",
-        "longitude_deg": "-22.91141"
-      }
-    ]
-  }
+    "Sun": {
+      "source": "jpl",
+      "data": [
+        {
+          "date": "2026-Mar-08",
+          "longitude_deg": "-5.11108"
+        },
+        {
+          "date": "2026-Mar-09",
+          "longitude_deg": "-4.72129"
+        },
+        {
+          "date": "2026-Mar-10",
+          "longitude_deg": "-4.33046"
+        },
+        {
+          "date": "2026-Mar-11",
+          "longitude_deg": "-3.93867"
+        },
+        {
+          "date": "2026-Mar-12",
+          "longitude_deg": "-3.54605"
+        },
+        {
+          "date": "2026-Mar-13",
+          "longitude_deg": "-3.15269"
+        },
+        {
+          "date": "2026-Mar-14",
+          "longitude_deg": "-2.75870"
+        },
+        {
+          "date": "2026-Mar-15",
+          "longitude_deg": "-2.36418"
+        }
+      ]
+    },
+    "Moon": {
+      "source": "jpl",
+      "data": [
+        {
+          "date": "2026-Mar-08",
+          "longitude_deg": "-19.13246"
+        },
+        {
+          "date": "2026-Mar-09",
+          "longitude_deg": "-23.10244"
+        },
+        {
+          "date": "2026-Mar-10",
+          "longitude_deg": "-26.06297"
+        },
+        {
+          "date": "2026-Mar-11",
+          "longitude_deg": "-27.86606"
+        },
+        {
+          "date": "2026-Mar-12",
+          "longitude_deg": "-28.39748"
+        },
+        {
+          "date": "2026-Mar-13",
+          "longitude_deg": "-27.59647"
+        },
+        {
+          "date": "2026-Mar-14",
+          "longitude_deg": "-25.46993"
+        },
+        {
+          "date": "2026-Mar-15",
+          "longitude_deg": "-22.09407"
+        }
+      ]
+    },
+    "Mercury": {
+      "source": "jpl",
+      "data": [
+        {
+          "date": "2026-Mar-08",
+          "longitude_deg": "-2.21419"
+        },
+        {
+          "date": "2026-Mar-09",
+          "longitude_deg": "-2.68967"
+        },
+        {
+          "date": "2026-Mar-10",
+          "longitude_deg": "-3.18556"
+        },
+        {
+          "date": "2026-Mar-11",
+          "longitude_deg": "-3.69128"
+        },
+        {
+          "date": "2026-Mar-12",
+          "longitude_deg": "-4.19687"
+        },
+        {
+          "date": "2026-Mar-13",
+          "longitude_deg": "-4.69336"
+        },
+        {
+          "date": "2026-Mar-14",
+          "longitude_deg": "-5.17289"
+        },
+        {
+          "date": "2026-Mar-15",
+          "longitude_deg": "-5.62888"
+        }
+      ]
+    },
+    "Venus": {
+      "source": "jpl",
+      "data": [
+        {
+          "date": "2026-Mar-08",
+          "longitude_deg": "-0.50257"
+        },
+        {
+          "date": "2026-Mar-09",
+          "longitude_deg": "0.01245"
+        },
+        {
+          "date": "2026-Mar-10",
+          "longitude_deg": "0.52769"
+        },
+        {
+          "date": "2026-Mar-11",
+          "longitude_deg": "1.04294"
+        },
+        {
+          "date": "2026-Mar-12",
+          "longitude_deg": "1.55800"
+        },
+        {
+          "date": "2026-Mar-13",
+          "longitude_deg": "2.07267"
+        },
+        {
+          "date": "2026-Mar-14",
+          "longitude_deg": "2.58674"
+        },
+        {
+          "date": "2026-Mar-15",
+          "longitude_deg": "3.10000"
+        }
+      ]
+    },
+    "Mars": {
+      "source": "jpl",
+      "data": [
+        {
+          "date": "2026-Mar-08",
+          "longitude_deg": "-11.09710"
+        },
+        {
+          "date": "2026-Mar-09",
+          "longitude_deg": "-10.80901"
+        },
+        {
+          "date": "2026-Mar-10",
+          "longitude_deg": "-10.51924"
+        },
+        {
+          "date": "2026-Mar-11",
+          "longitude_deg": "-10.22782"
+        },
+        {
+          "date": "2026-Mar-12",
+          "longitude_deg": "-9.93484"
+        },
+        {
+          "date": "2026-Mar-13",
+          "longitude_deg": "-9.64033"
+        },
+        {
+          "date": "2026-Mar-14",
+          "longitude_deg": "-9.34435"
+        },
+        {
+          "date": "2026-Mar-15",
+          "longitude_deg": "-9.04698"
+        }
+      ]
+    },
+    "Jupiter": {
+      "source": "jpl",
+      "data": [
+        {
+          "date": "2026-Mar-08",
+          "longitude_deg": "22.97135"
+        },
+        {
+          "date": "2026-Mar-09",
+          "longitude_deg": "22.97325"
+        },
+        {
+          "date": "2026-Mar-10",
+          "longitude_deg": "22.97477"
+        },
+        {
+          "date": "2026-Mar-11",
+          "longitude_deg": "22.97592"
+        },
+        {
+          "date": "2026-Mar-12",
+          "longitude_deg": "22.97669"
+        },
+        {
+          "date": "2026-Mar-13",
+          "longitude_deg": "22.97710"
+        },
+        {
+          "date": "2026-Mar-14",
+          "longitude_deg": "22.97713"
+        },
+        {
+          "date": "2026-Mar-15",
+          "longitude_deg": "22.97680"
+        }
+      ]
+    },
+    "Saturn": {
+      "source": "jpl",
+      "data": [
+        {
+          "date": "2026-Mar-08",
+          "longitude_deg": "-1.07382"
+        },
+        {
+          "date": "2026-Mar-09",
+          "longitude_deg": "-1.02489"
+        },
+        {
+          "date": "2026-Mar-10",
+          "longitude_deg": "-0.97588"
+        },
+        {
+          "date": "2026-Mar-11",
+          "longitude_deg": "-0.92679"
+        },
+        {
+          "date": "2026-Mar-12",
+          "longitude_deg": "-0.87765"
+        },
+        {
+          "date": "2026-Mar-13",
+          "longitude_deg": "-0.82846"
+        },
+        {
+          "date": "2026-Mar-14",
+          "longitude_deg": "-0.77922"
+        },
+        {
+          "date": "2026-Mar-15",
+          "longitude_deg": "-0.72994"
+        }
+      ]
+    },
+    "Uranus": {
+      "source": "jpl",
+      "data": [
+        {
+          "date": "2026-Mar-08",
+          "longitude_deg": "19.43448"
+        },
+        {
+          "date": "2026-Mar-09",
+          "longitude_deg": "19.44101"
+        },
+        {
+          "date": "2026-Mar-10",
+          "longitude_deg": "19.44771"
+        },
+        {
+          "date": "2026-Mar-11",
+          "longitude_deg": "19.45458"
+        },
+        {
+          "date": "2026-Mar-12",
+          "longitude_deg": "19.46161"
+        },
+        {
+          "date": "2026-Mar-13",
+          "longitude_deg": "19.46880"
+        },
+        {
+          "date": "2026-Mar-14",
+          "longitude_deg": "19.47615"
+        },
+        {
+          "date": "2026-Mar-15",
+          "longitude_deg": "19.48366"
+        }
+      ]
+    },
+    "Neptune": {
+      "source": "jpl",
+      "data": [
+        {
+          "date": "2026-Mar-08",
+          "longitude_deg": "-0.82574"
+        },
+        {
+          "date": "2026-Mar-09",
+          "longitude_deg": "-0.81095"
+        },
+        {
+          "date": "2026-Mar-10",
+          "longitude_deg": "-0.79612"
+        },
+        {
+          "date": "2026-Mar-11",
+          "longitude_deg": "-0.78126"
+        },
+        {
+          "date": "2026-Mar-12",
+          "longitude_deg": "-0.76637"
+        },
+        {
+          "date": "2026-Mar-13",
+          "longitude_deg": "-0.75146"
+        },
+        {
+          "date": "2026-Mar-14",
+          "longitude_deg": "-0.73652"
+        },
+        {
+          "date": "2026-Mar-15",
+          "longitude_deg": "-0.72156"
+        }
+      ]
+    },
+    "Pluto": {
+      "source": "jpl",
+      "data": [
+        {
+          "date": "2026-Mar-08",
+          "longitude_deg": "-22.93398"
+        },
+        {
+          "date": "2026-Mar-09",
+          "longitude_deg": "-22.93048"
+        },
+        {
+          "date": "2026-Mar-10",
+          "longitude_deg": "-22.92706"
+        },
+        {
+          "date": "2026-Mar-11",
+          "longitude_deg": "-22.92373"
+        },
+        {
+          "date": "2026-Mar-12",
+          "longitude_deg": "-22.92048"
+        },
+        {
+          "date": "2026-Mar-13",
+          "longitude_deg": "-22.91734"
+        },
+        {
+          "date": "2026-Mar-14",
+          "longitude_deg": "-22.91432"
+        },
+        {
+          "date": "2026-Mar-15",
+          "longitude_deg": "-22.91141"
+        }
+      ]
+    },
+    "Eris": {
+      "source": "jpl",
+      "data": [
+        {
+          "date": "2026-Mar-08",
+          "longitude_deg": "-0.21887"
+        },
+        {
+          "date": "2026-Mar-09",
+          "longitude_deg": "-0.21414"
+        },
+        {
+          "date": "2026-Mar-10",
+          "longitude_deg": "-0.20940"
+        },
+        {
+          "date": "2026-Mar-11",
+          "longitude_deg": "-0.20465"
+        },
+        {
+          "date": "2026-Mar-12",
+          "longitude_deg": "-0.19988"
+        },
+        {
+          "date": "2026-Mar-13",
+          "longitude_deg": "-0.19511"
+        },
+        {
+          "date": "2026-Mar-14",
+          "longitude_deg": "-0.19033"
+        },
+        {
+          "date": "2026-Mar-15",
+          "longitude_deg": "-0.18553"
+        }
+      ]
+    },
+    "Haumea": {
+      "source": "jpl",
+      "data": [
+        {
+          "date": "2026-Mar-08",
+          "longitude_deg": "14.20464"
+        },
+        {
+          "date": "2026-Mar-09",
+          "longitude_deg": "14.21506"
+        },
+        {
+          "date": "2026-Mar-10",
+          "longitude_deg": "14.22545"
+        },
+        {
+          "date": "2026-Mar-11",
+          "longitude_deg": "14.23583"
+        },
+        {
+          "date": "2026-Mar-12",
+          "longitude_deg": "14.24617"
+        },
+        {
+          "date": "2026-Mar-13",
+          "longitude_deg": "14.25649"
+        },
+        {
+          "date": "2026-Mar-14",
+          "longitude_deg": "14.26677"
+        },
+        {
+          "date": "2026-Mar-15",
+          "longitude_deg": "14.27701"
+        }
+      ]
+    },
+    "Makemake": {
+      "source": "jpl",
+      "data": [
+        {
+          "date": "2026-Mar-08",
+          "longitude_deg": "20.73855"
+        },
+        {
+          "date": "2026-Mar-09",
+          "longitude_deg": "20.74780"
+        },
+        {
+          "date": "2026-Mar-10",
+          "longitude_deg": "20.75697"
+        },
+        {
+          "date": "2026-Mar-11",
+          "longitude_deg": "20.76608"
+        },
+        {
+          "date": "2026-Mar-12",
+          "longitude_deg": "20.77511"
+        },
+        {
+          "date": "2026-Mar-13",
+          "longitude_deg": "20.78405"
+        },
+        {
+          "date": "2026-Mar-14",
+          "longitude_deg": "20.79292"
+        },
+        {
+          "date": "2026-Mar-15",
+          "longitude_deg": "20.80169"
+        }
+      ]
+    },
+    "Sedna": {
+      "source": "jpl",
+      "data": [
+        {
+          "date": "2026-Mar-08",
+          "longitude_deg": "8.68019"
+        },
+        {
+          "date": "2026-Mar-09",
+          "longitude_deg": "8.68352"
+        },
+        {
+          "date": "2026-Mar-10",
+          "longitude_deg": "8.68687"
+        },
+        {
+          "date": "2026-Mar-11",
+          "longitude_deg": "8.69025"
+        },
+        {
+          "date": "2026-Mar-12",
+          "longitude_deg": "8.69365"
+        },
+        {
+          "date": "2026-Mar-13",
+          "longitude_deg": "8.69708"
+        },
+        {
+          "date": "2026-Mar-14",
+          "longitude_deg": "8.70053"
+        },
+        {
+          "date": "2026-Mar-15",
+          "longitude_deg": "8.70399"
+        }
+      ]
+    },
+    "Quaoar": {
+      "source": "jpl",
+      "data": [
+        {
+          "date": "2026-Mar-08",
+          "longitude_deg": "-15.00799"
+        },
+        {
+          "date": "2026-Mar-09",
+          "longitude_deg": "-15.00400"
+        },
+        {
+          "date": "2026-Mar-10",
+          "longitude_deg": "-15.00001"
+        },
+        {
+          "date": "2026-Mar-11",
+          "longitude_deg": "-14.99603"
+        },
+        {
+          "date": "2026-Mar-12",
+          "longitude_deg": "-14.99206"
+        },
+        {
+          "date": "2026-Mar-13",
+          "longitude_deg": "-14.98810"
+        },
+        {
+          "date": "2026-Mar-14",
+          "longitude_deg": "-14.98414"
+        },
+        {
+          "date": "2026-Mar-15",
+          "longitude_deg": "-14.98020"
+        }
+      ]
+    },
+    "Orcus": {
+      "source": "jpl",
+      "data": [
+        {
+          "date": "2026-Mar-08",
+          "longitude_deg": "-13.82282"
+        },
+        {
+          "date": "2026-Mar-09",
+          "longitude_deg": "-13.81567"
+        },
+        {
+          "date": "2026-Mar-10",
+          "longitude_deg": "-13.80841"
+        },
+        {
+          "date": "2026-Mar-11",
+          "longitude_deg": "-13.80103"
+        },
+        {
+          "date": "2026-Mar-12",
+          "longitude_deg": "-13.79353"
+        },
+        {
+          "date": "2026-Mar-13",
+          "longitude_deg": "-13.78593"
+        },
+        {
+          "date": "2026-Mar-14",
+          "longitude_deg": "-13.77823"
+        },
+        {
+          "date": "2026-Mar-15",
+          "longitude_deg": "-13.77042"
+        }
+      ]
+    },
+    "Chiron": {
+      "source": "jpl",
+      "data": [
+        {
+          "date": "2026-Mar-08",
+          "longitude_deg": "9.68835"
+        },
+        {
+          "date": "2026-Mar-09",
+          "longitude_deg": "9.70573"
+        },
+        {
+          "date": "2026-Mar-10",
+          "longitude_deg": "9.72329"
+        },
+        {
+          "date": "2026-Mar-11",
+          "longitude_deg": "9.74101"
+        },
+        {
+          "date": "2026-Mar-12",
+          "longitude_deg": "9.75891"
+        },
+        {
+          "date": "2026-Mar-13",
+          "longitude_deg": "9.77697"
+        },
+        {
+          "date": "2026-Mar-14",
+          "longitude_deg": "9.79518"
+        },
+        {
+          "date": "2026-Mar-15",
+          "longitude_deg": "9.81355"
+        }
+      ]
+    },
+    "Chariklo": {
+      "source": "jpl",
+      "data": [
+        {
+          "date": "2026-Mar-08",
+          "longitude_deg": "-5.65489"
+        },
+        {
+          "date": "2026-Mar-09",
+          "longitude_deg": "-5.62854"
+        },
+        {
+          "date": "2026-Mar-10",
+          "longitude_deg": "-5.60218"
+        },
+        {
+          "date": "2026-Mar-11",
+          "longitude_deg": "-5.57580"
+        },
+        {
+          "date": "2026-Mar-12",
+          "longitude_deg": "-5.54941"
+        },
+        {
+          "date": "2026-Mar-13",
+          "longitude_deg": "-5.52302"
+        },
+        {
+          "date": "2026-Mar-14",
+          "longitude_deg": "-5.49662"
+        },
+        {
+          "date": "2026-Mar-15",
+          "longitude_deg": "-5.47023"
+        }
+      ]
+    },
+    "Pholus": {
+      "source": "jpl",
+      "data": [
+        {
+          "date": "2026-Mar-08",
+          "longitude_deg": "-14.62899"
+        },
+        {
+          "date": "2026-Mar-09",
+          "longitude_deg": "-14.62485"
+        },
+        {
+          "date": "2026-Mar-10",
+          "longitude_deg": "-14.62071"
+        },
+        {
+          "date": "2026-Mar-11",
+          "longitude_deg": "-14.61659"
+        },
+        {
+          "date": "2026-Mar-12",
+          "longitude_deg": "-14.61247"
+        },
+        {
+          "date": "2026-Mar-13",
+          "longitude_deg": "-14.60836"
+        },
+        {
+          "date": "2026-Mar-14",
+          "longitude_deg": "-14.60426"
+        },
+        {
+          "date": "2026-Mar-15",
+          "longitude_deg": "-14.60018"
+        }
+      ]
+    },
+    "Ceres": {
+      "source": "jpl",
+      "data": [
+        {
+          "date": "2026-Mar-08",
+          "longitude_deg": "-2.21419"
+        },
+        {
+          "date": "2026-Mar-09",
+          "longitude_deg": "-2.68967"
+        },
+        {
+          "date": "2026-Mar-10",
+          "longitude_deg": "-3.18556"
+        },
+        {
+          "date": "2026-Mar-11",
+          "longitude_deg": "-3.69128"
+        },
+        {
+          "date": "2026-Mar-12",
+          "longitude_deg": "-4.19687"
+        },
+        {
+          "date": "2026-Mar-13",
+          "longitude_deg": "-4.69336"
+        },
+        {
+          "date": "2026-Mar-14",
+          "longitude_deg": "-5.17289"
+        },
+        {
+          "date": "2026-Mar-15",
+          "longitude_deg": "-5.62888"
+        }
+      ]
+    },
+    "Pallas": {
+      "source": "jpl",
+      "data": [
+        {
+          "date": "2026-Mar-08",
+          "longitude_deg": "-0.50257"
+        },
+        {
+          "date": "2026-Mar-09",
+          "longitude_deg": "0.01245"
+        },
+        {
+          "date": "2026-Mar-10",
+          "longitude_deg": "0.52769"
+        },
+        {
+          "date": "2026-Mar-11",
+          "longitude_deg": "1.04294"
+        },
+        {
+          "date": "2026-Mar-12",
+          "longitude_deg": "1.55800"
+        },
+        {
+          "date": "2026-Mar-13",
+          "longitude_deg": "2.07267"
+        },
+        {
+          "date": "2026-Mar-14",
+          "longitude_deg": "2.58674"
+        },
+        {
+          "date": "2026-Mar-15",
+          "longitude_deg": "3.10000"
+        }
+      ]
+    },
+    "Vesta": {
+      "source": "jpl",
+      "data": [
+        {
+          "date": "2026-Mar-08",
+          "longitude_deg": "-11.09710"
+        },
+        {
+          "date": "2026-Mar-09",
+          "longitude_deg": "-10.80901"
+        },
+        {
+          "date": "2026-Mar-10",
+          "longitude_deg": "-10.51924"
+        },
+        {
+          "date": "2026-Mar-11",
+          "longitude_deg": "-10.22782"
+        },
+        {
+          "date": "2026-Mar-12",
+          "longitude_deg": "-9.93484"
+        },
+        {
+          "date": "2026-Mar-13",
+          "longitude_deg": "-9.64033"
+        },
+        {
+          "date": "2026-Mar-14",
+          "longitude_deg": "-9.34435"
+        },
+        {
+          "date": "2026-Mar-15",
+          "longitude_deg": "-9.04698"
+        }
+      ]
+    },
+    "Psyche": {
+      "source": "jpl",
+      "data": [
+        {
+          "date": "2026-Mar-08",
+          "longitude_deg": "19.98659"
+        },
+        {
+          "date": "2026-Mar-09",
+          "longitude_deg": "20.03212"
+        },
+        {
+          "date": "2026-Mar-10",
+          "longitude_deg": "20.07746"
+        },
+        {
+          "date": "2026-Mar-11",
+          "longitude_deg": "20.12258"
+        },
+        {
+          "date": "2026-Mar-12",
+          "longitude_deg": "20.16746"
+        },
+        {
+          "date": "2026-Mar-13",
+          "longitude_deg": "20.21207"
+        },
+        {
+          "date": "2026-Mar-14",
+          "longitude_deg": "20.25639"
+        },
+        {
+          "date": "2026-Mar-15",
+          "longitude_deg": "20.30040"
+        }
+      ]
+    },
+    "Eros": {
+      "source": "jpl",
+      "data": [
+        {
+          "date": "2026-Mar-08",
+          "longitude_deg": "16.70714"
+        },
+        {
+          "date": "2026-Mar-09",
+          "longitude_deg": "16.45616"
+        },
+        {
+          "date": "2026-Mar-10",
+          "longitude_deg": "16.20437"
+        },
+        {
+          "date": "2026-Mar-11",
+          "longitude_deg": "15.95181"
+        },
+        {
+          "date": "2026-Mar-12",
+          "longitude_deg": "15.69853"
+        },
+        {
+          "date": "2026-Mar-13",
+          "longitude_deg": "15.44456"
+        },
+        {
+          "date": "2026-Mar-14",
+          "longitude_deg": "15.18995"
+        },
+        {
+          "date": "2026-Mar-15",
+          "longitude_deg": "14.93475"
+        }
+      ]
+    },
+    "Amor": {
+      "source": "jpl",
+      "data": [
+        {
+          "date": "2026-Mar-08",
+          "longitude_deg": "-5.62164"
+        },
+        {
+          "date": "2026-Mar-09",
+          "longitude_deg": "-5.47986"
+        },
+        {
+          "date": "2026-Mar-10",
+          "longitude_deg": "-5.33804"
+        },
+        {
+          "date": "2026-Mar-11",
+          "longitude_deg": "-5.19621"
+        },
+        {
+          "date": "2026-Mar-12",
+          "longitude_deg": "-5.05438"
+        },
+        {
+          "date": "2026-Mar-13",
+          "longitude_deg": "-4.91257"
+        },
+        {
+          "date": "2026-Mar-14",
+          "longitude_deg": "-4.77079"
+        },
+        {
+          "date": "2026-Mar-15",
+          "longitude_deg": "-4.62907"
+        }
+      ]
+    }
+  },
+  "arabic_parts": {
+    "Part_of_Fortune": 70.86754
+  },
+  "harmonics": {
+    "H2": {
+      "Sun": 349.77784,
+      "Moon": 321.73508,
+      "Mercury": 355.57162,
+      "Venus": 358.99486,
+      "Mars": 337.8058,
+      "Jupiter": 45.9427,
+      "Saturn": 357.85236,
+      "Uranus": 38.86896,
+      "Neptune": 358.34852,
+      "Pluto": 314.13204,
+      "Eris": 359.56226,
+      "Haumea": 28.40928,
+      "Makemake": 41.4771,
+      "Sedna": 17.36038,
+      "Quaoar": 329.98402,
+      "Orcus": 332.35436,
+      "Chiron": 19.3767,
+      "Chariklo": 348.69022,
+      "Pholus": 330.74202,
+      "Ceres": 355.57162,
+      "Pallas": 358.99486,
+      "Vesta": 337.8058,
+      "Psyche": 39.97318,
+      "Eros": 33.41428,
+      "Amor": 348.75672
+    },
+    "H3": {
+      "Sun": 344.66676,
+      "Moon": 302.60262,
+      "Mercury": 353.35743,
+      "Venus": 358.49229,
+      "Mars": 326.7087,
+      "Jupiter": 68.91405,
+      "Saturn": 356.77854,
+      "Uranus": 58.30344,
+      "Neptune": 357.52278,
+      "Pluto": 291.19806,
+      "Eris": 359.34339,
+      "Haumea": 42.61392,
+      "Makemake": 62.21565,
+      "Sedna": 26.04057,
+      "Quaoar": 314.97603,
+      "Orcus": 318.53154,
+      "Chiron": 29.06505,
+      "Chariklo": 343.03533,
+      "Pholus": 316.11303,
+      "Ceres": 353.35743,
+      "Pallas": 358.49229,
+      "Vesta": 326.7087,
+      "Psyche": 59.95977,
+      "Eros": 50.12142,
+      "Amor": 343.13508
+    },
+    "H4": {
+      "Sun": 339.55568,
+      "Moon": 283.47016,
+      "Mercury": 351.14324,
+      "Venus": 357.98972,
+      "Mars": 315.6116,
+      "Jupiter": 91.8854,
+      "Saturn": 355.70472,
+      "Uranus": 77.73792,
+      "Neptune": 356.69704,
+      "Pluto": 268.26408000000004,
+      "Eris": 359.12452,
+      "Haumea": 56.81856,
+      "Makemake": 82.9542,
+      "Sedna": 34.72076,
+      "Quaoar": 299.96804,
+      "Orcus": 304.70871999999997,
+      "Chiron": 38.7534,
+      "Chariklo": 337.38044,
+      "Pholus": 301.48404,
+      "Ceres": 351.14324,
+      "Pallas": 357.98972,
+      "Vesta": 315.6116,
+      "Psyche": 79.94636,
+      "Eros": 66.82856,
+      "Amor": 337.51344
+    },
+    "H5": {
+      "Sun": 334.4446,
+      "Moon": 264.33770000000004,
+      "Mercury": 348.92905,
+      "Venus": 357.48715,
+      "Mars": 304.5145,
+      "Jupiter": 114.85675,
+      "Saturn": 354.6309,
+      "Uranus": 97.17240000000001,
+      "Neptune": 355.8713,
+      "Pluto": 245.33010000000002,
+      "Eris": 358.90565,
+      "Haumea": 71.0232,
+      "Makemake": 103.69275,
+      "Sedna": 43.400949999999995,
+      "Quaoar": 284.96005,
+      "Orcus": 290.8859,
+      "Chiron": 48.44175,
+      "Chariklo": 331.72555,
+      "Pholus": 286.85505,
+      "Ceres": 348.92905,
+      "Pallas": 357.48715,
+      "Vesta": 304.5145,
+      "Psyche": 99.93295,
+      "Eros": 83.53569999999999,
+      "Amor": 331.8918
+    },
+    "H6": {
+      "Sun": 329.33352,
+      "Moon": 245.20524,
+      "Mercury": 346.71486,
+      "Venus": 356.98458,
+      "Mars": 293.4174,
+      "Jupiter": 137.8281,
+      "Saturn": 353.55708,
+      "Uranus": 116.60688,
+      "Neptune": 355.04556,
+      "Pluto": 222.39612,
+      "Eris": 358.68678,
+      "Haumea": 85.22784,
+      "Makemake": 124.4313,
+      "Sedna": 52.08114,
+      "Quaoar": 269.95206,
+      "Orcus": 277.06308,
+      "Chiron": 58.1301,
+      "Chariklo": 326.07066,
+      "Pholus": 272.22606,
+      "Ceres": 346.71486,
+      "Pallas": 356.98458,
+      "Vesta": 293.4174,
+      "Psyche": 119.91954,
+      "Eros": 100.24284,
+      "Amor": 326.27016
+    },
+    "H7": {
+      "Sun": 324.22244,
+      "Moon": 226.07278000000002,
+      "Mercury": 344.50067,
+      "Venus": 356.48201,
+      "Mars": 282.3203,
+      "Jupiter": 160.79945,
+      "Saturn": 352.48326,
+      "Uranus": 136.04136,
+      "Neptune": 354.21982,
+      "Pluto": 199.46214,
+      "Eris": 358.46791,
+      "Haumea": 99.43248,
+      "Makemake": 145.16985,
+      "Sedna": 60.76133,
+      "Quaoar": 254.94407,
+      "Orcus": 263.24026000000003,
+      "Chiron": 67.81845,
+      "Chariklo": 320.41577,
+      "Pholus": 257.59707000000003,
+      "Ceres": 344.50067,
+      "Pallas": 356.48201,
+      "Vesta": 282.3203,
+      "Psyche": 139.90613,
+      "Eros": 116.94998,
+      "Amor": 320.64852
+    },
+    "H8": {
+      "Sun": 319.11136,
+      "Moon": 206.94032,
+      "Mercury": 342.28648,
+      "Venus": 355.97944,
+      "Mars": 271.2232,
+      "Jupiter": 183.7708,
+      "Saturn": 351.40944,
+      "Uranus": 155.47584,
+      "Neptune": 353.39408,
+      "Pluto": 176.52816,
+      "Eris": 358.24904,
+      "Haumea": 113.63712,
+      "Makemake": 165.9084,
+      "Sedna": 69.44152,
+      "Quaoar": 239.93608,
+      "Orcus": 249.41744,
+      "Chiron": 77.5068,
+      "Chariklo": 314.76088,
+      "Pholus": 242.96808,
+      "Ceres": 342.28648,
+      "Pallas": 355.97944,
+      "Vesta": 271.2232,
+      "Psyche": 159.89272,
+      "Eros": 133.65712,
+      "Amor": 315.02688
+    },
+    "H9": {
+      "Sun": 314.00028,
+      "Moon": 187.80786,
+      "Mercury": 340.07229,
+      "Venus": 355.47687,
+      "Mars": 260.1261,
+      "Jupiter": 206.74215,
+      "Saturn": 350.33562,
+      "Uranus": 174.91032,
+      "Neptune": 352.56834,
+      "Pluto": 153.59418000000002,
+      "Eris": 358.03017,
+      "Haumea": 127.84176,
+      "Makemake": 186.64695,
+      "Sedna": 78.12171,
+      "Quaoar": 224.92809,
+      "Orcus": 235.59462,
+      "Chiron": 87.19515,
+      "Chariklo": 309.10599,
+      "Pholus": 228.33909,
+      "Ceres": 340.07229,
+      "Pallas": 355.47687,
+      "Vesta": 260.1261,
+      "Psyche": 179.87931,
+      "Eros": 150.36426,
+      "Amor": 309.40524
+    },
+    "H10": {
+      "Sun": 308.8892,
+      "Moon": 168.67540000000002,
+      "Mercury": 337.8581,
+      "Venus": 354.9743,
+      "Mars": 249.029,
+      "Jupiter": 229.7135,
+      "Saturn": 349.2618,
+      "Uranus": 194.34480000000002,
+      "Neptune": 351.7426,
+      "Pluto": 130.66020000000003,
+      "Eris": 357.8113,
+      "Haumea": 142.0464,
+      "Makemake": 207.3855,
+      "Sedna": 86.80189999999999,
+      "Quaoar": 209.9201,
+      "Orcus": 221.77179999999998,
+      "Chiron": 96.8835,
+      "Chariklo": 303.4511,
+      "Pholus": 213.7101,
+      "Ceres": 337.8581,
+      "Pallas": 354.9743,
+      "Vesta": 249.029,
+      "Psyche": 199.8659,
+      "Eros": 167.07139999999998,
+      "Amor": 303.7836
+    },
+    "H11": {
+      "Sun": 303.77812,
+      "Moon": 149.54294000000002,
+      "Mercury": 335.64391,
+      "Venus": 354.47173,
+      "Mars": 237.9319,
+      "Jupiter": 252.68485,
+      "Saturn": 348.18798,
+      "Uranus": 213.77928,
+      "Neptune": 350.91686,
+      "Pluto": 107.72622000000001,
+      "Eris": 357.59243,
+      "Haumea": 156.25104,
+      "Makemake": 228.12405,
+      "Sedna": 95.48209,
+      "Quaoar": 194.91211,
+      "Orcus": 207.94898,
+      "Chiron": 106.57185,
+      "Chariklo": 297.79621,
+      "Pholus": 199.08111,
+      "Ceres": 335.64391,
+      "Pallas": 354.47173,
+      "Vesta": 237.9319,
+      "Psyche": 219.85249,
+      "Eros": 183.77854,
+      "Amor": 298.16196
+    },
+    "H12": {
+      "Sun": 298.66704,
+      "Moon": 130.41048,
+      "Mercury": 333.42972,
+      "Venus": 353.96916,
+      "Mars": 226.8348,
+      "Jupiter": 275.6562,
+      "Saturn": 347.11416,
+      "Uranus": 233.21376,
+      "Neptune": 350.09112,
+      "Pluto": 84.79223999999999,
+      "Eris": 357.37356,
+      "Haumea": 170.45568,
+      "Makemake": 248.8626,
+      "Sedna": 104.16228,
+      "Quaoar": 179.90412,
+      "Orcus": 194.12616,
+      "Chiron": 116.2602,
+      "Chariklo": 292.14132,
+      "Pholus": 184.45212,
+      "Ceres": 333.42972,
+      "Pallas": 353.96916,
+      "Vesta": 226.8348,
+      "Psyche": 239.83908,
+      "Eros": 200.48568,
+      "Amor": 292.54032
+    }
+  },
+  "fixed_star_conjunctions": {}
 }
