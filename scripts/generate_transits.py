@@ -134,7 +134,6 @@ def fetch_miriade(body, date):
         raise RuntimeError("Miriade request failed")
 
     data = r.json()
-    eph = None
     if "ephemerides" in data and data["ephemerides"]:
         eph = data["ephemerides"][0]
         lon = float(eph["lambda"])
