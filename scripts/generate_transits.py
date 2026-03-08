@@ -3,38 +3,12 @@ import datetime
 import os
 
 from scripts.bodies.horizons_client import fetch_horizons
-from scripts.bodies.miriade_client import fetch_miriade
-from scripts.bodies.mpc_client import fetch_mpc
 
 
 PLANETS = [
-"Sun","Moon","Mercury","Venus","Mars",
-"Jupiter","Saturn","Uranus","Neptune","Pluto"
+    "Sun","Moon","Mercury","Venus","Mars",
+    "Jupiter","Saturn","Uranus","Neptune","Pluto"
 ]
-
-
-def normalize(lon):
-    return lon % 360
-
-
-def fetch_body(body):
-
-    try:
-        return fetch_horizons(body)
-    except Exception:
-        pass
-
-    try:
-        return fetch_miriade(body)
-    except Exception:
-        pass
-
-    try:
-        return fetch_mpc(body)
-    except Exception:
-        pass
-
-    return None
 
 
 def zodiac(lon):
@@ -45,43 +19,49 @@ def zodiac(lon):
         "Sagittarius","Capricorn","Aquarius","Pisces"
     ]
 
-    s = int(lon/30)
+    s = int(lon / 30)
 
     return signs[s], lon % 30
 
 
 def generate():
 
+    today = datetime.date.today()
+    week_later = today + datetime.timedelta(days=7)
+
+    start = today.isoformat()
+    stop = week_later.isoformat()
+
     bodies = {}
 
-    for body in PLANETS:
+    for planet in PLANETS:
 
-        r = fetch_body(body)
+        data = fetch_horizons(planet, start, stop)
 
-        if not r:
+        if not data:
             continue
 
-        lon = normalize(r["lon"])
+        lon = data[0]["lon"] % 360
 
         sign,deg = zodiac(lon)
 
-        bodies[body] = {
-            "lon":lon,
-            "sign":sign,
-            "degree":deg
+        bodies[planet] = {
+            "lon": round(lon,6),
+            "sign": sign,
+            "degree": round(deg,6)
         }
 
     output = {
-        "generated_utc":datetime.datetime.utcnow().isoformat(),
-        "bodies":bodies
+        "generated_utc": datetime.datetime.utcnow().isoformat(),
+        "bodies": bodies
     }
 
-    os.makedirs("docs",exist_ok=True)
+    os.makedirs("docs", exist_ok=True)
 
-    with open("docs/current_week.json","w") as f:
-        json.dump(output,f,indent=2)
+    with open("docs/current_week.json", "w") as f:
+        json.dump(output, f, indent=2)
 
-    print("Weekly overlay written to docs/current_week.json")
+    print("Generated docs/current_week.json")
 
 
 if __name__ == "__main__":
