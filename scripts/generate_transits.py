@@ -18,106 +18,112 @@ BODIES = [
 ]
 
 
-# global cache for Horizons
 JPL_CACHE = {}
 
 
 def batch_fetch_horizons(start, stop):
 
-    results = {}
+    cache = {}
 
     for body in BODIES:
 
         try:
 
-            rows = fetch_batch(body,start,stop)
+            rows = fetch_batch(body, start, stop)
 
-            results[body] = rows
+            cache[body] = rows
 
         except Exception:
 
-            results[body] = None
+            cache[body] = None
 
-    return results
+    return cache
 
 
-def missing(rows):
+def missing_indices(rows):
 
     return [i for i,r in enumerate(rows) if r["lon"] is None]
 
 
-def resolve_body(body,start_date):
+def resolve_body(body, start_date):
 
-    start=start_date.strftime("%Y-%m-%d")
-    stop=(start_date+timedelta(days=6)).strftime("%Y-%m-%d")
+    start = start_date.strftime("%Y-%m-%d")
+    stop = (start_date + timedelta(days=6)).strftime("%Y-%m-%d")
 
-    results=[{"lon":None,"lat":None,"source":"none"} for _ in range(7)]
+    results = [{"lon":None,"lat":None,"source":"none"} for _ in range(7)]
 
-    # 1 JPL cached
     if body in JPL_CACHE and JPL_CACHE[body]:
 
         for i,(lon,lat) in enumerate(JPL_CACHE[body][:7]):
 
             if lon is not None:
+                results[i] = {"lon":lon,"lat":lat,"source":"JPL"}
 
-                results[i]={"lon":lon,"lat":lat,"source":"JPL"}
+    missing = missing_indices(results)
 
-    # 2 Miriade
-    m=missing(results)
-
-    if m:
+    if missing:
 
         try:
 
-            rows=fetch_miriade(body,start,stop)
+            rows = fetch_miriade(body,start,stop)
 
             for i,row in enumerate(rows):
 
-                if i in m and row["lon"] is not None:
+                if i in missing and row["lon"] is not None:
 
-                    results[i]={"lon":row["lon"],"lat":row["lat"],"source":"Miriade"}
+                    results[i] = {
+                        "lon":row["lon"],
+                        "lat":row["lat"],
+                        "source":"Miriade"
+                    }
 
         except Exception as e:
 
-            print(f"[WARN] Miriade failed {body}: {e}")
+            print(f"[WARN] Miriade failed for {body}: {e}")
 
-    # 3 MPC propagation
-    m=missing(results)
+    missing = missing_indices(results)
 
-    if m:
+    if missing:
 
         try:
 
-            rows=fetch_mpc(body,start,stop)
+            rows = fetch_mpc(body,start,stop)
 
             for i,row in enumerate(rows):
 
-                if i in m and row["lon"] is not None:
+                if i in missing and row["lon"] is not None:
 
-                    results[i]={"lon":row["lon"],"lat":row["lat"],"source":"MPC"}
+                    results[i] = {
+                        "lon":row["lon"],
+                        "lat":row["lat"],
+                        "source":"MPC"
+                    }
 
         except Exception as e:
 
-            print(f"[WARN] MPC failed {body}: {e}")
+            print(f"[WARN] MPC propagation failed for {body}: {e}")
 
-    # 4 Swiss fallback
-    m=missing(results)
+    missing = missing_indices(results)
 
-    if m:
+    if missing:
 
         try:
 
-            rows=fetch_swiss(body,start,stop)
+            rows = fetch_swiss(body,start,stop)
 
             for i,row in enumerate(rows):
 
-                if i in m and row["lon"] is not None:
+                if i in missing and row["lon"] is not None:
 
-                    results[i]={"lon":row["lon"],"lat":row["lat"],"source":"Swiss"}
+                    results[i] = {
+                        "lon":row["lon"],
+                        "lat":row["lat"],
+                        "source":"Swiss"
+                    }
 
         except Exception as e:
 
-            print(f"[WARN] Swiss failed {body}: {e}")
+            print(f"[WARN] Swiss fallback failed for {body}: {e}")
 
     return results
 
@@ -150,7 +156,7 @@ def calc_arabic_parts(data):
 
 def calc_harmonics(data):
 
-    out=[]
+    results=[]
 
     for i in range(7):
 
@@ -159,59 +165,55 @@ def calc_harmonics(data):
             sun=data["Sun"][i]["lon"]
 
             if sun is None:
-
-                out.append({})
-
+                results.append({})
                 continue
 
             h=compute_harmonics([sun])
 
-            out.append({
+            results.append({
                 "sun_h5":float(h["h5"][0]),
                 "sun_h7":float(h["h7"][0]),
                 "sun_h9":float(h["h9"][0])
             })
 
         except:
+            results.append({})
 
-            out.append({})
-
-    return out
+    return results
 
 
-def compute_star_conjunctions(data):
+def compute_fixed_star_conjunctions(data):
 
     stars=get_fixed_star_catalog()
 
-    hits=[]
+    results=[]
 
-    for day in range(7):
+    for i in range(7):
 
-        events=[]
+        hits=[]
 
         for body in data:
 
-            lon=data[body][day]["lon"]
+            lon=data[body][i]["lon"]
 
             if lon is None:
-
                 continue
 
-            for star,slon in stars.items():
+            for star,star_lon in stars.items():
 
-                diff=abs((lon-slon+180)%360-180)
+                diff=abs((lon-star_lon+180)%360-180)
 
                 if diff<1:
 
-                    events.append({
+                    hits.append({
                         "body":body,
                         "star":star,
                         "orb":round(diff,3)
                     })
 
-        hits.append(events)
+        results.append(hits)
 
-    return hits
+    return results
 
 
 def main():
@@ -223,7 +225,7 @@ def main():
 
     global JPL_CACHE
 
-    print("Fetching JPL batch")
+    print("Fetching JPL ephemeris batch")
 
     JPL_CACHE=batch_fetch_horizons(start,stop)
 
@@ -242,36 +244,30 @@ def main():
             body=futures[future]
 
             try:
-
                 bodies[body]=future.result()
 
             except Exception as e:
 
-                print(f"[ERROR] {body} failed: {e}")
+                print(f"[ERROR] Failed resolving {body}: {e}")
 
                 bodies[body]=[]
 
     data={
-
         "generated":datetime.utcnow().isoformat(),
-
         "bodies":bodies
-
     }
 
     data["arabic_parts"]=calc_arabic_parts(bodies)
 
     data["harmonics"]=calc_harmonics(bodies)
 
-    data["fixed_star_conjunctions"]=compute_star_conjunctions(bodies)
+    data["fixed_star_conjunctions"]=compute_fixed_star_conjunctions(bodies)
 
     with open("docs/current_week.json","w") as f:
-
         json.dump(data,f,indent=2)
 
     print("current_week.json written")
 
 
 if __name__=="__main__":
-
     main()
