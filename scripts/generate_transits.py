@@ -47,13 +47,11 @@ SWISS_MAP = {
     "Pluto": swe.PLUTO
 }
 
-
+# Parse Horizons API response
 def parse_horizons(text):
-    """Parse Horizons CSV output dynamically."""
     lines = text.splitlines()
+    start, end = None, None
 
-    start = None
-    end = None
     for i, line in enumerate(lines):
         if "$$SOE" in line:
             start = i + 1
@@ -72,7 +70,6 @@ def parse_horizons(text):
 
     headers = [h.strip() for h in header_line.split(",")]
 
-    # Dynamically find indices for EclLon and EclLat
     lon_index = headers.index("EclLon")
     lat_index = headers.index("EclLat")
 
@@ -88,9 +85,8 @@ def parse_horizons(text):
 
     return rows
 
-
+# Fetch data from JPL Horizons
 def fetch_jpl(body_id, start, stop):
-    """Fetch data from JPL Horizons."""
     params = {
         "format": "json",
         "COMMAND": body_id,
@@ -117,9 +113,8 @@ def fetch_jpl(body_id, start, stop):
 
     raise RuntimeError("JPL request failed")
 
-
+# Fetch data from Miriade
 def fetch_miriade(body, date):
-    """Fetch data from Miriade."""
     params = {
         "name": body,
         "type": "p",
@@ -139,9 +134,8 @@ def fetch_miriade(body, date):
 
     return lon, lat
 
-
+# Fetch data from Swiss Ephemeris
 def fetch_swiss(body, date):
-    """Fetch data from Swiss Ephemeris."""
     swe.set_ephe_path(".")
 
     dt = datetime.fromisoformat(date)
@@ -155,9 +149,8 @@ def fetch_swiss(body, date):
 
     return pos[0], pos[1]
 
-
+# Resolve body data using JPL, Miriade, and Swiss fallback
 def resolve_body(body, start_date):
-    """Resolve ephemeris data for a body."""
     start = start_date.strftime("%Y-%m-%d")
     stop = (start_date + timedelta(days=6)).strftime("%Y-%m-%d")
 
@@ -179,9 +172,8 @@ def resolve_body(body, start_date):
 
     return results
 
-
+# Calculate Arabic Parts
 def calc_arabic_parts(data):
-    """Calculate Arabic Parts."""
     parts = []
     for i in range(7):
         sun = data["Sun"][i]["lon"]
@@ -190,9 +182,8 @@ def calc_arabic_parts(data):
         parts.append({"part_of_fortune": fortune})
     return parts
 
-
+# Calculate Harmonics
 def calc_harmonics(data):
-    """Calculate Harmonics."""
     harmonics = []
     for i in range(7):
         sun = data["Sun"][i]["lon"]
@@ -202,45 +193,8 @@ def calc_harmonics(data):
         })
     return harmonics
 
-
-def calc_fixed_stars():
-    """Calculate fixed stars."""
-    return {
-        "Regulus": 150.0,
-        "Spica": 204.0,
-        "Aldebaran": 69.0,
-        "Antares": 249.0
-    }
-
-
-def calc_tnos():
-    """Calculate TNOs."""
-    return {
-        "Eris": 15.0,
-        "Sedna": 13.5,
-        "Orcus": 18.0
-    }
-
-
-def calc_minor_bodies():
-    """Calculate Minor Bodies."""
-    return {
-        "Ceres": 10.0,
-        "Vesta": 6.0
-    }
-
-
-def calc_aether_planets():
-    """Calculate Aether Planets."""
-    return {
-        "Eris": 300.0,
-        "Haumea": 140.0,
-        "Makemake": 280.0
-    }
-
-
+# Main function to generate weekly ephemeris
 def main():
-    """Main function to generate the weekly ephemeris."""
     start_date = datetime.utcnow()
     bodies = {}
 
@@ -256,13 +210,6 @@ def main():
     # Calculate additional astrology layers
     data["arabic_parts"] = calc_arabic_parts(bodies)
     data["harmonics"] = calc_harmonics(bodies)
-    data["fixed_stars"] = calc_fixed_stars()
-
-    # Calculate additional minor bodies, TNOs, aether planets
-    data["tnos"] = calc_tnos()
-    data["asteroids"] = calc_minor_bodies()
-    data["minor_bodies"] = calc_minor_bodies()
-    data["aether_planets"] = calc_aether_planets()
 
     # Write to output JSON
     with open("docs/current_week.json", "w") as f:
