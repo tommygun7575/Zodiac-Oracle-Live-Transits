@@ -1,5 +1,5 @@
 {
-  "generated": "2026-03-08T11:07:04.324348",
+  "generated": "2026-03-08T11:10:13.527697",
   "bodies": {
     "Sun": [
       {
@@ -149,43 +149,6 @@
         "source": "Swiss"
       }
     ],
-    "Mars": [
-      {
-        "lon": 334.65285254301017,
-        "lat": -1.093013119870658,
-        "source": "Swiss"
-      },
-      {
-        "lon": 335.4406162186688,
-        "lat": -1.0922927621821983,
-        "source": "Swiss"
-      },
-      {
-        "lon": 336.2283264262063,
-        "lat": -1.0914479404564879,
-        "source": "Swiss"
-      },
-      {
-        "lon": 337.01596773831454,
-        "lat": -1.0904785550116909,
-        "source": "Swiss"
-      },
-      {
-        "lon": 337.8035228327233,
-        "lat": -1.089384644691737,
-        "source": "Swiss"
-      },
-      {
-        "lon": 338.59097287465625,
-        "lat": -1.0881663970461086,
-        "source": "Swiss"
-      },
-      {
-        "lon": 339.3782978718172,
-        "lat": -1.086824156827567,
-        "source": "Swiss"
-      }
-    ],
     "Jupiter": [
       {
         "lon": 105.09882724357156,
@@ -223,40 +186,40 @@
         "source": "Swiss"
       }
     ],
-    "Uranus": [
+    "Mars": [
       {
-        "lon": 57.916674111634784,
-        "lat": -0.17732218666411995,
+        "lon": 334.65285254301017,
+        "lat": -1.093013119870658,
         "source": "Swiss"
       },
       {
-        "lon": 57.944611306760805,
-        "lat": -0.17703086622957304,
+        "lon": 335.4406162186688,
+        "lat": -1.0922927621821983,
         "source": "Swiss"
       },
       {
-        "lon": 57.97332383388437,
-        "lat": -0.17674052744669702,
+        "lon": 336.2283264262063,
+        "lat": -1.0914479404564879,
         "source": "Swiss"
       },
       {
-        "lon": 58.00280231636396,
-        "lat": -0.17645119373654067,
+        "lon": 337.01596773831454,
+        "lat": -1.0904785550116909,
         "source": "Swiss"
       },
       {
-        "lon": 58.03303628424122,
-        "lat": -0.1761629023520867,
+        "lon": 337.8035228327233,
+        "lat": -1.089384644691737,
         "source": "Swiss"
       },
       {
-        "lon": 58.06401454571733,
-        "lat": -0.17587570565516372,
+        "lon": 338.59097287465625,
+        "lat": -1.0881663970461086,
         "source": "Swiss"
       },
       {
-        "lon": 58.095725553842776,
-        "lat": -0.1755896721710924,
+        "lon": 339.3782978718172,
+        "lat": -1.086824156827567,
         "source": "Swiss"
       }
     ],
@@ -334,41 +297,78 @@
         "source": "Swiss"
       }
     ],
-    "Ceres": [
+    "Uranus": [
       {
-        "lon": null,
-        "lat": null,
-        "source": "none"
+        "lon": 57.916674111634784,
+        "lat": -0.17732218666411995,
+        "source": "Swiss"
       },
       {
-        "lon": null,
-        "lat": null,
-        "source": "none"
+        "lon": 57.944611306760805,
+        "lat": -0.17703086622957304,
+        "source": "Swiss"
       },
       {
-        "lon": null,
-        "lat": null,
-        "source": "none"
+        "lon": 57.97332383388437,
+        "lat": -0.17674052744669702,
+        "source": "Swiss"
       },
       {
-        "lon": null,
-        "lat": null,
-        "source": "none"
+        "lon": 58.00280231636396,
+        "lat": -0.17645119373654067,
+        "source": "Swiss"
       },
       {
-        "lon": null,
-        "lat": null,
-        "source": "none"
+        "lon": 58.03303628424122,
+        "lat": -0.1761629023520867,
+        "source": "Swiss"
       },
       {
-        "lon": null,
-        "lat": null,
-        "source": "none"
+        "lon": 58.06401454571733,
+        "lat": -0.17587570565516372,
+        "source": "Swiss"
       },
       {
-        "lon": null,
-        "lat": null,
-        "source": "none"
+        "lon": 58.095725553842776,
+        "lat": -0.1755896721710924,
+        "source": "Swiss"
+      }
+    ],
+    "Pluto": [
+      {
+        "lon": 304.7281373011825,
+        "lat": -3.8799090374601755,
+        "source": "Swiss"
+      },
+      {
+        "lon": 304.75287718996543,
+        "lat": -3.882505866350497,
+        "source": "Swiss"
+      },
+      {
+        "lon": 304.7773134223074,
+        "lat": -3.8851266079834477,
+        "source": "Swiss"
+      },
+      {
+        "lon": 304.80143719304306,
+        "lat": -3.8877709753407497,
+        "source": "Swiss"
+      },
+      {
+        "lon": 304.8252388193547,
+        "lat": -3.8904386792248316,
+        "source": "Swiss"
+      },
+      {
+        "lon": 304.8487081147514,
+        "lat": -3.8931294281083315,
+        "source": "Swiss"
+      },
+      {
+        "lon": 304.87183480023754,
+        "lat": -3.8958429283478226,
+        "source": "Swiss"
       }
     ],
     "Pallas": [
@@ -408,41 +408,41 @@
         "source": "none"
       }
     ],
-    "Pluto": [
+    "Ceres": [
       {
-        "lon": 304.7281373011825,
-        "lat": -3.8799090374601755,
-        "source": "Swiss"
+        "lon": null,
+        "lat": null,
+        "source": "none"
       },
       {
-        "lon": 304.75287718996543,
-        "lat": -3.882505866350497,
-        "source": "Swiss"
+        "lon": null,
+        "lat": null,
+        "source": "none"
       },
       {
-        "lon": 304.7773134223074,
-        "lat": -3.8851266079834477,
-        "source": "Swiss"
+        "lon": null,
+        "lat": null,
+        "source": "none"
       },
       {
-        "lon": 304.80143719304306,
-        "lat": -3.8877709753407497,
-        "source": "Swiss"
+        "lon": null,
+        "lat": null,
+        "source": "none"
       },
       {
-        "lon": 304.8252388193547,
-        "lat": -3.8904386792248316,
-        "source": "Swiss"
+        "lon": null,
+        "lat": null,
+        "source": "none"
       },
       {
-        "lon": 304.8487081147514,
-        "lat": -3.8931294281083315,
-        "source": "Swiss"
+        "lon": null,
+        "lat": null,
+        "source": "none"
       },
       {
-        "lon": 304.87183480023754,
-        "lat": -3.8958429283478226,
-        "source": "Swiss"
+        "lon": null,
+        "lat": null,
+        "source": "none"
       }
     ],
     "Juno": [
@@ -556,43 +556,6 @@
         "source": "none"
       }
     ],
-    "Sedna": [
-      {
-        "lon": null,
-        "lat": null,
-        "source": "none"
-      },
-      {
-        "lon": null,
-        "lat": null,
-        "source": "none"
-      },
-      {
-        "lon": null,
-        "lat": null,
-        "source": "none"
-      },
-      {
-        "lon": null,
-        "lat": null,
-        "source": "none"
-      },
-      {
-        "lon": null,
-        "lat": null,
-        "source": "none"
-      },
-      {
-        "lon": null,
-        "lat": null,
-        "source": "none"
-      },
-      {
-        "lon": null,
-        "lat": null,
-        "source": "none"
-      }
-    ],
     "Orcus": [
       {
         "lon": null,
@@ -667,6 +630,43 @@
         "source": "none"
       }
     ],
+    "Sedna": [
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      },
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      },
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      },
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      },
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      },
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      },
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      }
+    ],
     "Haumea": [
       {
         "lon": null,
@@ -704,7 +704,7 @@
         "source": "none"
       }
     ],
-    "Quaoar": [
+    "Ixion": [
       {
         "lon": null,
         "lat": null,
@@ -741,7 +741,7 @@
         "source": "none"
       }
     ],
-    "Ixion": [
+    "Quaoar": [
       {
         "lon": null,
         "lat": null,
