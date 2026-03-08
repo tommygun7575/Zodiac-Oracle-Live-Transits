@@ -130,10 +130,9 @@ def fetch_miriade(body, date):
     r = requests.get(MIRIADE_URL, params=params, timeout=30)
 
     if r.status_code != 200:
-        raise RuntimeError("Miriade failed")
+        raise RuntimeError("Miriade request failed")
 
     data = r.json()
-
     eph = data["ephemerides"][0]
     lon = float(eph["lambda"])
     lat = float(eph["beta"])
@@ -150,7 +149,7 @@ def fetch_swiss(body, date):
 
     planet = SWISS_MAP.get(body)
     if planet is None:
-        raise RuntimeError("Swiss unsupported")
+        raise RuntimeError("Swiss unsupported body")
 
     pos, _ = swe.calc_ut(jd, planet)
 
