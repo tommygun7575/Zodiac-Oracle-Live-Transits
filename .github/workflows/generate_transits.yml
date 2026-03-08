@@ -6,7 +6,9 @@ on:
   workflow_dispatch:
 
 jobs:
+
   build:
+
     runs-on: ubuntu-latest
 
     permissions:
@@ -24,7 +26,7 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install system libraries (required for pyswisseph)
+      - name: Install system libraries
         run: |
           sudo apt-get update
           sudo apt-get install -y build-essential
@@ -32,14 +34,9 @@ jobs:
       - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip wheel setuptools
-          pip install \
-            numpy \
-            astroquery \
-            pyswisseph \
-            python-dateutil \
-            requests
+          pip install numpy astroquery pyswisseph python-dateutil requests
 
-      - name: Ensure Python module path
+      - name: Set Python path
         run: |
           echo "PYTHONPATH=${{ github.workspace }}" >> $GITHUB_ENV
 
@@ -47,10 +44,10 @@ jobs:
         run: |
           python -m scripts.generate_transits
 
-      - name: Verify output file exists
+      - name: Verify output
         run: |
           if [ ! -f docs/current_week.json ]; then
-            echo "ERROR: docs/current_week.json not generated"
+            echo "ERROR: docs/current_week.json missing"
             exit 1
           fi
 
