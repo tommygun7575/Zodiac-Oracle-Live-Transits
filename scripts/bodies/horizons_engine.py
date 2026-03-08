@@ -1,6 +1,3 @@
-from .horizons_client import fetch_ephemeris
-
-
 def parse_ephemeris(text: str):
     rows = []
     reading = False
@@ -16,23 +13,14 @@ def parse_ephemeris(text: str):
             break
 
         if reading and line:
-            parts = [p.strip() for p in line.split(",")]
+            parts = line.split()
 
+            # Horizons observer format:
+            # Date ... Lon Lat ...
             if len(parts) >= 5:
                 rows.append({
                     "date": parts[0],
-                    "ra": parts[3],
-                    "dec": parts[4]
+                    "longitude_deg": parts[3]
                 })
 
     return rows
-
-
-def get_body_week(body_id: str, name: str, start: str, stop: str):
-    raw = fetch_ephemeris(body_id, start, stop)
-    parsed = parse_ephemeris(raw)
-
-    if not parsed:
-        raise RuntimeError(f"No parsed data for {name}")
-
-    return name, parsed
