@@ -14,17 +14,17 @@ BODY_IDS = {
     "Uranus": "799",
     "Neptune": "899",
     "Pluto": "999",
-    "Ceres": "1",
-    "Pallas": "2",
-    "Juno": "3",
-    "Vesta": "4",
-    "Eris": "136199",
-    "Sedna": "90377",
-    "Orcus": "90482",
-    "Makemake": "136472",
-    "Haumea": "136108",
-    "Quaoar": "50000",
-    "Ixion": "28978"
+    "Ceres": "1;",
+    "Pallas": "2;",
+    "Juno": "3;",
+    "Vesta": "4;",
+    "Eris": "136199;",
+    "Sedna": "90377;",
+    "Orcus": "90482;",
+    "Makemake": "136472;",
+    "Haumea": "136108;",
+    "Quaoar": "50000;",
+    "Ixion": "28978;"
 }
 
 
@@ -41,7 +41,7 @@ def fetch_batch(body, start, stop):
         "START_TIME": start,
         "STOP_TIME": stop,
         "STEP_SIZE": "1 d",
-        "QUANTITIES": "18,20",
+        "QUANTITIES": "31",
         "CSV_FORMAT": "YES",
         "ANG_FORMAT": "DEG"
     }

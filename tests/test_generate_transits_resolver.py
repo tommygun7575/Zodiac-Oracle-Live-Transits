@@ -62,6 +62,40 @@ class ResolveBodyOrderTests(unittest.TestCase):
         fetch_miriade.assert_not_called()
         fetch_swiss.assert_not_called()
 
+    @patch("scripts.generate_transits.fetch_swiss")
+    @patch("scripts.generate_transits.fetch_miriade")
+    @patch("scripts.generate_transits.fetch_jpl")
+    def test_small_body_jpl_id_uses_semicolon(self, fetch_jpl, fetch_miriade, fetch_swiss):
+        """Ceres (asteroid #1) must be requested with id '1;' so JPL resolves it
+        as an MPC small body rather than the Mercury system barycenter (NAIF id 1)."""
+        fetch_jpl.return_value = [(10.0, 0.5)]
+
+        generate_transits.resolve_body("Ceres", self.start_date)
+        fetch_jpl.assert_called_once_with("1;", "2026-03-08", "2026-03-14")
+
+    def test_jpl_ids_for_all_small_bodies_use_semicolons(self):
+        """Verify every small body in BODIES uses a semicolon-suffixed ID so JPL
+        resolves them as MPC catalog entries rather than planet-system barycenters."""
+        small_bodies = {
+            "Ceres": "1;",
+            "Pallas": "2;",
+            "Juno": "3;",
+            "Vesta": "4;",
+            "Eris": "136199;",
+            "Sedna": "90377;",
+            "Orcus": "90482;",
+            "Makemake": "136472;",
+            "Haumea": "136108;",
+            "Quaoar": "50000;",
+            "Ixion": "28978;",
+        }
+        for body, expected_id in small_bodies.items():
+            self.assertEqual(
+                generate_transits.BODIES[body],
+                expected_id,
+                msg=f"{body} should have JPL id '{expected_id}', got '{generate_transits.BODIES[body]}'",
+            )
+
 
 if __name__ == "__main__":
     unittest.main()

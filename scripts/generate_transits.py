@@ -12,7 +12,10 @@ MIRIADE_URL = "https://ssp.imcce.fr/webservices/miriade/api/ephemcc.php"
 # Set ephemeris path once at module level
 swe.set_ephe_path(".")
 
-# Define the celestial bodies and their IDs
+# Define the celestial bodies and their JPL Horizons IDs.
+# Major planets/Moon use NAIF integer IDs; small bodies use the MPC number
+# followed by a semicolon so JPL resolves them as asteroids rather than as
+# planet-system barycenters (e.g. "1" alone = Mercury barycenter).
 BODIES = {
     "Sun": "10",
     "Moon": "301",
@@ -24,17 +27,17 @@ BODIES = {
     "Uranus": "799",
     "Neptune": "899",
     "Pluto": "999",
-    "Ceres": "1",
-    "Pallas": "2",
-    "Juno": "3",
-    "Vesta": "4",
-    "Eris": "136199",
-    "Sedna": "90377",
-    "Orcus": "90482",
-    "Makemake": "136472",
-    "Haumea": "136108",
-    "Quaoar": "50000",
-    "Ixion": "28978"
+    "Ceres": "1;",
+    "Pallas": "2;",
+    "Juno": "3;",
+    "Vesta": "4;",
+    "Eris": "136199;",
+    "Sedna": "90377;",
+    "Orcus": "90482;",
+    "Makemake": "136472;",
+    "Haumea": "136108;",
+    "Quaoar": "50000;",
+    "Ixion": "28978;"
 }
 
 # Swiss Ephemeris constants
@@ -89,7 +92,7 @@ def fetch_jpl(body_id, start, stop):
         "START_TIME": start,
         "STOP_TIME": stop,
         "STEP_SIZE": "1 d",
-        "QUANTITIES": "18,20",
+        "QUANTITIES": "31",
         "CSV_FORMAT": "YES",
         "ANG_FORMAT": "DEG"
     }
@@ -114,6 +117,7 @@ def fetch_miriade(body, start_date):
         "nbd": 7,
         "step": "1d",
         "observer": "500",
+        "tcoor": "2",
         "mime": "json"
     }
 

@@ -15,6 +15,7 @@ def fetch_miriade(body, start, stop):
         "nbd": 7,
         "step": "1d",
         "observer": "500",
+        "tcoor": "2",
         "mime": "json"
     }
 
