@@ -24,6 +24,11 @@ class GenerateTransitsMinimalTests(unittest.TestCase):
         self.assertEqual("Cancer", sign)
         self.assertEqual(5.5, degree)
 
+    def test_zodiac_boundaries(self):
+        self.assertEqual(("Aries", 0), generate_transits.zodiac(0))
+        self.assertEqual(("Aries", 29.99), generate_transits.zodiac(29.99))
+        self.assertEqual(("Taurus", 0), generate_transits.zodiac(30))
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -17,7 +17,7 @@ def fetch_horizons(body):
     r = requests.get(HORIZONS_URL, params=params, timeout=30)
 
     if r.status_code != 200:
-        raise RuntimeError("Horizons request failed")
+        raise RuntimeError(f"Horizons request failed for {body} with status {r.status_code}")
 
     data = r.json()
 
@@ -28,12 +28,15 @@ def fetch_horizons(body):
 
     for line in text.split("\n"):
 
-        if "," in line and line.strip()[0].isdigit():
+        stripped = line.strip()
+        if "," in stripped and stripped[0].isdigit():
 
-            parts = line.split(",")
+            parts = stripped.split(",")
+            if len(parts) <= 4:
+                continue
 
             lon = float(parts[4])
 
             return {"lon": lon}
 
-    raise RuntimeError("No ephemeris found")
+    raise RuntimeError(f"No ephemeris found for {body}")

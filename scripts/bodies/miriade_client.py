@@ -14,7 +14,7 @@ def fetch_miriade(body):
     r = requests.get(MIRIADE_URL, params=params, timeout=30)
 
     if r.status_code != 200:
-        raise RuntimeError("Miriade request failed")
+        raise RuntimeError(f"Miriade request failed for {body} with status {r.status_code}")
 
     data = r.json()
 
