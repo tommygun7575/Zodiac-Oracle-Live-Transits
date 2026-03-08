@@ -7,8 +7,11 @@ from scripts.bodies.mpc_engine import get_mpc_week
 from scripts.bodies.swiss_engine import get_swiss_week
 
 
-COVERAGE_THRESHOLD = 0.92  # 92% minimum
+COVERAGE_THRESHOLD = 0.92
+HARMONIC_MIN = 2
+HARMONIC_MAX = 12  # dynamic range (change freely)
 
+# Curated master registry (expand carefully)
 ALL_BODIES = {
     # Planets
     "10": "Sun",
@@ -22,48 +25,117 @@ ALL_BODIES = {
     "899": "Neptune",
     "999": "Pluto",
 
-    # Dwarf planets
+    # Dwarf / TNO
     "136199": "Eris",
     "136108": "Haumea",
     "136472": "Makemake",
-
-    # TNO examples
     "90377": "Sedna",
     "50000": "Quaoar",
-    "90482": "Orcus"
+    "90482": "Orcus",
+
+    # Centaurs
+    "2060": "Chiron",
+    "10199": "Chariklo",
+    "5145": "Pholus",
+
+    # Key Asteroids
+    "1": "Ceres",
+    "2": "Pallas",
+    "3": "Juno",
+    "4": "Vesta",
+    "16": "Psyche",
+    "433": "Eros",
+    "1221": "Amor"
 }
+
+# Fixed star catalog (curated)
+FIXED_STARS = {
+    "Regulus": 150.0,
+    "Spica": 204.0,
+    "Aldebaran": 69.0,
+    "Antares": 249.0
+}
+
+ORB = 1.0  # degree orb
 
 
 def resolve_body(body_id, name, start, stop):
 
-    # 1 — JPL
     try:
-        return get_body_week(body_id, name, start, stop), "jpl_horizons"
-    except Exception:
+        return get_body_week(body_id, name, start, stop), "jpl"
+    except:
         pass
 
-    # 2 — Miriade
     try:
         return get_miriade_week(body_id, name, start, stop), "miriade"
-    except Exception:
+    except:
         pass
 
-    # 3 — MPC
     try:
         return get_mpc_week(body_id, name, start, stop), "mpc"
-    except Exception:
+    except:
         pass
 
-    # 4 — Swiss
     try:
         return get_swiss_week(body_id, name, start, stop), "swiss"
-    except Exception:
+    except:
         pass
 
     return None, None
 
 
+def compute_arabic_parts(bodies):
+    parts = {}
+
+    try:
+        sun = float(bodies["Sun"]["data"][0]["longitude_deg"])
+        moon = float(bodies["Moon"]["data"][0]["longitude_deg"])
+
+        # Placeholder ASC (real ASC requires location + time calc)
+        asc = (sun + 90) % 360
+
+        fortune = (asc + moon - sun) % 360
+        parts["Part_of_Fortune"] = fortune
+
+    except:
+        pass
+
+    return parts
+
+
+def compute_harmonics(bodies, h_min, h_max):
+    harmonic_output = {}
+
+    for h in range(h_min, h_max + 1):
+        harmonic_output[f"H{h}"] = {}
+        for name, obj in bodies.items():
+            try:
+                lon = float(obj["data"][0]["longitude_deg"])
+                harmonic_output[f"H{h}"][name] = (lon * h) % 360
+            except:
+                pass
+
+    return harmonic_output
+
+
+def compute_fixed_star_conjunctions(bodies):
+    results = {}
+
+    for body_name, obj in bodies.items():
+        try:
+            lon = float(obj["data"][0]["longitude_deg"])
+            for star, star_lon in FIXED_STARS.items():
+                diff = abs(lon - star_lon)
+                if diff <= ORB or abs(diff - 360) <= ORB:
+                    results.setdefault(body_name, []).append(star)
+        except:
+            pass
+
+    return results
+
+
 def generate_week():
+
     today = datetime.utcnow().date()
     start = today.strftime("%Y-%m-%d")
     stop = (today + timedelta(days=7)).strftime("%Y-%m-%d")
@@ -94,16 +166,23 @@ def generate_week():
             f"Coverage below threshold ({coverage*100:.2f}%). Aborting."
         )
 
+    arabic_parts = compute_arabic_parts(bodies)
+    harmonics = compute_harmonics(bodies, HARMONIC_MIN, HARMONIC_MAX)
+    fixed_star_hits = compute_fixed_star_conjunctions(bodies)
+
     output = {
         "generated_utc": datetime.utcnow().isoformat(),
         "week_start": start,
         "week_end": stop,
-        "engine_version": "ZodiacOracle.MultiSource.v3",
+        "engine_version": "ZodiacOracle.Curated.vFinal",
         "coverage": coverage,
         "resolved": len(bodies),
         "total_targets": total_targets,
         "missing": missing,
-        "bodies": bodies
+        "bodies": bodies,
+        "arabic_parts": arabic_parts,
+        "harmonics": harmonics,
+        "fixed_star_conjunctions": fixed_star_hits
     }
 
     filename = f"docs/current_week_{start}.json"
