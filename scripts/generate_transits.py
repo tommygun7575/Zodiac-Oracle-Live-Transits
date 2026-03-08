@@ -22,6 +22,9 @@ TNO = [
 ]
 
 
+ASPECTS = [0,60,90,120,180]
+
+
 FIXED_STARS = {
     "Regulus":150.0,
     "Spica":204.0,
@@ -29,9 +32,6 @@ FIXED_STARS = {
     "Aldebaran":69.0,
     "Fomalhaut":334.0
 }
-
-
-ASPECTS = [0,60,90,120,180]
 
 
 def normalize(lon):
@@ -62,11 +62,11 @@ def compute_harmonics(lon):
     return harmonics
 
 
-def detect_star_contacts(body,lon):
+def detect_star_contacts(body, lon):
 
-    contacts=[]
+    contacts = []
 
-    for star,star_lon in FIXED_STARS.items():
+    for star, star_lon in FIXED_STARS.items():
 
         orb = abs(lon-star_lon)
         orb = min(orb,360-orb)
@@ -74,9 +74,9 @@ def detect_star_contacts(body,lon):
         if orb < 1.0:
 
             contacts.append({
-                "body":body,
-                "star":star,
-                "orb":round(orb,3)
+                "body": body,
+                "star": star,
+                "orb": round(orb,3)
             })
 
     return contacts
@@ -84,40 +84,41 @@ def detect_star_contacts(body,lon):
 
 def compute_aspects(bodies):
 
-    aspects=[]
-    names=list(bodies.keys())
+    aspects = []
+
+    names = list(bodies.keys())
 
     for i in range(len(names)):
         for j in range(i+1,len(names)):
 
-            lon1=bodies[names[i]]["lon"]
-            lon2=bodies[names[j]]["lon"]
+            lon1 = bodies[names[i]]["lon"]
+            lon2 = bodies[names[j]]["lon"]
 
-            diff=abs(lon1-lon2)
-            diff=min(diff,360-diff)
+            diff = abs(lon1-lon2)
+            diff = min(diff,360-diff)
 
             for asp in ASPECTS:
 
-                if abs(diff-asp)<1:
+                if abs(diff-asp) < 1:
 
                     aspects.append({
-                        "a":names[i],
-                        "b":names[j],
-                        "type":asp,
-                        "orb":round(abs(diff-asp),3)
+                        "a": names[i],
+                        "b": names[j],
+                        "type": asp,
+                        "orb": round(abs(diff-asp),3)
                     })
 
     return aspects
 
 
-def compute_arabic_parts(sun,moon):
+def compute_arabic_parts(sun, moon):
 
-    fortune=(moon-sun)%360
-    spirit=(sun-moon)%360
+    fortune = (moon - sun) % 360
+    spirit = (sun - moon) % 360
 
     return {
-        "fortune":fortune,
-        "spirit":spirit
+        "fortune": fortune,
+        "spirit": spirit
     }
 
 
@@ -141,68 +142,57 @@ def fetch_body(body):
     return None
 
 
-def get_week_filename():
-
-    now=datetime.datetime.utcnow()
-
-    year,week,_=now.isocalendar()
-
-    return f"weekly_overlay_{year}_W{week}.json"
-
-
 def generate():
 
-    bodies={}
-    star_contacts=[]
+    bodies = {}
+    star_contacts = []
 
-    all_bodies=PLANETS+EXTENDED+TNO
+    all_bodies = PLANETS + EXTENDED + TNO
 
     for body in all_bodies:
 
-        result=fetch_body(body)
+        result = fetch_body(body)
 
         if not result:
             continue
 
-        lon=normalize(result["lon"])
+        lon = normalize(result["lon"])
 
-        sign,degree=zodiac_position(lon)
+        sign, degree = zodiac_position(lon)
 
-        bodies[body]={
-            "lon":lon,
-            "sign":sign,
-            "degree":degree,
-            "harmonics":compute_harmonics(lon)
+        bodies[body] = {
+            "lon": lon,
+            "sign": sign,
+            "degree": degree,
+            "harmonics": compute_harmonics(lon)
         }
 
-        star_contacts+=detect_star_contacts(body,lon)
+        star_contacts += detect_star_contacts(body, lon)
 
-    aspects=compute_aspects(bodies)
+    aspects = compute_aspects(bodies)
 
-    sun=bodies["Sun"]["lon"]
-    moon=bodies["Moon"]["lon"]
+    sun = bodies["Sun"]["lon"]
+    moon = bodies["Moon"]["lon"]
 
-    arabic_parts=compute_arabic_parts(sun,moon)
+    arabic_parts = compute_arabic_parts(sun, moon)
 
-    output={
-        "timestamp":datetime.datetime.utcnow().isoformat(),
-        "bodies":bodies,
-        "aspects":aspects,
-        "star_contacts":star_contacts,
-        "arabic_parts":arabic_parts
+    output = {
+        "generated_utc": datetime.datetime.utcnow().isoformat(),
+        "bodies": bodies,
+        "aspects": aspects,
+        "star_contacts": star_contacts,
+        "arabic_parts": arabic_parts
     }
 
-    filename=get_week_filename()
+    os.makedirs("docs", exist_ok=True)
 
-    os.makedirs("overlays",exist_ok=True)
+    filepath = "docs/current_week.json"
 
-    filepath=f"overlays/{filename}"
+    with open(filepath, "w") as f:
+        json.dump(output, f, indent=2)
 
-    with open(filepath,"w") as f:
-        json.dump(output,f,indent=2)
-
-    print(f"Weekly overlay generated: {filepath}")
+    print(f"Overlay written to {filepath}")
 
 
-if __name__=="__main__":
+if __name__ == "__main__":
     generate()
