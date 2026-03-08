@@ -133,9 +133,15 @@ def fetch_miriade(body, start_date):
         try:
             lon = float(entry["EclLon"])
             lat = float(entry["EclLat"])
-        except (KeyError, IndexError, TypeError, ValueError) as e:
-            raise RuntimeError(f"Miriade response parse failed: {e}")
+        except (KeyError, IndexError, TypeError, ValueError):
+            results.append((None, None))
+            continue
         results.append((lon, lat))
+
+    # Pad to exactly 7 entries so per-day gap filling can rely on the length
+    while len(results) < 7:
+        results.append((None, None))
+
     return results
 
 # Fetch data from Swiss Ephemeris
@@ -151,36 +157,51 @@ def fetch_swiss(body, date):
 
     return pos[0], pos[1]
 
-# Resolve body data using JPL, Miriade, and Swiss fallback
+def _missing_indices(results):
+    """Return indices of entries whose lon is still None (not yet resolved)."""
+    return [i for i, r in enumerate(results) if r["lon"] is None]
+
+# Resolve body data using JPL, Miriade, and Swiss fallback with per-day gap filling.
+# Priority order: JPL Horizons → Miriade → Swiss Ephemeris.
+# Bodies without a JPL ID skip straight to Miriade. Any day still missing after
+# Miriade is filled individually by Swiss. Days that no source can provide remain
+# as null entries rather than causing the whole batch to fail.
 def resolve_body(body, start_date):
     start = start_date.strftime("%Y-%m-%d")
     stop = (start_date + timedelta(days=6)).strftime("%Y-%m-%d")
     body_id = BODIES.get(body)
 
-    if body_id is None:
-        raise RuntimeError(f"No JPL body id configured for {body}")
+    results = [{"lon": None, "lat": None, "source": "none"} for _ in range(7)]
 
-    try:
-        rows = fetch_jpl(body_id, start, stop)
-        return [{"lon": lon, "lat": lat, "source": "JPL"} for lon, lat in rows]
-    except Exception as e:
-        print(f"[WARN] JPL failed for {body}: {e}")
+    # Step 1: JPL Horizons (primary) — only attempted when a known ID exists
+    if body_id is not None:
+        try:
+            rows = fetch_jpl(body_id, start, stop)
+            for i, (lon, lat) in enumerate(rows[:7]):
+                if lon is not None and lat is not None:
+                    results[i] = {"lon": lon, "lat": lat, "source": "JPL"}
+        except Exception as e:
+            print(f"[WARN] JPL failed for {body}: {e}")
 
-    try:
-        rows = fetch_miriade(body, start_date)
-        return [{"lon": lon, "lat": lat, "source": "Miriade"} for lon, lat in rows]
-    except Exception as e:
-        print(f"[WARN] Miriade failed for {body}: {e}")
+    # Step 2: Miriade (secondary) — fills any day still missing after JPL
+    missing = _missing_indices(results)
+    if missing:
+        try:
+            rows = fetch_miriade(body, start_date)
+            for i, (lon, lat) in enumerate(rows[:7]):
+                if i in missing and lon is not None and lat is not None:
+                    results[i] = {"lon": lon, "lat": lat, "source": "Miriade"}
+        except Exception as e:
+            print(f"[WARN] Miriade failed for {body}: {e}")
 
-    results = []
-    for i in range(7):
+    # Step 3: Swiss Ephemeris (fallback) — fills any day still missing after Miriade
+    for i in _missing_indices(results):
         date = (start_date + timedelta(days=i)).strftime("%Y-%m-%d")
         try:
             lon, lat = fetch_swiss(body, date)
-            results.append({"lon": lon, "lat": lat, "source": "Swiss"})
+            results[i] = {"lon": lon, "lat": lat, "source": "Swiss"}
         except Exception as e:
             print(f"[WARN] All sources failed for {body} on {date}: {e}")
-            results.append({"lon": None, "lat": None, "source": "none"})
 
     return results
 
