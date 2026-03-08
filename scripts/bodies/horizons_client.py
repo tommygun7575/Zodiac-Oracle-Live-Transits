@@ -2,20 +2,38 @@ import requests
 
 HORIZONS_URL = "https://ssd.jpl.nasa.gov/api/horizons.api"
 
+# Numeric Horizons IDs
+BODY_IDS = {
+    "Sun": "10",
+    "Moon": "301",
+    "Mercury": "199",
+    "Venus": "299",
+    "Mars": "499",
+    "Jupiter": "599",
+    "Saturn": "699",
+    "Uranus": "799",
+    "Neptune": "899",
+    "Pluto": "999"
+}
 
-def fetch_horizons(body):
+
+def fetch_horizons(body, start, stop):
+
+    body_id = BODY_IDS[body]
 
     params = {
         "format": "json",
-        "COMMAND": body,
+        "COMMAND": body_id,
         "EPHEM_TYPE": "OBSERVER",
         "CENTER": "500@399",
-        "STEP_SIZE": "1d",
+        "START_TIME": start,
+        "STOP_TIME": stop,
+        "STEP_SIZE": "1 d",
         "QUANTITIES": "18,20",
         "CSV_FORMAT": "YES"
     }
 
-    r = requests.get(HORIZONS_URL, params=params, timeout=30)
+    r = requests.get(HORIZONS_URL, params=params, timeout=60)
 
     if r.status_code != 200:
         raise RuntimeError("Horizons request failed")
@@ -25,8 +43,12 @@ def fetch_horizons(body):
     if "result" not in data:
         raise RuntimeError("Malformed Horizons response")
 
-    text = data["result"]
+    return parse_ephemeris(data["result"])
 
+
+def parse_ephemeris(text):
+
+    rows = []
     reading = False
 
     for line in text.splitlines():
@@ -44,8 +66,9 @@ def fetch_horizons(body):
 
             if len(parts) > 4:
 
-                lon = float(parts[4])
+                rows.append({
+                    "date": parts[0].strip(),
+                    "lon": float(parts[4])
+                })
 
-                return {"lon": lon}
-
-    raise RuntimeError("No longitude found")
+    return rows
