@@ -1,27 +1,48 @@
 import json
 import datetime
 import os
+import time
 
 from scripts.bodies.horizons_client import fetch_horizons
 
 
 PLANETS = [
-    "Sun","Moon","Mercury","Venus","Mars",
-    "Jupiter","Saturn","Uranus","Neptune","Pluto"
+    "Sun",
+    "Moon",
+    "Mercury",
+    "Venus",
+    "Mars",
+    "Jupiter",
+    "Saturn",
+    "Uranus",
+    "Neptune",
+    "Pluto"
+]
+
+
+SIGNS = [
+    "Aries",
+    "Taurus",
+    "Gemini",
+    "Cancer",
+    "Leo",
+    "Virgo",
+    "Libra",
+    "Scorpio",
+    "Sagittarius",
+    "Capricorn",
+    "Aquarius",
+    "Pisces"
 ]
 
 
 def zodiac(lon):
 
-    signs = [
-        "Aries","Taurus","Gemini","Cancer",
-        "Leo","Virgo","Libra","Scorpio",
-        "Sagittarius","Capricorn","Aquarius","Pisces"
-    ]
+    lon = lon % 360
+    sign_index = int(lon // 30)
+    degree = lon % 30
 
-    s = int(lon / 30)
-
-    return signs[s], lon % 30
+    return SIGNS[sign_index], degree
 
 
 def generate():
@@ -32,24 +53,48 @@ def generate():
     start = today.isoformat()
     stop = week_later.isoformat()
 
+    print(f"Generating weekly transits {start} → {stop}")
+
     bodies = {}
 
     for planet in PLANETS:
 
-        data = fetch_horizons(planet, start, stop)
+        try:
 
-        if not data:
+            print(f"Requesting {planet} from Horizons")
+
+            data = fetch_horizons(planet, start, stop)
+
+            # prevent JPL API rate limit
+            time.sleep(1)
+
+            if not data or len(data) == 0:
+                print(f"{planet} returned no data")
+                continue
+
+            lon = data[0].get("lon")
+
+            if lon is None:
+                print(f"{planet} longitude missing")
+                continue
+
+            lon = lon % 360
+
+            sign, degree = zodiac(lon)
+
+            bodies[planet] = {
+                "lon": round(lon, 6),
+                "sign": sign,
+                "degree": round(degree, 6)
+            }
+
+            print(f"{planet} OK")
+
+        except Exception as e:
+
+            print(f"{planet} failed: {e}")
+
             continue
-
-        lon = data[0]["lon"] % 360
-
-        sign,deg = zodiac(lon)
-
-        bodies[planet] = {
-            "lon": round(lon,6),
-            "sign": sign,
-            "degree": round(deg,6)
-        }
 
     output = {
         "generated_utc": datetime.datetime.utcnow().isoformat(),
@@ -58,10 +103,12 @@ def generate():
 
     os.makedirs("docs", exist_ok=True)
 
-    with open("docs/current_week.json", "w") as f:
+    output_path = "docs/current_week.json"
+
+    with open(output_path, "w") as f:
         json.dump(output, f, indent=2)
 
-    print("Generated docs/current_week.json")
+    print(f"Weekly overlay written to {output_path}")
 
 
 if __name__ == "__main__":
