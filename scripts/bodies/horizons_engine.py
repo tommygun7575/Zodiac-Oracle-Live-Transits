@@ -57,7 +57,8 @@ def fetch_batch(body, start, stop):
             if rows:
                 return rows
 
-        time.sleep(2)
+        if attempt < 2:
+            time.sleep(2)
 
     raise RuntimeError(f"Horizons failed for {body}")
 

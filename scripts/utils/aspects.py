@@ -62,11 +62,7 @@ TNO_MULTIPLIER = {
 # NORMALIZE ANGLE TO 0–360
 # ------------------------------------------------------------
 def norm(deg):
-    while deg < 0:
-        deg += 360
-    while deg >= 360:
-        deg -= 360
-    return deg
+    return deg % 360
 
 
 # ------------------------------------------------------------
