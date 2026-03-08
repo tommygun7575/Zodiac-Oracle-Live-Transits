@@ -5,7 +5,6 @@ import time
 
 from scripts.bodies.horizons_client import fetch_horizons
 
-
 PLANETS = [
     "Sun",
     "Moon",
@@ -19,18 +18,27 @@ PLANETS = [
     "Pluto"
 ]
 
-
 SIGNS = [
-    "Aries","Taurus","Gemini","Cancer",
-    "Leo","Virgo","Libra","Scorpio",
-    "Sagittarius","Capricorn","Aquarius","Pisces"
+    "Aries",
+    "Taurus",
+    "Gemini",
+    "Cancer",
+    "Leo",
+    "Virgo",
+    "Libra",
+    "Scorpio",
+    "Sagittarius",
+    "Capricorn",
+    "Aquarius",
+    "Pisces"
 ]
-
 
 def zodiac(lon):
 
     lon = lon % 360
+
     sign_index = int(lon // 30)
+
     degree = lon % 30
 
     return SIGNS[sign_index], degree
@@ -39,9 +47,11 @@ def zodiac(lon):
 def generate():
 
     today = datetime.date.today()
+
     week_later = today + datetime.timedelta(days=7)
 
     start = today.isoformat()
+
     stop = week_later.isoformat()
 
     bodies = {}
@@ -73,6 +83,7 @@ def generate():
         except Exception as e:
 
             print(f"{planet} failed: {e}")
+
             continue
 
 
@@ -83,10 +94,12 @@ def generate():
 
     os.makedirs("docs", exist_ok=True)
 
-    with open("docs/current_week.json", "w") as f:
+    output_path = "docs/current_week.json"
+
+    with open(output_path, "w") as f:
         json.dump(output, f, indent=2)
 
-    print("Generated docs/current_week.json")
+    print(f"Weekly overlay written to {output_path}")
 
 
 if __name__ == "__main__":
