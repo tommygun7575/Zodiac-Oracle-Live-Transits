@@ -1,5 +1,6 @@
 import requests
 import json
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timedelta
 import swisseph as swe
 import time
@@ -32,6 +33,9 @@ BODIES = {
     "Quaoar": "50000",
     "Ixion": "28978"
 }
+
+# Initialise Swiss Ephemeris path once at module load
+swe.set_ephe_path(".")
 
 # Swiss Ephemeris constants
 SWISS_MAP = {
@@ -136,8 +140,6 @@ def fetch_miriade(body, date):
 
 # Fetch data from Swiss Ephemeris
 def fetch_swiss(body, date):
-    swe.set_ephe_path(".")
-
     dt = datetime.fromisoformat(date)
     jd = swe.julday(dt.year, dt.month, dt.day)
 
@@ -198,12 +200,18 @@ def main():
     start_date = datetime.utcnow()
     bodies = {}
 
-    for body in BODIES:
-        print(f"Resolving {body}")
-        bodies[body] = resolve_body(body, start_date)
+    with ThreadPoolExecutor() as executor:
+        futures = {executor.submit(resolve_body, body, start_date): body for body in BODIES}
+        for future in as_completed(futures):
+            body = futures[future]
+            try:
+                bodies[body] = future.result()
+                print(f"Resolved {body}")
+            except Exception as e:
+                print(f"[ERROR] Failed to resolve {body}: {e}")
 
     data = {
-        "generated": datetime.utcnow().isoformat(),
+        "generated": start_date.isoformat(),
         "bodies": bodies
     }
 

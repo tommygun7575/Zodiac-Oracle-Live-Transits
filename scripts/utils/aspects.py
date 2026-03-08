@@ -1,3 +1,4 @@
+import itertools
 import math
 
 # ------------------------------------------------------------
@@ -62,11 +63,10 @@ TNO_MULTIPLIER = {
 # NORMALIZE ANGLE TO 0–360
 # ------------------------------------------------------------
 def norm(deg):
-    while deg < 0:
-        deg += 360
-    while deg >= 360:
-        deg -= 360
-    return deg
+    # Python's % operator always returns a non-negative result when the
+    # divisor is positive, so this is equivalent to the previous while-loop
+    # for both positive and negative inputs.
+    return deg % 360
 
 
 # ------------------------------------------------------------
@@ -155,23 +155,18 @@ def compute_aspect(name_a, a_lon, a_harm, name_b, b_lon, b_harm):
 # bodies = {name: {"lon":..., "harmonics":...}}
 # ------------------------------------------------------------
 def compute_all_aspects(bodies):
-    names = list(bodies.keys())
     aspects = {}
 
-    for i in range(len(names)):
-        for j in range(i + 1, len(names)):
-            a = names[i]
-            b = names[j]
+    for a, b in itertools.combinations(bodies.keys(), 2):
+        a_lon = bodies[a]["lon"]
+        b_lon = bodies[b]["lon"]
+        a_harm = bodies[a]["harmonics"]
+        b_harm = bodies[b]["harmonics"]
 
-            a_lon = bodies[a]["lon"]
-            b_lon = bodies[b]["lon"]
-            a_harm = bodies[a]["harmonics"]
-            b_harm = bodies[b]["harmonics"]
+        asp = compute_aspect(a, a_lon, a_harm, b, b_lon, b_harm)
 
-            asp = compute_aspect(a, a_lon, a_harm, b, b_lon, b_harm)
-
-            if asp is not None:
-                key = f"{a}-{b}"
-                aspects[key] = asp
+        if asp is not None:
+            key = f"{a}-{b}"
+            aspects[key] = asp
 
     return aspects
