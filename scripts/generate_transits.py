@@ -122,9 +122,10 @@ def fetch_miriade(body, date):
     """Fetch data from Miriade."""
     params = {
         "name": body,
-        "type": "p",
+        "type": "object",
         "epoch": date,
-        "observer": "500"
+        "observer": "500",
+        "mime": "json"
     }
 
     r = requests.get(MIRIADE_URL, params=params, timeout=30)
@@ -133,11 +134,20 @@ def fetch_miriade(body, date):
         raise RuntimeError("Miriade request failed")
 
     data = r.json()
-    eph = data["ephemerides"][0]
-    lon = float(eph["lambda"])
-    lat = float(eph["beta"])
+    eph = None
+    if "ephemerides" in data and data["ephemerides"]:
+        eph = data["ephemerides"][0]
+        lon = float(eph["lambda"])
+        lat = float(eph["beta"])
+        return lon, lat
 
-    return lon, lat
+    if "data" in data and data["data"]:
+        eph = data["data"][0]
+        lon = float(eph["EclLon"])
+        lat = float(eph["EclLat"])
+        return lon, lat
+
+    raise RuntimeError("Malformed Miriade response")
 
 
 def fetch_swiss(body, date):
@@ -173,9 +183,16 @@ def resolve_body(body, start_date):
         try:
             lon, lat = fetch_miriade(body, date)
             results.append({"lon": lon, "lat": lat, "source": "Miriade"})
-        except Exception:
-            lon, lat = fetch_swiss(body, date)
-            results.append({"lon": lon, "lat": lat, "source": "Swiss"})
+        except Exception as miriade_error:
+            try:
+                lon, lat = fetch_swiss(body, date)
+                results.append({"lon": lon, "lat": lat, "source": "Swiss"})
+            except Exception as swiss_error:
+                print(
+                    f"[WARN] Fallback failed for {body} on {date}: "
+                    f"Miriade={miriade_error}; Swiss={swiss_error}"
+                )
+                results.append({"lon": None, "lat": None, "source": "Unavailable"})
 
     return results
 
