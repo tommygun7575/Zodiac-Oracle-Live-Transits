@@ -1,203 +1,26 @@
-import requests
 import json
-from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timedelta
-import swisseph as swe
-import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
+
+from scripts.bodies.horizons_engine import fetch_batch as fetch_horizons
+from scripts.bodies.miriade_engine import fetch_miriade
+from scripts.bodies.swiss_engine import fetch_swiss
+from scripts.bodies.mpc_client import fetch_mpc
+from scripts.bodies.harmonics_engine import compute_harmonics
+
+from scripts.fixed_stars import get_fixed_star_catalog
 
 
-# CORRECT JPL ENDPOINT
-HORIZONS_URL = "https://ssd-api.jpl.nasa.gov/horizons.api"
-MIRIADE_URL = "https://ssp.imcce.fr/webservices/miriade/api/ephemcc.php"
-
-swe.set_ephe_path(".")
-
-
-BODIES = {
-    "Sun": "10",
-    "Moon": "301",
-    "Mercury": "199",
-    "Venus": "299",
-    "Mars": "499",
-    "Jupiter": "599",
-    "Saturn": "699",
-    "Uranus": "799",
-    "Neptune": "899",
-    "Pluto": "999",
-    "Ceres": "1;",
-    "Pallas": "2;",
-    "Juno": "3;",
-    "Vesta": "4;",
-    "Eris": "136199;",
-    "Sedna": "90377;",
-    "Orcus": "90482;",
-    "Makemake": "136472;",
-    "Haumea": "136108;",
-    "Quaoar": "50000;",
-    "Ixion": "28978;"
-}
+BODIES = [
+    "Sun","Moon","Mercury","Venus","Mars","Jupiter","Saturn",
+    "Uranus","Neptune","Pluto",
+    "Ceres","Pallas","Juno","Vesta",
+    "Eris","Sedna","Orcus","Makemake","Haumea","Quaoar","Ixion"
+]
 
 
-SWISS_MAP = {
-    "Sun": swe.SUN,
-    "Moon": swe.MOON,
-    "Mercury": swe.MERCURY,
-    "Venus": swe.VENUS,
-    "Mars": swe.MARS,
-    "Jupiter": swe.JUPITER,
-    "Saturn": swe.SATURN,
-    "Uranus": swe.URANUS,
-    "Neptune": swe.NEPTUNE,
-    "Pluto": swe.PLUTO,
-    "Ceres": swe.AST_OFFSET + 1,
-    "Pallas": swe.AST_OFFSET + 2,
-    "Juno": swe.AST_OFFSET + 3,
-    "Vesta": swe.AST_OFFSET + 4,
-}
-
-
-JPL_CACHE = {}
-
-
-def parse_horizons(text):
-
-    rows = []
-    reading = False
-
-    for line in text.splitlines():
-
-        if "$$SOE" in line:
-            reading = True
-            continue
-
-        if "$$EOE" in line:
-            break
-
-        if not reading:
-            continue
-
-        line = line.strip()
-
-        if not line:
-            continue
-
-        parts = [p.strip() for p in line.split(",")]
-
-        if len(parts) < 5:
-            continue
-
-        try:
-            lon = float(parts[3])
-            lat = float(parts[4])
-            rows.append((lon, lat))
-        except Exception:
-            continue
-
-    if not rows:
-        raise RuntimeError("Horizons parse returned no rows")
-
-    return rows
-
-
-def fetch_jpl(body_id, start, stop):
-
-    cache_key = f"{body_id}_{start}"
-
-    if cache_key in JPL_CACHE:
-        return JPL_CACHE[cache_key]
-
-    params = {
-        "format": "text",
-        "COMMAND": body_id,
-        "EPHEM_TYPE": "OBSERVER",
-        "CENTER": "500@399",
-        "START_TIME": start,
-        "STOP_TIME": stop,
-        "STEP_SIZE": "1 d",
-        "QUANTITIES": "31",
-        "CSV_FORMAT": "YES",
-        "ANG_FORMAT": "DEG"
-    }
-
-    for attempt in range(3):
-
-        try:
-
-            r = requests.get(HORIZONS_URL, params=params, timeout=30)
-
-            if r.status_code == 200:
-
-                rows = parse_horizons(r.text)
-
-                if rows:
-                    JPL_CACHE[cache_key] = rows
-                    return rows
-
-        except Exception as e:
-            print(f"[WARN] JPL request error: {e}")
-
-        time.sleep(2)
-
-    raise RuntimeError("JPL request failed")
-
-
-def fetch_miriade(body, start_date):
-
-    params = {
-        "name": body,
-        "type": "object",
-        "epoch": start_date.strftime("%Y-%m-%dT00:00:00"),
-        "nbd": 7,
-        "step": "1d",
-        "observer": "500",
-        "tcoor": "2",
-        "mime": "json"
-    }
-
-    r = requests.get(MIRIADE_URL, params=params, timeout=30)
-
-    if r.status_code != 200:
-        raise RuntimeError("Miriade request failed")
-
-    data = r.json()
-    entries = data.get("data", [])
-
-    results = []
-
-    for entry in entries[:7]:
-
-        try:
-            lon = float(entry["EclLon"])
-            lat = float(entry["EclLat"])
-        except Exception:
-            results.append((None, None))
-            continue
-
-        results.append((lon, lat))
-
-    while len(results) < 7:
-        results.append((None, None))
-
-    return results
-
-
-def fetch_swiss(body, date):
-
-    dt = datetime.fromisoformat(date)
-    jd = swe.julday(dt.year, dt.month, dt.day)
-
-    planet = SWISS_MAP.get(body)
-
-    if planet is None:
-        raise RuntimeError("Swiss unsupported body")
-
-    pos, _ = swe.calc_ut(jd, planet)
-
-    return pos[0], pos[1]
-
-
-def _missing_indices(results):
-    return [i for i, r in enumerate(results) if r["lon"] is None]
+def missing_indices(rows):
+    return [i for i,r in enumerate(rows) if r["lon"] is None]
 
 
 def resolve_body(body, start_date):
@@ -205,137 +28,206 @@ def resolve_body(body, start_date):
     start = start_date.strftime("%Y-%m-%d")
     stop = (start_date + timedelta(days=6)).strftime("%Y-%m-%d")
 
-    body_id = BODIES.get(body)
+    results = [{"lon":None,"lat":None,"source":"none"} for _ in range(7)]
 
-    results = [{"lon": None, "lat": None, "source": "none"} for _ in range(7)]
+    # 1. JPL Horizons
+    try:
 
-    if body_id:
+        rows = fetch_horizons(body,start,stop)
 
-        try:
+        for i,(lon,lat) in enumerate(rows[:7]):
+            if lon is not None:
+                results[i]={"lon":lon,"lat":lat,"source":"JPL"}
 
-            rows = fetch_jpl(body_id, start, stop)
+    except Exception as e:
+        print(f"[WARN] JPL failed for {body}: {e}")
 
-            for i, (lon, lat) in enumerate(rows[:7]):
-                results[i] = {"lon": lon, "lat": lat, "source": "JPL"}
-
-        except Exception as e:
-            print(f"[WARN] JPL failed for {body}: {e}")
-
-    missing = _missing_indices(results)
+    # 2. Miriade
+    missing = missing_indices(results)
 
     if missing:
 
         try:
 
-            rows = fetch_miriade(body, start_date)
+            rows = fetch_miriade(body,start,stop)
 
-            for i, (lon, lat) in enumerate(rows[:7]):
+            for i,row in enumerate(rows[:7]):
 
-                if i in missing and lon is not None:
-                    results[i] = {"lon": lon, "lat": lat, "source": "Miriade"}
+                if i in missing and row["lon"] is not None:
+                    results[i]={"lon":row["lon"],"lat":row["lat"],"source":"Miriade"}
 
         except Exception as e:
             print(f"[WARN] Miriade failed for {body}: {e}")
 
-    for i in _missing_indices(results):
+    # 3. MPC orbital propagation
+    missing = missing_indices(results)
 
-        date = (start_date + timedelta(days=i)).strftime("%Y-%m-%d")
+    if missing:
 
         try:
 
-            lon, lat = fetch_swiss(body, date)
+            rows = fetch_mpc(body,start,stop)
 
-            results[i] = {"lon": lon, "lat": lat, "source": "Swiss"}
+            for i,row in enumerate(rows[:7]):
+
+                if i in missing and row["lon"] is not None:
+                    results[i]={"lon":row["lon"],"lat":row["lat"],"source":"MPC"}
 
         except Exception as e:
-            print(f"[WARN] All sources failed for {body} on {date}: {e}")
+            print(f"[WARN] MPC propagation failed for {body}: {e}")
+
+    # 4. Swiss fallback
+    missing = missing_indices(results)
+
+    if missing:
+
+        try:
+
+            rows = fetch_swiss(body,start,stop)
+
+            for i,row in enumerate(rows[:7]):
+
+                if i in missing and row["lon"] is not None:
+                    results[i]={"lon":row["lon"],"lat":row["lat"],"source":"Swiss"}
+
+        except Exception as e:
+            print(f"[WARN] Swiss fallback failed for {body}: {e}")
 
     return results
 
 
 def calc_arabic_parts(data):
 
-    parts = []
+    parts=[]
 
     for i in range(7):
 
         try:
 
-            sun = data["Sun"][i]["lon"]
-            moon = data["Moon"][i]["lon"]
+            sun=data["Sun"][i]["lon"]
+            moon=data["Moon"][i]["lon"]
 
             if sun is None or moon is None:
-                parts.append({"part_of_fortune": None})
-            else:
-                parts.append({"part_of_fortune": (moon - sun) % 360})
+                parts.append({"part_of_fortune":None})
+                continue
+
+            fortune=(moon-sun)%360
+
+            parts.append({"part_of_fortune":fortune})
 
         except:
-            parts.append({"part_of_fortune": None})
+            parts.append({"part_of_fortune":None})
 
     return parts
 
 
 def calc_harmonics(data):
 
-    harmonics = []
+    results=[]
 
     for i in range(7):
 
         try:
 
-            sun = data["Sun"][i]["lon"]
+            sun=data["Sun"][i]["lon"]
 
             if sun is None:
-                harmonics.append({"sun_h5": None, "sun_h7": None})
-            else:
-                harmonics.append({
-                    "sun_h5": (sun * 5) % 360,
-                    "sun_h7": (sun * 7) % 360
-                })
+                results.append({})
+                continue
+
+            h=compute_harmonics([sun])
+
+            results.append({
+                "sun_h5":float(h["h5"][0]),
+                "sun_h7":float(h["h7"][0]),
+                "sun_h9":float(h["h9"][0])
+            })
 
         except:
-            harmonics.append({"sun_h5": None, "sun_h7": None})
+            results.append({})
 
-    return harmonics
+    return results
+
+
+def compute_fixed_star_conjunctions(data):
+
+    stars=get_fixed_star_catalog()
+
+    results=[]
+
+    for i in range(7):
+
+        day_hits=[]
+
+        for body in data:
+
+            lon=data[body][i]["lon"]
+
+            if lon is None:
+                continue
+
+            for star,star_lon in stars.items():
+
+                diff=abs((lon-star_lon+180)%360-180)
+
+                if diff<1.0:
+
+                    day_hits.append({
+                        "body":body,
+                        "star":star,
+                        "orb":round(diff,3)
+                    })
+
+        results.append(day_hits)
+
+    return results
 
 
 def main():
 
-    start_date = datetime.utcnow()
+    start_date=datetime.utcnow()
 
-    bodies = {}
+    bodies={}
 
-    with ThreadPoolExecutor(max_workers=3) as executor:
+    with ThreadPoolExecutor(max_workers=4) as executor:
 
-        futures = {}
+        futures={}
 
         for body in BODIES:
-            print(f"Resolving {body}")
-            futures[executor.submit(resolve_body, body, start_date)] = body
+
+            futures[executor.submit(resolve_body,body,start_date)]=body
 
         for future in as_completed(futures):
 
-            body = futures[future]
+            body=futures[future]
 
             try:
-                bodies[body] = future.result()
-            except Exception as e:
-                print(f"[ERROR] Failed to resolve {body}: {e}")
-                bodies[body] = []
+                bodies[body]=future.result()
 
-    data = {
-        "generated": datetime.utcnow().isoformat(),
-        "bodies": bodies
+            except Exception as e:
+
+                print(f"[ERROR] Failed resolving {body}: {e}")
+
+                bodies[body]=[]
+
+    data={
+        "generated":datetime.utcnow().isoformat(),
+        "bodies":bodies
     }
 
-    data["arabic_parts"] = calc_arabic_parts(bodies)
-    data["harmonics"] = calc_harmonics(bodies)
+    # astrology layers
 
-    with open("docs/current_week.json", "w") as f:
-        json.dump(data, f, indent=2)
+    data["arabic_parts"]=calc_arabic_parts(bodies)
+
+    data["harmonics"]=calc_harmonics(bodies)
+
+    data["fixed_star_conjunctions"]=compute_fixed_star_conjunctions(bodies)
+
+    with open("docs/current_week.json","w") as f:
+        json.dump(data,f,indent=2)
 
     print("current_week.json written")
 
 
-if __name__ == "__main__":
+if __name__=="__main__":
     main()
