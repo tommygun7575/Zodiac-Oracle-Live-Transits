@@ -151,9 +151,13 @@ def fetch_swiss(body, date):
 def resolve_body(body, start_date):
     start = start_date.strftime("%Y-%m-%d")
     stop = (start_date + timedelta(days=6)).strftime("%Y-%m-%d")
+    body_id = BODIES.get(body)
+
+    if body_id is None:
+        raise RuntimeError(f"No JPL body id configured for {body}")
 
     try:
-        rows = fetch_jpl(BODIES[body], start, stop)
+        rows = fetch_jpl(body_id, start, stop)
         return [{"lon": lon, "lat": lat, "source": "JPL"} for lon, lat in rows]
     except Exception as e:
         print(f"[WARN] JPL failed for {body}: {e}")
