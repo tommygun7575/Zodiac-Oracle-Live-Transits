@@ -5,10 +5,8 @@ from datetime import datetime, timedelta
 import swisseph as swe
 import time
 
-
 HORIZONS_URL = "https://ssd.jpl.nasa.gov/api/horizons.api"
 MIRIADE_URL = "https://ssp.imcce.fr/webservices/miriade/api/ephemcc.php"
-
 
 swe.set_ephe_path(".")
 
@@ -56,6 +54,9 @@ SWISS_MAP = {
 }
 
 
+JPL_CACHE = {}
+
+
 def parse_horizons(text):
 
     rows = []
@@ -74,6 +75,7 @@ def parse_horizons(text):
             continue
 
         line = line.strip()
+
         if not line:
             continue
 
@@ -96,12 +98,17 @@ def parse_horizons(text):
             rows.append((lon, lat))
 
     if not rows:
-        raise RuntimeError("Horizons ephemeris parse produced no rows")
+        raise RuntimeError("Horizons parse returned no rows")
 
     return rows
 
 
 def fetch_jpl(body_id, start, stop):
+
+    cache_key = f"{body_id}_{start}"
+
+    if cache_key in JPL_CACHE:
+        return JPL_CACHE[cache_key]
 
     params = {
         "format": "text",
@@ -121,15 +128,19 @@ def fetch_jpl(body_id, start, stop):
         r = requests.get(HORIZONS_URL, params=params, timeout=30)
 
         if r.status_code == 200:
+
             try:
+
                 rows = parse_horizons(r.text)
+
                 if rows:
+                    JPL_CACHE[cache_key] = rows
                     return rows
+
             except Exception as e:
                 print(f"[WARN] Horizons parse error: {e}")
 
-        if attempt < 2:
-            time.sleep(2)
+        time.sleep(2)
 
     raise RuntimeError("JPL request failed")
 
@@ -158,6 +169,7 @@ def fetch_miriade(body, start_date):
     results = []
 
     for entry in entries[:7]:
+
         try:
             lon = float(entry["EclLon"])
             lat = float(entry["EclLat"])
@@ -189,7 +201,6 @@ def fetch_swiss(body, date):
 
 
 def _missing_indices(results):
-
     return [i for i, r in enumerate(results) if r["lon"] is None]
 
 
@@ -202,14 +213,14 @@ def resolve_body(body, start_date):
 
     results = [{"lon": None, "lat": None, "source": "none"} for _ in range(7)]
 
-    if body_id is not None:
+    if body_id:
+
         try:
 
             rows = fetch_jpl(body_id, start, stop)
 
             for i, (lon, lat) in enumerate(rows[:7]):
-                if lon is not None and lat is not None:
-                    results[i] = {"lon": lon, "lat": lat, "source": "JPL"}
+                results[i] = {"lon": lon, "lat": lat, "source": "JPL"}
 
         except Exception as e:
             print(f"[WARN] JPL failed for {body}: {e}")
@@ -217,13 +228,14 @@ def resolve_body(body, start_date):
     missing = _missing_indices(results)
 
     if missing:
+
         try:
 
             rows = fetch_miriade(body, start_date)
 
             for i, (lon, lat) in enumerate(rows[:7]):
 
-                if i in missing and lon is not None and lat is not None:
+                if i in missing and lon is not None:
                     results[i] = {"lon": lon, "lat": lat, "source": "Miriade"}
 
         except Exception as e:
@@ -259,12 +271,9 @@ def calc_arabic_parts(data):
             if sun is None or moon is None:
                 parts.append({"part_of_fortune": None})
             else:
-                fortune = (moon - sun) % 360
-                parts.append({"part_of_fortune": fortune})
+                parts.append({"part_of_fortune": (moon - sun) % 360})
 
-        except Exception as e:
-
-            print(f"[WARN] arabic_parts calculation failed at index {i}: {e}")
+        except:
             parts.append({"part_of_fortune": None})
 
     return parts
@@ -288,9 +297,7 @@ def calc_harmonics(data):
                     "sun_h7": (sun * 7) % 360
                 })
 
-        except Exception as e:
-
-            print(f"[WARN] harmonics calculation failed at index {i}: {e}")
+        except:
             harmonics.append({"sun_h5": None, "sun_h7": None})
 
     return harmonics
@@ -299,6 +306,7 @@ def calc_harmonics(data):
 def main():
 
     start_date = datetime.utcnow()
+
     bodies = {}
 
     with ThreadPoolExecutor(max_workers=3) as executor:
@@ -306,7 +314,6 @@ def main():
         futures = {}
 
         for body in BODIES:
-
             print(f"Resolving {body}")
             futures[executor.submit(resolve_body, body, start_date)] = body
 
