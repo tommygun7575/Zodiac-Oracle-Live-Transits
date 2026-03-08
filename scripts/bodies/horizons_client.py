@@ -15,7 +15,6 @@ BODY_IDS = {
     "Pluto": "999"
 }
 
-
 def fetch_horizons(body, start, stop):
 
     body_id = BODY_IDS[body]
@@ -37,56 +36,46 @@ def fetch_horizons(body, start, stop):
     if r.status_code != 200:
         raise RuntimeError("Horizons request failed")
 
-    data = r.json()
+    payload = r.json()
 
-    if "result" not in data:
-        raise RuntimeError("Malformed Horizons response")
+    if "result" not in payload:
+        raise RuntimeError("Horizons response malformed")
 
-    return parse_ephemeris(data["result"])
+    text = payload["result"]
+
+    return parse_ephemeris(text)
 
 
 def parse_ephemeris(text):
 
-    reading = False
-    header = None
-    lon_index = None
-
     rows = []
 
-    for line in text.splitlines():
+    if "$$SOE" not in text or "$$EOE" not in text:
+        return rows
 
-        if "$$SOE" in line:
-            reading = True
+    start = text.index("$$SOE") + 5
+    end = text.index("$$EOE")
+
+    block = text[start:end].strip().splitlines()
+
+    for line in block:
+
+        parts = line.split(",")
+
+        if len(parts) < 5:
             continue
 
-        if "$$EOE" in line:
-            break
+        try:
 
-        if not reading:
+            date = parts[0].strip()
+            lon = float(parts[4])
 
-            if "Date__(UT)__HR:MN" in line or "Date__(UT)__HR:MN:SC" in line:
+            rows.append({
+                "date": date,
+                "lon": lon
+            })
 
-                header = [h.strip() for h in line.split(",")]
-
-                for i, col in enumerate(header):
-
-                    if "EclLon" in col or "Lon" in col:
-                        lon_index = i
-
-        else:
-
-            parts = line.split(",")
-
-            if lon_index is not None and len(parts) > lon_index:
-
-                try:
-
-                    rows.append({
-                        "date": parts[0].strip(),
-                        "lon": float(parts[lon_index])
-                    })
-
-                except:
-                    pass
+        except ValueError:
+            continue
 
     return rows
