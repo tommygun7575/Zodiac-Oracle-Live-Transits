@@ -1,4 +1,347 @@
 {
-  "generated_utc": "2026-03-08T22:43:34.576733",
-  "bodies": {}
+  "generated_utc": "2026-03-08T23:11:53.756062",
+  "week_start": "2026-03-08",
+  "week_end": "2026-03-15",
+  "bodies": {
+    "Sun": [
+      {
+        "date": "2026-Mar-08",
+        "longitude_deg": "-5.11108"
+      },
+      {
+        "date": "2026-Mar-09",
+        "longitude_deg": "-4.72129"
+      },
+      {
+        "date": "2026-Mar-10",
+        "longitude_deg": "-4.33046"
+      },
+      {
+        "date": "2026-Mar-11",
+        "longitude_deg": "-3.93867"
+      },
+      {
+        "date": "2026-Mar-12",
+        "longitude_deg": "-3.54605"
+      },
+      {
+        "date": "2026-Mar-13",
+        "longitude_deg": "-3.15269"
+      },
+      {
+        "date": "2026-Mar-14",
+        "longitude_deg": "-2.75870"
+      },
+      {
+        "date": "2026-Mar-15",
+        "longitude_deg": "-2.36418"
+      }
+    ],
+    "Moon": [
+      {
+        "date": "2026-Mar-08",
+        "longitude_deg": "-19.13246"
+      },
+      {
+        "date": "2026-Mar-09",
+        "longitude_deg": "-23.10244"
+      },
+      {
+        "date": "2026-Mar-10",
+        "longitude_deg": "-26.06297"
+      },
+      {
+        "date": "2026-Mar-11",
+        "longitude_deg": "-27.86606"
+      },
+      {
+        "date": "2026-Mar-12",
+        "longitude_deg": "-28.39748"
+      },
+      {
+        "date": "2026-Mar-13",
+        "longitude_deg": "-27.59647"
+      },
+      {
+        "date": "2026-Mar-14",
+        "longitude_deg": "-25.46993"
+      },
+      {
+        "date": "2026-Mar-15",
+        "longitude_deg": "-22.09407"
+      }
+    ],
+    "Mercury": [
+      {
+        "date": "2026-Mar-08",
+        "longitude_deg": "-2.21419"
+      },
+      {
+        "date": "2026-Mar-09",
+        "longitude_deg": "-2.68967"
+      },
+      {
+        "date": "2026-Mar-10",
+        "longitude_deg": "-3.18556"
+      },
+      {
+        "date": "2026-Mar-11",
+        "longitude_deg": "-3.69128"
+      },
+      {
+        "date": "2026-Mar-12",
+        "longitude_deg": "-4.19687"
+      },
+      {
+        "date": "2026-Mar-13",
+        "longitude_deg": "-4.69336"
+      },
+      {
+        "date": "2026-Mar-14",
+        "longitude_deg": "-5.17289"
+      },
+      {
+        "date": "2026-Mar-15",
+        "longitude_deg": "-5.62888"
+      }
+    ],
+    "Venus": [
+      {
+        "date": "2026-Mar-08",
+        "longitude_deg": "-0.50257"
+      },
+      {
+        "date": "2026-Mar-09",
+        "longitude_deg": "0.01245"
+      },
+      {
+        "date": "2026-Mar-10",
+        "longitude_deg": "0.52769"
+      },
+      {
+        "date": "2026-Mar-11",
+        "longitude_deg": "1.04294"
+      },
+      {
+        "date": "2026-Mar-12",
+        "longitude_deg": "1.55800"
+      },
+      {
+        "date": "2026-Mar-13",
+        "longitude_deg": "2.07267"
+      },
+      {
+        "date": "2026-Mar-14",
+        "longitude_deg": "2.58674"
+      },
+      {
+        "date": "2026-Mar-15",
+        "longitude_deg": "3.10000"
+      }
+    ],
+    "Mars": [
+      {
+        "date": "2026-Mar-08",
+        "longitude_deg": "-11.09710"
+      },
+      {
+        "date": "2026-Mar-09",
+        "longitude_deg": "-10.80901"
+      },
+      {
+        "date": "2026-Mar-10",
+        "longitude_deg": "-10.51924"
+      },
+      {
+        "date": "2026-Mar-11",
+        "longitude_deg": "-10.22782"
+      },
+      {
+        "date": "2026-Mar-12",
+        "longitude_deg": "-9.93484"
+      },
+      {
+        "date": "2026-Mar-13",
+        "longitude_deg": "-9.64033"
+      },
+      {
+        "date": "2026-Mar-14",
+        "longitude_deg": "-9.34435"
+      },
+      {
+        "date": "2026-Mar-15",
+        "longitude_deg": "-9.04698"
+      }
+    ],
+    "Jupiter": [
+      {
+        "date": "2026-Mar-08",
+        "longitude_deg": "22.97135"
+      },
+      {
+        "date": "2026-Mar-09",
+        "longitude_deg": "22.97325"
+      },
+      {
+        "date": "2026-Mar-10",
+        "longitude_deg": "22.97477"
+      },
+      {
+        "date": "2026-Mar-11",
+        "longitude_deg": "22.97592"
+      },
+      {
+        "date": "2026-Mar-12",
+        "longitude_deg": "22.97669"
+      },
+      {
+        "date": "2026-Mar-13",
+        "longitude_deg": "22.97710"
+      },
+      {
+        "date": "2026-Mar-14",
+        "longitude_deg": "22.97713"
+      },
+      {
+        "date": "2026-Mar-15",
+        "longitude_deg": "22.97680"
+      }
+    ],
+    "Saturn": [
+      {
+        "date": "2026-Mar-08",
+        "longitude_deg": "-1.07382"
+      },
+      {
+        "date": "2026-Mar-09",
+        "longitude_deg": "-1.02489"
+      },
+      {
+        "date": "2026-Mar-10",
+        "longitude_deg": "-0.97588"
+      },
+      {
+        "date": "2026-Mar-11",
+        "longitude_deg": "-0.92679"
+      },
+      {
+        "date": "2026-Mar-12",
+        "longitude_deg": "-0.87765"
+      },
+      {
+        "date": "2026-Mar-13",
+        "longitude_deg": "-0.82846"
+      },
+      {
+        "date": "2026-Mar-14",
+        "longitude_deg": "-0.77922"
+      },
+      {
+        "date": "2026-Mar-15",
+        "longitude_deg": "-0.72994"
+      }
+    ],
+    "Uranus": [
+      {
+        "date": "2026-Mar-08",
+        "longitude_deg": "19.43448"
+      },
+      {
+        "date": "2026-Mar-09",
+        "longitude_deg": "19.44101"
+      },
+      {
+        "date": "2026-Mar-10",
+        "longitude_deg": "19.44771"
+      },
+      {
+        "date": "2026-Mar-11",
+        "longitude_deg": "19.45458"
+      },
+      {
+        "date": "2026-Mar-12",
+        "longitude_deg": "19.46161"
+      },
+      {
+        "date": "2026-Mar-13",
+        "longitude_deg": "19.46880"
+      },
+      {
+        "date": "2026-Mar-14",
+        "longitude_deg": "19.47615"
+      },
+      {
+        "date": "2026-Mar-15",
+        "longitude_deg": "19.48366"
+      }
+    ],
+    "Neptune": [
+      {
+        "date": "2026-Mar-08",
+        "longitude_deg": "-0.82574"
+      },
+      {
+        "date": "2026-Mar-09",
+        "longitude_deg": "-0.81095"
+      },
+      {
+        "date": "2026-Mar-10",
+        "longitude_deg": "-0.79612"
+      },
+      {
+        "date": "2026-Mar-11",
+        "longitude_deg": "-0.78126"
+      },
+      {
+        "date": "2026-Mar-12",
+        "longitude_deg": "-0.76637"
+      },
+      {
+        "date": "2026-Mar-13",
+        "longitude_deg": "-0.75146"
+      },
+      {
+        "date": "2026-Mar-14",
+        "longitude_deg": "-0.73652"
+      },
+      {
+        "date": "2026-Mar-15",
+        "longitude_deg": "-0.72156"
+      }
+    ],
+    "Pluto": [
+      {
+        "date": "2026-Mar-08",
+        "longitude_deg": "-22.93398"
+      },
+      {
+        "date": "2026-Mar-09",
+        "longitude_deg": "-22.93048"
+      },
+      {
+        "date": "2026-Mar-10",
+        "longitude_deg": "-22.92706"
+      },
+      {
+        "date": "2026-Mar-11",
+        "longitude_deg": "-22.92373"
+      },
+      {
+        "date": "2026-Mar-12",
+        "longitude_deg": "-22.92048"
+      },
+      {
+        "date": "2026-Mar-13",
+        "longitude_deg": "-22.91734"
+      },
+      {
+        "date": "2026-Mar-14",
+        "longitude_deg": "-22.91432"
+      },
+      {
+        "date": "2026-Mar-15",
+        "longitude_deg": "-22.91141"
+      }
+    ]
+  }
 }
