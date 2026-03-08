@@ -3,7 +3,6 @@ from datetime import datetime, timedelta
 
 from scripts.bodies.horizons_engine import get_body_week
 
-# Safe optional imports (prevents crash if engine not implemented yet)
 try:
     from scripts.bodies.miriade_engine import get_miriade_week
 except ImportError:
@@ -65,56 +64,21 @@ FIXED_STARS = {
 ORB = 1.0
 
 
-def resolve_body(body_id, name, start, stop):
-
-    try:
-        return get_body_week(body_id, name, start, stop), "jpl"
-    except:
-        pass
-
-    if get_miriade_week:
-        try:
-            return get_miriade_week(body_id, name, start, stop), "miriade"
-        except:
-            pass
-
-    if get_mpc_week:
-        try:
-            return get_mpc_week(body_id, name, start, stop), "mpc"
-        except:
-            pass
-
-    if get_swiss_week:
-        try:
-            return get_swiss_week(body_id, name, start, stop), "swiss"
-        except:
-            pass
-
-    return None, None
-
-
 def compute_arabic_parts(bodies):
-
     parts = {}
-
     try:
         sun = float(bodies["Sun"]["data"][0]["longitude_deg"])
         moon = float(bodies["Moon"]["data"][0]["longitude_deg"])
-
         asc = (sun + 90) % 360
         fortune = (asc + moon - sun) % 360
-
         parts["Part_of_Fortune"] = fortune
     except:
         pass
-
     return parts
 
 
 def compute_harmonics(bodies, h_min, h_max):
-
     harmonic_output = {}
-
     for h in range(h_min, h_max + 1):
         harmonic_output[f"H{h}"] = {}
         for name, obj in bodies.items():
@@ -123,14 +87,11 @@ def compute_harmonics(bodies, h_min, h_max):
                 harmonic_output[f"H{h}"][name] = (lon * h) % 360
             except:
                 pass
-
     return harmonic_output
 
 
 def compute_fixed_star_conjunctions(bodies):
-
     results = {}
-
     for body_name, obj in bodies.items():
         try:
             lon = float(obj["data"][0]["longitude_deg"])
@@ -140,7 +101,6 @@ def compute_fixed_star_conjunctions(bodies):
                     results.setdefault(body_name, []).append(star)
         except:
             pass
-
     return results
 
 
@@ -151,26 +111,72 @@ def generate_week():
     stop = (today + timedelta(days=7)).strftime("%Y-%m-%d")
 
     bodies = {}
-    missing = []
+    missing = dict(ALL_BODIES)
 
-    total_targets = len(ALL_BODIES)
-
-    print(f"Attempting resolution for {total_targets} bodies")
+    print("=== JPL PASS ===")
 
     for body_id, name in ALL_BODIES.items():
-        result, source = resolve_body(body_id, name, start, stop)
-
-        if result:
-            key, data = result
+        try:
+            key, data = get_body_week(body_id, name, start, stop)
             bodies[key] = {
-                "source": source,
+                "source": "jpl",
                 "data": data
             }
-        else:
-            missing.append(name)
+            missing.pop(body_id, None)
+        except:
+            pass
 
+    print(f"After JPL: {len(bodies)} resolved, {len(missing)} missing")
+
+    if get_miriade_week and missing:
+        print("=== MIRIADE PASS ===")
+        for body_id in list(missing.keys()):
+            name = missing[body_id]
+            try:
+                key, data = get_miriade_week(body_id, name, start, stop)
+                bodies[key] = {
+                    "source": "miriade",
+                    "data": data
+                }
+                missing.pop(body_id, None)
+            except:
+                pass
+        print(f"After Miriade: {len(bodies)} resolved, {len(missing)} missing")
+
+    if get_mpc_week and missing:
+        print("=== MPC PASS ===")
+        for body_id in list(missing.keys()):
+            name = missing[body_id]
+            try:
+                key, data = get_mpc_week(body_id, name, start, stop)
+                bodies[key] = {
+                    "source": "mpc",
+                    "data": data
+                }
+                missing.pop(body_id, None)
+            except:
+                pass
+        print(f"After MPC: {len(bodies)} resolved, {len(missing)} missing")
+
+    if get_swiss_week and missing:
+        print("=== SWISS PASS ===")
+        for body_id in list(missing.keys()):
+            name = missing[body_id]
+            try:
+                key, data = get_swiss_week(body_id, name, start, stop)
+                bodies[key] = {
+                    "source": "swiss",
+                    "data": data
+                }
+                missing.pop(body_id, None)
+            except:
+                pass
+        print(f"After Swiss: {len(bodies)} resolved, {len(missing)} missing")
+
+    total_targets = len(ALL_BODIES)
     coverage = len(bodies) / total_targets
-    print(f"Coverage: {coverage * 100:.2f}%")
+
+    print(f"Final coverage: {coverage * 100:.2f}%")
 
     if coverage < COVERAGE_THRESHOLD:
         raise RuntimeError(
@@ -185,11 +191,11 @@ def generate_week():
         "generated_utc": datetime.utcnow().isoformat(),
         "week_start": start,
         "week_end": stop,
-        "engine_version": "ZodiacOracle.Curated.vFinal",
+        "engine_version": "ZodiacOracle.LayeredSweep.v1",
         "coverage": coverage,
         "resolved": len(bodies),
         "total_targets": total_targets,
-        "missing": missing,
+        "missing": list(missing.values()),
         "bodies": bodies,
         "arabic_parts": arabic_parts,
         "harmonics": harmonics,
