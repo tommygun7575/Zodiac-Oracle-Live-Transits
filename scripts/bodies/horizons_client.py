@@ -15,8 +15,10 @@ BODY_IDS = {
     "Pluto": "999"
 }
 
-
 def fetch_horizons(body, start, stop):
+
+    if body not in BODY_IDS:
+        raise ValueError(f"Unknown body: {body}")
 
     body_id = BODY_IDS[body]
 
@@ -35,20 +37,20 @@ def fetch_horizons(body, start, stop):
     r = requests.get(HORIZONS_URL, params=params, timeout=60)
 
     if r.status_code != 200:
-        raise RuntimeError("Horizons request failed")
+        raise RuntimeError(f"Horizons request failed: {r.status_code}")
 
     data = r.json()
 
     if "result" not in data:
-        raise RuntimeError("Malformed Horizons response")
+        raise RuntimeError("Horizons returned malformed response")
 
     return parse_ephemeris(data["result"])
 
 
 def parse_ephemeris(text):
 
-    reading = False
     rows = []
+    reading = False
 
     for line in text.splitlines():
 
@@ -66,11 +68,13 @@ def parse_ephemeris(text):
             if len(parts) > 4:
 
                 try:
+
                     rows.append({
                         "date": parts[0].strip(),
                         "lon": float(parts[4])
                     })
-                except:
-                    pass
+
+                except ValueError:
+                    continue
 
     return rows
