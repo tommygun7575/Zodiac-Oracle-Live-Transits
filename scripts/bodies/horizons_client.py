@@ -1,25 +1,39 @@
-from datetime import datetime, timedelta, timezone
+import requests
 
-from scripts.bodies.horizons_engine import fetch_batch
+HORIZONS_URL = "https://ssd.jpl.nasa.gov/api/horizons.api"
 
 
-def fetch_horizons(body, start=None, stop=None):
-    if start is None:
-        start_date = datetime.now(timezone.utc).date()
-        start = start_date.strftime("%Y-%m-%d")
-    else:
-        start_date = datetime.strptime(start, "%Y-%m-%d").date()
+def fetch_horizons(body):
 
-    if stop is None:
-        stop = (start_date + timedelta(days=6)).strftime("%Y-%m-%d")
+    params = {
+        "format": "json",
+        "COMMAND": body,
+        "EPHEM_TYPE": "OBSERVER",
+        "CENTER": "500@399",
+        "STEP_SIZE": "1d",
+        "QUANTITIES": "18"
+    }
 
-    rows = fetch_batch(body, start, stop)
-    if not rows:
-        raise RuntimeError(f"Horizons returned no data for {body}")
+    r = requests.get(HORIZONS_URL, params=params, timeout=30)
 
-    lon, lat = rows[0]
+    if r.status_code != 200:
+        raise RuntimeError("Horizons request failed")
 
-    if lon is None:
-        raise RuntimeError(f"Horizons returned incomplete data for {body}")
+    data = r.json()
 
-    return {"lon": lon, "lat": lat}
+    if "result" not in data:
+        raise RuntimeError("Malformed Horizons response")
+
+    text = data["result"]
+
+    for line in text.split("\n"):
+
+        if "," in line and line.strip()[0].isdigit():
+
+            parts = line.split(",")
+
+            lon = float(parts[4])
+
+            return {"lon": lon}
+
+    raise RuntimeError("No ephemeris found")

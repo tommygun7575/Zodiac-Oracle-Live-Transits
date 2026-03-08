@@ -1,24 +1,23 @@
-from datetime import datetime, timedelta, timezone
+import requests
 
-from scripts.bodies.miriade_engine import fetch_miriade as fetch_miriade_batch
+MIRIADE_URL = "https://ssp.imcce.fr/webservices/miriade/api/ephemcc.php"
 
 
-def fetch_miriade(body, start=None, stop=None):
-    if start is None:
-        start_date = datetime.now(timezone.utc).date()
-        start = start_date.strftime("%Y-%m-%d")
-    else:
-        start_date = datetime.strptime(start, "%Y-%m-%d").date()
+def fetch_miriade(body):
 
-    if stop is None:
-        stop = (start_date + timedelta(days=6)).strftime("%Y-%m-%d")
+    params = {
+        "name": body,
+        "type": "asteroid",
+        "output": "json"
+    }
 
-    rows = fetch_miriade_batch(body, start, stop)
-    if not rows:
-        raise RuntimeError(f"Miriade returned no data for {body}")
+    r = requests.get(MIRIADE_URL, params=params, timeout=30)
 
-    first = rows[0]
-    if first["lon"] is None:
-        raise RuntimeError(f"Miriade returned incomplete data for {body}")
+    if r.status_code != 200:
+        raise RuntimeError("Miriade request failed")
 
-    return first
+    data = r.json()
+
+    lon = float(data["data"][0]["RA"])
+
+    return {"lon": lon}

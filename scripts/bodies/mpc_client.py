@@ -1,28 +1,25 @@
-# Minor Planet Center Ephemeris Client
-#import requests
+import requests
 
 MPC_ENDPOINT = "https://minorplanetcenter.net/web_service/search_orbits"
 
 
-def fetch_mpc(body_name: str):
-    """
-    Fetch orbital elements for an asteroid/TNO from the Minor Planet Center.
-    Returns a dict with orbital parameters used for propagation.
-    """
+def fetch_mpc(body):
 
     params = {
-        "object_id": body_name,
+        "object_id": body,
         "format": "json"
     }
 
-    response = requests.get(MPC_ENDPOINT, params=params, timeout=30)
+    r = requests.get(MPC_ENDPOINT, params=params, timeout=30)
 
-    if response.status_code != 200:
-        raise RuntimeError(f"MPC request failed for {body_name}")
+    if r.status_code != 200:
+        raise RuntimeError("MPC request failed")
 
-    data = response.json()
+    data = r.json()
 
     if not data:
-        raise RuntimeError(f"MPC returned empty result for {body_name}")
+        raise RuntimeError("Empty MPC response")
 
-    return data TODO: Implement MPC object fetching and ecliptic computation.
+    lon = float(data[0]["node"])
+
+    return {"lon": lon}
