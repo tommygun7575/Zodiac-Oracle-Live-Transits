@@ -12,8 +12,7 @@ def fetch_ephemeris(body_id: str, start: str, stop: str) -> str:
         "START_TIME": start,
         "STOP_TIME": stop,
         "STEP_SIZE": "1 d",
-        "QUANTITIES": "18,20",
-        "CSV_FORMAT": "YES"
+        "ANG_FORMAT": "DEG"
     }
 
     response = requests.get(HORIZONS_URL, params=params, timeout=60)
