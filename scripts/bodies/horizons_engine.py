@@ -1,7 +1,7 @@
 import requests
 import time
 
-HORIZONS_URL = "https://ssd.jpl.nasa.gov/api/horizons.api"
+HORIZONS_URL = "https://ssd-api.jpl.nasa.gov/horizons.api"
 
 BODY_IDS = {
     "Sun": "10",
@@ -26,6 +26,38 @@ BODY_IDS = {
     "Quaoar": "50000;",
     "Ixion": "28978;"
 }
+
+
+def parse_ephemeris(text):
+
+    rows = []
+    reading = False
+
+    for line in text.splitlines():
+
+        if "$$SOE" in line:
+            reading = True
+            continue
+
+        if "$$EOE" in line:
+            break
+
+        if not reading:
+            continue
+
+        parts = [p.strip() for p in line.split(",")]
+
+        if len(parts) < 5:
+            continue
+
+        try:
+            lon = float(parts[3])
+            lat = float(parts[4])
+            rows.append((lon, lat))
+        except:
+            rows.append((None, None))
+
+    return rows
 
 
 def fetch_batch(body, start, stop):
@@ -61,34 +93,3 @@ def fetch_batch(body, start, stop):
             time.sleep(2)
 
     raise RuntimeError(f"Horizons failed for {body}")
-
-
-def parse_ephemeris(text):
-
-    rows = []
-    reading = False
-
-    for line in text.splitlines():
-
-        if "$$SOE" in line:
-            reading = True
-            continue
-
-        if "$$EOE" in line:
-            break
-
-        if reading:
-
-            parts = [p.strip() for p in line.split(",")]
-
-            if len(parts) < 5:
-                continue
-
-            try:
-                lon = float(parts[3])
-                lat = float(parts[4])
-                rows.append((lon, lat))
-            except Exception:
-                rows.append((None, None))
-
-    return rows
