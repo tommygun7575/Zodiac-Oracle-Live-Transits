@@ -1,12 +1,7 @@
 {
-  "generated": "2026-03-07T18:26:12.740117",
+  "generated": "2026-03-08T09:21:06.750377",
   "bodies": {
     "Sun": [
-      {
-        "lon": 346.9190825897838,
-        "lat": -0.0001497577364202695,
-        "source": "Swiss"
-      },
       {
         "lon": 347.9193179630192,
         "lat": -0.00016831003287633874,
@@ -36,14 +31,14 @@
         "lon": 352.9137414440068,
         "lat": -0.00014753602561947684,
         "source": "Swiss"
+      },
+      {
+        "lon": 353.91123511505896,
+        "lat": -0.00012175893341450551,
+        "source": "Swiss"
       }
     ],
     "Moon": [
-      {
-        "lon": 214.07897441740982,
-        "lat": -4.330658698470778,
-        "source": "Swiss"
-      },
       {
         "lon": 226.22045606429023,
         "lat": -4.865678576044189,
@@ -73,14 +68,14 @@
         "lon": 286.0229035433998,
         "lat": -4.207056502653222,
         "source": "Swiss"
+      },
+      {
+        "lon": 298.3264879608059,
+        "lat": -3.4343097828728335,
+        "source": "Swiss"
       }
     ],
     "Mercury": [
-      {
-        "lon": 346.8377929429774,
-        "lat": 3.6334174933579857,
-        "source": "Swiss"
-      },
       {
         "lon": 345.8248158977725,
         "lat": 3.55665712021443,
@@ -110,14 +105,14 @@
         "lon": 341.2510257394539,
         "lat": 2.750693989112993,
         "source": "Swiss"
+      },
+      {
+        "lon": 340.55115564578,
+        "lat": 2.5291541170068945,
+        "source": "Swiss"
       }
     ],
     "Venus": [
-      {
-        "lon": 1.3082022875797406,
-        "lat": -1.2380911552433957,
-        "source": "Swiss"
-      },
       {
         "lon": 2.551852320091785,
         "lat": -1.215738045659226,
@@ -147,14 +142,14 @@
         "lon": 8.763961789424819,
         "lat": -1.0894850600098926,
         "source": "Swiss"
+      },
+      {
+        "lon": 10.005103578060089,
+        "lat": -1.0614372536358605,
+        "source": "Swiss"
       }
     ],
     "Mars": [
-      {
-        "lon": 333.8650484975247,
-        "lat": -1.093609245382462,
-        "source": "Swiss"
-      },
       {
         "lon": 334.65285254301017,
         "lat": -1.093013119870658,
@@ -184,14 +179,14 @@
         "lon": 338.59097287465625,
         "lat": -1.0881663970461086,
         "source": "Swiss"
+      },
+      {
+        "lon": 339.3782978718172,
+        "lat": -1.086824156827567,
+        "source": "Swiss"
       }
     ],
     "Jupiter": [
-      {
-        "lon": 105.10912824172284,
-        "lat": 0.3512268294282226,
-        "source": "Swiss"
-      },
       {
         "lon": 105.09882724357156,
         "lat": 0.3521896321040701,
@@ -221,14 +216,14 @@
         "lon": 105.09641039538144,
         "lat": 0.3567939914019086,
         "source": "Swiss"
+      },
+      {
+        "lon": 105.10570141165078,
+        "lat": 0.35767554399166196,
+        "source": "Swiss"
       }
     ],
     "Saturn": [
-      {
-        "lon": 2.5074927541425085,
-        "lat": -2.1263116982307277,
-        "source": "Swiss"
-      },
       {
         "lon": 2.6294420984934788,
         "lat": -2.125812657368255,
@@ -258,14 +253,14 @@
         "lon": 3.243844493382359,
         "lat": -2.1240516546934147,
         "source": "Swiss"
+      },
+      {
+        "lon": 3.3675009716152524,
+        "lat": -2.1238472069251153,
+        "source": "Swiss"
       }
     ],
     "Uranus": [
-      {
-        "lon": 57.88952013196469,
-        "lat": -0.17761447843660802,
-        "source": "Swiss"
-      },
       {
         "lon": 57.916674111634784,
         "lat": -0.17732218666411995,
@@ -295,14 +290,14 @@
         "lon": 58.06401454571733,
         "lat": -0.17587570565516372,
         "source": "Swiss"
+      },
+      {
+        "lon": 58.095725553842776,
+        "lat": -0.1755896721710924,
+        "source": "Swiss"
       }
     ],
     "Neptune": [
-      {
-        "lon": 1.2807991031620458,
-        "lat": -1.305967553388816,
-        "source": "Swiss"
-      },
       {
         "lon": 1.3177995933105198,
         "lat": -1.3058975870674179,
@@ -332,14 +327,14 @@
         "lon": 1.504599593254637,
         "lat": -1.305722385210286,
         "source": "Swiss"
+      },
+      {
+        "lon": 1.5422358114261971,
+        "lat": -1.3057227375620901,
+        "source": "Swiss"
       }
     ],
     "Pluto": [
-      {
-        "lon": 304.703101260591,
-        "lat": -3.8773364058624677,
-        "source": "Swiss"
-      },
       {
         "lon": 304.7281373011825,
         "lat": -3.8799090374601755,
@@ -369,13 +364,422 @@
         "lon": 304.8487081147514,
         "lat": -3.8931294281083315,
         "source": "Swiss"
+      },
+      {
+        "lon": 304.87183480023754,
+        "lat": -3.8958429283478226,
+        "source": "Swiss"
+      }
+    ],
+    "Ceres": [
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      },
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      },
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      },
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      },
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      },
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      },
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      }
+    ],
+    "Pallas": [
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      },
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      },
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      },
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      },
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      },
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      },
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      }
+    ],
+    "Juno": [
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      },
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      },
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      },
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      },
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      },
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      },
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      }
+    ],
+    "Vesta": [
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      },
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      },
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      },
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      },
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      },
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      },
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      }
+    ],
+    "Eris": [
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      },
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      },
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      },
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      },
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      },
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      },
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      }
+    ],
+    "Sedna": [
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      },
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      },
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      },
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      },
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      },
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      },
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      }
+    ],
+    "Orcus": [
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      },
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      },
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      },
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      },
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      },
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      },
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      }
+    ],
+    "Makemake": [
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      },
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      },
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      },
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      },
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      },
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      },
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      }
+    ],
+    "Haumea": [
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      },
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      },
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      },
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      },
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      },
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      },
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      }
+    ],
+    "Quaoar": [
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      },
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      },
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      },
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      },
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      },
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      },
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      }
+    ],
+    "Ixion": [
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      },
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      },
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      },
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      },
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      },
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
+      },
+      {
+        "lon": null,
+        "lat": null,
+        "source": "none"
       }
     ]
   },
   "arabic_parts": [
-    {
-      "part_of_fortune": 227.15989182762604
-    },
     {
       "part_of_fortune": 238.30113810127105
     },
@@ -393,13 +797,12 @@
     },
     {
       "part_of_fortune": 293.109162099393
+    },
+    {
+      "part_of_fortune": 304.4152528457469
     }
   ],
   "harmonics": [
-    {
-      "sun_h5": 294.5954129489189,
-      "sun_h7": 268.43357812848626
-    },
     {
       "sun_h5": 299.59658981509597,
       "sun_h7": 275.4352257411342
@@ -423,16 +826,10 @@
     {
       "sun_h5": 324.56870722003396,
       "sun_h7": 310.39619010804745
+    },
+    {
+      "sun_h5": 329.5561755752947,
+      "sun_h7": 317.3786458054128
     }
-  ],
-  "fixed_stars": {
-    "Regulus": 150.0,
-    "Spica": 204.0,
-    "Aldebaran": 69.0,
-    "Antares": 249.0
-  },
-  "tnos": {},
-  "asteroids": {},
-  "minor_bodies": {},
-  "aether_planets": {}
+  ]
 }

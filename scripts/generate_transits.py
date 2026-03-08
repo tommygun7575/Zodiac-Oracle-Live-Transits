@@ -44,51 +44,41 @@ SWISS_MAP = {
     "Saturn": swe.SATURN,
     "Uranus": swe.URANUS,
     "Neptune": swe.NEPTUNE,
-    "Pluto": swe.PLUTO
+    "Pluto": swe.PLUTO,
+    "Ceres": swe.AST_OFFSET + 1,
+    "Pallas": swe.AST_OFFSET + 2,
+    "Juno": swe.AST_OFFSET + 3,
+    "Vesta": swe.AST_OFFSET + 4,
 }
 
-# Parse Horizons API response
+# Parse Horizons plain-text CSV response using fixed column indices
 def parse_horizons(text):
-    lines = text.splitlines()
-    start, end = None, None
-
-    for i, line in enumerate(lines):
-        if "$$SOE" in line:
-            start = i + 1
-        if "$$EOE" in line:
-            end = i
-            break
-
-    header_line = None
-    for line in lines:
-        if "EclLon" in line and "EclLat" in line:
-            header_line = line
-            break
-
-    if not header_line:
-        raise RuntimeError("Could not locate Horizons header")
-
-    headers = [h.strip() for h in header_line.split(",")]
-
-    lon_index = headers.index("EclLon")
-    lat_index = headers.index("EclLat")
-
     rows = []
-    for line in lines[start:end]:
-        parts = [p.strip() for p in line.split(",")]
-        try:
-            lon = float(parts[lon_index])
-            lat = float(parts[lat_index])
-            rows.append((lon, lat))
-        except:
+    reading = False
+
+    for line in text.splitlines():
+        if "$$SOE" in line:
+            reading = True
             continue
+        if "$$EOE" in line:
+            break
+        if reading:
+            parts = [p.strip() for p in line.split(",")]
+            if len(parts) < 5:
+                continue
+            try:
+                lon = float(parts[3])
+                lat = float(parts[4])
+                rows.append((lon, lat))
+            except (ValueError, IndexError):
+                continue
 
     return rows
 
 # Fetch data from JPL Horizons
 def fetch_jpl(body_id, start, stop):
     params = {
-        "format": "json",
+        "format": "text",
         "COMMAND": body_id,
         "EPHEM_TYPE": "OBSERVER",
         "CENTER": "500@399",
@@ -96,19 +86,16 @@ def fetch_jpl(body_id, start, stop):
         "STOP_TIME": stop,
         "STEP_SIZE": "1 d",
         "QUANTITIES": "18,20",
-        "CSV_FORMAT": "YES"
+        "CSV_FORMAT": "YES",
+        "ANG_FORMAT": "DEG"
     }
 
-    retries = 3
-    for _ in range(retries):
-        r = requests.get(HORIZONS_URL, params=params, timeout=30)
+    for _ in range(2):
+        r = requests.get(HORIZONS_URL, params=params, timeout=20)
         if r.status_code == 200:
-            data = r.json()
-            text = data.get("result")
-            if not text:
-                raise RuntimeError("Malformed JPL response")
-            return parse_horizons(text)
-
+            rows = parse_horizons(r.text)
+            if rows:
+                return rows
         time.sleep(2)
 
     raise RuntimeError("JPL request failed")
@@ -117,20 +104,24 @@ def fetch_jpl(body_id, start, stop):
 def fetch_miriade(body, date):
     params = {
         "name": body,
-        "type": "p",
+        "type": "object",
         "epoch": date,
-        "observer": "500"
+        "observer": "500",
+        "mime": "json"
     }
 
-    r = requests.get(MIRIADE_URL, params=params, timeout=30)
+    r = requests.get(MIRIADE_URL, params=params, timeout=10)
 
     if r.status_code != 200:
         raise RuntimeError("Miriade request failed")
 
     data = r.json()
-    eph = data["ephemerides"][0]
-    lon = float(eph["lambda"])
-    lat = float(eph["beta"])
+    try:
+        eph = data["data"][0]
+        lon = float(eph["EclLon"])
+        lat = float(eph["EclLat"])
+    except (KeyError, IndexError, TypeError, ValueError) as e:
+        raise RuntimeError(f"Miriade response parse failed: {e}")
 
     return lon, lat
 
@@ -167,8 +158,12 @@ def resolve_body(body, start_date):
             lon, lat = fetch_miriade(body, date)
             results.append({"lon": lon, "lat": lat, "source": "Miriade"})
         except Exception:
-            lon, lat = fetch_swiss(body, date)
-            results.append({"lon": lon, "lat": lat, "source": "Swiss"})
+            try:
+                lon, lat = fetch_swiss(body, date)
+                results.append({"lon": lon, "lat": lat, "source": "Swiss"})
+            except Exception as e:
+                print(f"[WARN] All sources failed for {body} on {date}: {e}")
+                results.append({"lon": None, "lat": None, "source": "none"})
 
     return results
 
@@ -176,21 +171,35 @@ def resolve_body(body, start_date):
 def calc_arabic_parts(data):
     parts = []
     for i in range(7):
-        sun = data["Sun"][i]["lon"]
-        moon = data["Moon"][i]["lon"]
-        fortune = (moon - sun) % 360
-        parts.append({"part_of_fortune": fortune})
+        try:
+            sun = data["Sun"][i]["lon"]
+            moon = data["Moon"][i]["lon"]
+            if sun is None or moon is None:
+                parts.append({"part_of_fortune": None})
+            else:
+                fortune = (moon - sun) % 360
+                parts.append({"part_of_fortune": fortune})
+        except Exception as e:
+            print(f"[WARN] arabic_parts calculation failed at index {i}: {e}")
+            parts.append({"part_of_fortune": None})
     return parts
 
 # Calculate Harmonics
 def calc_harmonics(data):
     harmonics = []
     for i in range(7):
-        sun = data["Sun"][i]["lon"]
-        harmonics.append({
-            "sun_h5": (sun * 5) % 360,
-            "sun_h7": (sun * 7) % 360
-        })
+        try:
+            sun = data["Sun"][i]["lon"]
+            if sun is None:
+                harmonics.append({"sun_h5": None, "sun_h7": None})
+            else:
+                harmonics.append({
+                    "sun_h5": (sun * 5) % 360,
+                    "sun_h7": (sun * 7) % 360
+                })
+        except Exception as e:
+            print(f"[WARN] harmonics calculation failed at index {i}: {e}")
+            harmonics.append({"sun_h5": None, "sun_h7": None})
     return harmonics
 
 # Main function to generate weekly ephemeris
@@ -200,7 +209,11 @@ def main():
 
     for body in BODIES:
         print(f"Resolving {body}")
-        bodies[body] = resolve_body(body, start_date)
+        try:
+            bodies[body] = resolve_body(body, start_date)
+        except Exception as e:
+            print(f"[ERROR] Failed to resolve {body}: {e}")
+            bodies[body] = []
 
     data = {
         "generated": datetime.utcnow().isoformat(),
