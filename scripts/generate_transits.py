@@ -90,8 +90,8 @@ def fetch_jpl(body_id, start, stop):
         "ANG_FORMAT": "DEG"
     }
 
-    for _ in range(3):
-        r = requests.get(HORIZONS_URL, params=params, timeout=60)
+    for _ in range(2):
+        r = requests.get(HORIZONS_URL, params=params, timeout=20)
         if r.status_code == 200:
             rows = parse_horizons(r.text)
             if rows:
@@ -110,7 +110,7 @@ def fetch_miriade(body, date):
         "mime": "json"
     }
 
-    r = requests.get(MIRIADE_URL, params=params, timeout=30)
+    r = requests.get(MIRIADE_URL, params=params, timeout=10)
 
     if r.status_code != 200:
         raise RuntimeError("Miriade request failed")
