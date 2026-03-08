@@ -6,15 +6,18 @@ on:
   workflow_dispatch:
 
 jobs:
-
   build:
-
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
 
     steps:
 
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -36,17 +39,28 @@ jobs:
             python-dateutil \
             requests
 
+      - name: Ensure Python module path
+        run: |
+          echo "PYTHONPATH=${{ github.workspace }}" >> $GITHUB_ENV
+
       - name: Run weekly transit generator
         run: |
           python -m scripts.generate_transits
 
+      - name: Verify output file exists
+        run: |
+          if [ ! -f docs/current_week.json ]; then
+            echo "ERROR: docs/current_week.json not generated"
+            exit 1
+          fi
+
       - name: Commit updated weekly overlay
         run: |
-          git config --global user.name "transit-bot"
-          git config --global user.email "bot@github.com"
+          git config user.name "transit-bot"
+          git config user.email "bot@github.com"
 
           git add docs/current_week.json
 
-          git commit -m "update weekly transits" || echo "no changes"
+          git diff --cached --quiet || git commit -m "update weekly transits"
 
           git push
