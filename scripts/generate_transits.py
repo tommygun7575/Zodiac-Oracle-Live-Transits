@@ -5,7 +5,9 @@ from datetime import datetime, timedelta
 import swisseph as swe
 import time
 
-HORIZONS_URL = "https://ssd.jpl.nasa.gov/api/horizons.api"
+
+# CORRECT JPL ENDPOINT
+HORIZONS_URL = "https://ssd-api.jpl.nasa.gov/horizons.api"
 MIRIADE_URL = "https://ssp.imcce.fr/webservices/miriade/api/ephemcc.php"
 
 swe.set_ephe_path(".")
@@ -79,23 +81,17 @@ def parse_horizons(text):
         if not line:
             continue
 
-        if "," in line:
-            parts = [p.strip() for p in line.split(",")]
-        else:
-            parts = line.split()
+        parts = [p.strip() for p in line.split(",")]
 
-        numeric = []
+        if len(parts) < 5:
+            continue
 
-        for p in parts:
-            try:
-                numeric.append(float(p))
-            except ValueError:
-                pass
-
-        if len(numeric) >= 2:
-            lon = numeric[-2]
-            lat = numeric[-1]
+        try:
+            lon = float(parts[3])
+            lat = float(parts[4])
             rows.append((lon, lat))
+        except Exception:
+            continue
 
     if not rows:
         raise RuntimeError("Horizons parse returned no rows")
@@ -125,11 +121,11 @@ def fetch_jpl(body_id, start, stop):
 
     for attempt in range(3):
 
-        r = requests.get(HORIZONS_URL, params=params, timeout=30)
+        try:
 
-        if r.status_code == 200:
+            r = requests.get(HORIZONS_URL, params=params, timeout=30)
 
-            try:
+            if r.status_code == 200:
 
                 rows = parse_horizons(r.text)
 
@@ -137,8 +133,8 @@ def fetch_jpl(body_id, start, stop):
                     JPL_CACHE[cache_key] = rows
                     return rows
 
-            except Exception as e:
-                print(f"[WARN] Horizons parse error: {e}")
+        except Exception as e:
+            print(f"[WARN] JPL request error: {e}")
 
         time.sleep(2)
 
