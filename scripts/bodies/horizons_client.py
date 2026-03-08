@@ -11,13 +11,14 @@ def fetch_horizons(body):
         "EPHEM_TYPE": "OBSERVER",
         "CENTER": "500@399",
         "STEP_SIZE": "1d",
-        "QUANTITIES": "18"
+        "QUANTITIES": "18,20",
+        "CSV_FORMAT": "YES"
     }
 
     r = requests.get(HORIZONS_URL, params=params, timeout=30)
 
     if r.status_code != 200:
-        raise RuntimeError(f"Horizons request failed for {body} with status {r.status_code}")
+        raise RuntimeError("Horizons request failed")
 
     data = r.json()
 
@@ -26,17 +27,25 @@ def fetch_horizons(body):
 
     text = data["result"]
 
-    for line in text.split("\n"):
+    reading = False
 
-        stripped = line.strip()
-        if "," in stripped and stripped[0].isdigit():
+    for line in text.splitlines():
 
-            parts = stripped.split(",")
-            if len(parts) <= 4:
-                continue
+        if "$$SOE" in line:
+            reading = True
+            continue
 
-            lon = float(parts[4])
+        if "$$EOE" in line:
+            break
 
-            return {"lon": lon}
+        if reading:
 
-    raise RuntimeError(f"No ephemeris found for {body}")
+            parts = line.split(",")
+
+            if len(parts) > 4:
+
+                lon = float(parts[4])
+
+                return {"lon": lon}
+
+    raise RuntimeError("No longitude found")
