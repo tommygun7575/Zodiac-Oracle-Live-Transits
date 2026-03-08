@@ -1,5 +1,6 @@
 import requests
 import json
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timedelta
 import swisseph as swe
 import time
@@ -7,6 +8,9 @@ import time
 # Define the URLs for the services
 HORIZONS_URL = "https://ssd.jpl.nasa.gov/api/horizons.api"
 MIRIADE_URL = "https://ssp.imcce.fr/webservices/miriade/api/ephemcc.php"
+
+# Set ephemeris path once at module level
+swe.set_ephe_path(".")
 
 # Define the celestial bodies and their IDs
 BODIES = {
@@ -90,45 +94,48 @@ def fetch_jpl(body_id, start, stop):
         "ANG_FORMAT": "DEG"
     }
 
-    for _ in range(2):
+    for attempt in range(2):
         r = requests.get(HORIZONS_URL, params=params, timeout=20)
         if r.status_code == 200:
             rows = parse_horizons(r.text)
             if rows:
                 return rows
-        time.sleep(2)
+        if attempt < 1:
+            time.sleep(2)
 
     raise RuntimeError("JPL request failed")
 
-# Fetch data from Miriade
-def fetch_miriade(body, date):
+# Fetch data from Miriade (single batched request for all 7 days)
+def fetch_miriade(body, start_date):
     params = {
         "name": body,
         "type": "object",
-        "epoch": date,
+        "epoch": start_date.strftime("%Y-%m-%dT00:00:00"),
+        "nbd": 7,
+        "step": "1d",
         "observer": "500",
         "mime": "json"
     }
 
-    r = requests.get(MIRIADE_URL, params=params, timeout=10)
+    r = requests.get(MIRIADE_URL, params=params, timeout=30)
 
     if r.status_code != 200:
         raise RuntimeError("Miriade request failed")
 
     data = r.json()
-    try:
-        eph = data["data"][0]
-        lon = float(eph["EclLon"])
-        lat = float(eph["EclLat"])
-    except (KeyError, IndexError, TypeError, ValueError) as e:
-        raise RuntimeError(f"Miriade response parse failed: {e}")
-
-    return lon, lat
+    entries = data.get("data", [])
+    results = []
+    for entry in entries[:7]:
+        try:
+            lon = float(entry["EclLon"])
+            lat = float(entry["EclLat"])
+        except (KeyError, IndexError, TypeError, ValueError) as e:
+            raise RuntimeError(f"Miriade response parse failed: {e}")
+        results.append((lon, lat))
+    return results
 
 # Fetch data from Swiss Ephemeris
 def fetch_swiss(body, date):
-    swe.set_ephe_path(".")
-
     dt = datetime.fromisoformat(date)
     jd = swe.julday(dt.year, dt.month, dt.day)
 
@@ -151,19 +158,21 @@ def resolve_body(body, start_date):
     except Exception as e:
         print(f"[WARN] JPL failed for {body}: {e}")
 
+    try:
+        rows = fetch_miriade(body, start_date)
+        return [{"lon": lon, "lat": lat, "source": "Miriade"} for lon, lat in rows]
+    except Exception as e:
+        print(f"[WARN] Miriade failed for {body}: {e}")
+
     results = []
     for i in range(7):
         date = (start_date + timedelta(days=i)).strftime("%Y-%m-%d")
         try:
-            lon, lat = fetch_miriade(body, date)
-            results.append({"lon": lon, "lat": lat, "source": "Miriade"})
-        except Exception:
-            try:
-                lon, lat = fetch_swiss(body, date)
-                results.append({"lon": lon, "lat": lat, "source": "Swiss"})
-            except Exception as e:
-                print(f"[WARN] All sources failed for {body} on {date}: {e}")
-                results.append({"lon": None, "lat": None, "source": "none"})
+            lon, lat = fetch_swiss(body, date)
+            results.append({"lon": lon, "lat": lat, "source": "Swiss"})
+        except Exception as e:
+            print(f"[WARN] All sources failed for {body} on {date}: {e}")
+            results.append({"lon": None, "lat": None, "source": "none"})
 
     return results
 
@@ -207,13 +216,18 @@ def main():
     start_date = datetime.utcnow()
     bodies = {}
 
-    for body in BODIES:
-        print(f"Resolving {body}")
-        try:
-            bodies[body] = resolve_body(body, start_date)
-        except Exception as e:
-            print(f"[ERROR] Failed to resolve {body}: {e}")
-            bodies[body] = []
+    with ThreadPoolExecutor(max_workers=5) as executor:
+        futures = {}
+        for body in BODIES:
+            print(f"Resolving {body}")
+            futures[executor.submit(resolve_body, body, start_date)] = body
+        for future in as_completed(futures):
+            body = futures[future]
+            try:
+                bodies[body] = future.result()
+            except Exception as e:
+                print(f"[ERROR] Failed to resolve {body}: {e}")
+                bodies[body] = []
 
     data = {
         "generated": datetime.utcnow().isoformat(),
