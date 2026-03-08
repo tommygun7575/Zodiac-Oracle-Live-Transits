@@ -1,106 +1,56 @@
 import json
-import datetime
-import os
-import time
-
-from scripts.bodies.horizons_client import fetch_horizons
-
-PLANETS = [
-    "Sun",
-    "Moon",
-    "Mercury",
-    "Venus",
-    "Mars",
-    "Jupiter",
-    "Saturn",
-    "Uranus",
-    "Neptune",
-    "Pluto"
-]
-
-SIGNS = [
-    "Aries",
-    "Taurus",
-    "Gemini",
-    "Cancer",
-    "Leo",
-    "Virgo",
-    "Libra",
-    "Scorpio",
-    "Sagittarius",
-    "Capricorn",
-    "Aquarius",
-    "Pisces"
-]
-
-def zodiac(lon):
-
-    lon = lon % 360
-
-    sign_index = int(lon // 30)
-
-    degree = lon % 30
-
-    return SIGNS[sign_index], degree
+from datetime import datetime, timedelta
+from scripts.bodies.horizons_engine import get_body_week
 
 
-def generate():
+BODY_MAP = {
+    "10": "Sun",
+    "301": "Moon",
+    "199": "Mercury",
+    "299": "Venus",
+    "499": "Mars",
+    "599": "Jupiter",
+    "699": "Saturn",
+    "799": "Uranus",
+    "899": "Neptune",
+    "999": "Pluto"
+}
 
-    today = datetime.date.today()
 
-    week_later = today + datetime.timedelta(days=7)
-
-    start = today.isoformat()
-
-    stop = week_later.isoformat()
+def generate_week():
+    today = datetime.utcnow().date()
+    start = today.strftime("%Y-%m-%d")
+    stop = (today + timedelta(days=7)).strftime("%Y-%m-%d")
 
     bodies = {}
 
-    for planet in PLANETS:
+    for body_id, name in BODY_MAP.items():
+        print(f"Processing {name}")
+        key, data = get_body_week(body_id, name, start, stop)
+        bodies[key] = data
 
-        try:
-
-            print(f"Fetching {planet}")
-
-            data = fetch_horizons(planet, start, stop)
-
-            time.sleep(1)
-
-            if not data:
-                print(f"{planet} returned no data")
-                continue
-
-            lon = data[0]["lon"] % 360
-
-            sign, degree = zodiac(lon)
-
-            bodies[planet] = {
-                "lon": round(lon, 6),
-                "sign": sign,
-                "degree": round(degree, 6)
-            }
-
-        except Exception as e:
-
-            print(f"{planet} failed: {e}")
-
-            continue
-
+    if not bodies:
+        raise RuntimeError("No bodies collected — aborting write.")
 
     output = {
-        "generated_utc": datetime.datetime.utcnow().isoformat(),
+        "generated_utc": datetime.utcnow().isoformat(),
+        "week_start": start,
+        "week_end": stop,
         "bodies": bodies
     }
 
-    os.makedirs("docs", exist_ok=True)
+    filename = f"docs/current_week_{start}.json"
 
-    output_path = "docs/current_week.json"
-
-    with open(output_path, "w") as f:
+    with open(filename, "w") as f:
         json.dump(output, f, indent=2)
 
-    print(f"Weekly overlay written to {output_path}")
+    # also overwrite pointer file
+    with open("docs/current_week.json", "w") as f:
+        json.dump(output, f, indent=2)
+
+    print(f"Generated weekly file for {start}")
+    print(f"Bodies collected: {len(bodies)}")
 
 
 if __name__ == "__main__":
-    generate()
+    generate_week()
