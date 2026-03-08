@@ -42,13 +42,14 @@ class ResolveBodyOrderTests(unittest.TestCase):
     def test_falls_back_to_swiss_after_jpl_and_miriade_failure(self, fetch_jpl, fetch_miriade, fetch_swiss):
         fetch_jpl.side_effect = RuntimeError("jpl down")
         fetch_miriade.side_effect = RuntimeError("miriade down")
-        fetch_swiss.side_effect = [(i, i + 0.1) for i in range(7)]
+        fetch_swiss.return_value = (42.0, 0.42)
 
         result = generate_transits.resolve_body("Mercury", self.start_date)
 
         self.assertEqual(fetch_swiss.call_count, 7)
         self.assertTrue(all(entry["source"] == "Swiss" for entry in result))
         self.assertEqual(len(result), 7)
+        self.assertTrue(all(entry["lon"] == 42.0 and entry["lat"] == 0.42 for entry in result))
 
     @patch("scripts.generate_transits.fetch_swiss")
     @patch("scripts.generate_transits.fetch_miriade")
