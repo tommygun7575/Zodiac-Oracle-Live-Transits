@@ -1,20 +1,12 @@
-import numpy as np
-
-FIXED_STARS = {
-    "Regulus": 150.0,
-    "Spica": 204.0,
-    "Antares": 250.0,
-    "Aldebaran": 69.0
+{
+  "Regulus": 150.000,
+  "Spica": 204.000,
+  "Aldebaran": 69.000,
+  "Antares": 250.000,
+  "Fomalhaut": 333.000,
+  "Sirius": 104.000,
+  "Betelgeuse": 88.000,
+  "Rigel": 78.000,
+  "Algol": 55.000,
+  "Vega": 285.000
 }
-
-
-def detect_star_hits(longitudes):
-
-    lons = np.array(longitudes)
-
-    hits = {}
-
-    for star, pos in FIXED_STARS.items():
-        hits[star] = np.abs(lons - pos) < 1.0
-
-    return hits
