@@ -4,7 +4,7 @@ from scripts.bodies.horizons_client import fetch_ephemeris
 
 TARGETS = {
 
-    "Sun": "10",
+    "Sun": "'10'",
     "Moon": "301",
     "Mercury": "199",
     "Venus": "299",
@@ -60,13 +60,13 @@ def generate_week():
                 step
             )
 
-           resolved[name] = {
-    "source": "jpl",
-    "data": {
-        row["date"]: row["longitude_deg"]
-        for row in data
-    }
-}
+            resolved[name] = {
+                "source": "jpl",
+                "data": {
+                    row["date"]: row["longitude_deg"]
+                    for row in data
+                }
+            }
 
         except Exception as e:
             print(f"FAILED: {name} -> {e}")
@@ -78,9 +78,13 @@ def generate_week():
     arabic_parts = {"Part_of_Fortune": {}}
 
     if "Sun" in resolved and "Moon" in resolved:
-        for date in resolved["Sun"]:
-            sun = resolved["Sun"][date]
-            moon = resolved["Moon"].get(date)
+
+        sun_data = resolved["Sun"]["data"]
+        moon_data = resolved["Moon"]["data"]
+
+        for date in sun_data:
+            sun = sun_data[date]
+            moon = moon_data.get(date)
 
             if moon is None:
                 continue
@@ -90,8 +94,9 @@ def generate_week():
 
     harmonics = {}
 
-    for body, data in resolved.items():
-        for date, lon in data.items():
+    for body, payload in resolved.items():
+
+        for date, lon in payload["data"].items():
 
             if date not in harmonics:
                 harmonics[date] = {}
