@@ -1,12 +1,12 @@
 import json
+import os
 from datetime import datetime, timedelta
+import swisseph as swe
 
-from scripts.bodies.horizons_client import fetch_ephemeris
-from scripts.bodies.swiss_engine import get_swiss_week
+from scripts.horizons_client import fetch_ephemeris
 
 
-TARGETS = {
-
+BODY_MAP = {
     "Sun": "10",
     "Moon": "301",
     "Mercury": "199",
@@ -17,138 +17,136 @@ TARGETS = {
     "Uranus": "799",
     "Neptune": "899",
     "Pluto": "999",
-
     "Eris": "136199",
     "Haumea": "136108",
     "Makemake": "136472",
     "Sedna": "90377",
-    "Quaoar": "50000",
+    "Quaoar": "136108",
     "Orcus": "90482",
-
     "Chiron": "2060",
     "Chariklo": "10199",
     "Pholus": "5145",
-
-    "Ceres": "1;",
-    "Pallas": "2;",
-    "Juno": "3;",
-    "Vesta": "4;",
-
-    "Psyche": "16;",
-    "Eros": "433;",
-    "Amor": "1221;"
+    "Ceres": "1",
+    "Pallas": "2",
+    "Juno": "3",
+    "Vesta": "4",
+    "Psyche": "16",
+    "Eros": "433",
+    "Amor": "1221"
 }
 
 
-def generate_week():
+def load_fixed_stars():
+    with open(os.path.join("data", "fixed_stars.json"), "r") as f:
+        return json.load(f)
 
-    MAX_HARMONIC = 12
 
+def detect_star_conjunctions(bodies, orb=1.0):
+    stars = load_fixed_stars()
+    results = {}
+
+    for body, info in bodies.items():
+        for date, lon in info["data"].items():
+
+            for star_name, star_lon in stars.items():
+
+                diff = abs(lon - star_lon)
+                if diff > 180:
+                    diff = 360 - diff
+
+                if diff <= orb:
+                    if date not in results:
+                        results[date] = []
+                    results[date].append({
+                        "body": body,
+                        "star": star_name,
+                        "orb": round(diff, 4)
+                    })
+
+    return results
+
+
+def generate_week_dates():
     today = datetime.utcnow().date()
     week_start = today
     week_end = today + timedelta(days=7)
+    return week_start, week_end
 
-    resolved = {}
-    missing = []
 
-    for name, body_id in TARGETS.items():
+def generate_swiss_sun(start, end):
+    swe.set_ephe_path(".")
+    results = {}
+    current = start
 
-        step_days = 1 if name in ["Sun", "Moon"] else 2
-        data = None
-        source = None
+    while current <= end:
+        jd = swe.julday(current.year, current.month, current.day)
+        lon = swe.calc_ut(jd, swe.SUN)[0][0]
+        results[current.strftime("%Y-%m-%d")] = lon
+        current += timedelta(days=1)
 
-        # LAYER 1 — JPL (skip Sun)
-        if name != "Sun":
-            try:
-                jpl_data = fetch_ephemeris(
-                    body_id,
-                    week_start.strftime("%Y-%m-%d"),
-                    week_end.strftime("%Y-%m-%d"),
-                    f"{step_days}d"
-                )
-                if jpl_data:
-                    data = jpl_data
-                    source = "jpl"
-            except:
-                pass
+    return results
 
-        # LAYER 2 — Swiss fallback
-        if data is None:
-            try:
-                swiss_data = get_swiss_week(
-                    name,
-                    week_start.strftime("%Y-%m-%d"),
-                    week_end.strftime("%Y-%m-%d"),
-                    step_days
-                )
-                if swiss_data:
-                    data = swiss_data
-                    source = "swiss"
-            except:
-                pass
 
-        if data is not None:
-            resolved[name] = {
-                "source": source,
-                "data": {
-                    row["date"]: row["longitude_deg"]
-                    for row in data
-                }
-            }
-        else:
-            missing.append(name)
+def main():
 
-    coverage = len(resolved) / len(TARGETS)
-
-    arabic_parts = {"Part_of_Fortune": {}}
-
-    if "Sun" in resolved and "Moon" in resolved:
-
-        sun_data = resolved["Sun"]["data"]
-        moon_data = resolved["Moon"]["data"]
-
-        for date in sun_data:
-            if date in moon_data:
-                sun = sun_data[date]
-                moon = moon_data[date]
-                asc = (sun + 90) % 360
-                arabic_parts["Part_of_Fortune"][date] = (asc + moon - sun) % 360
-
-    harmonics = {}
-
-    for body, payload in resolved.items():
-        for date, lon in payload["data"].items():
-
-            if date not in harmonics:
-                harmonics[date] = {}
-
-            for h in range(2, MAX_HARMONIC + 1):
-
-                key = f"H{h}"
-
-                if key not in harmonics[date]:
-                    harmonics[date][key] = {}
-
-                harmonics[date][key][body] = (lon * h) % 360
+    week_start, week_end = generate_week_dates()
 
     output = {
         "generated_utc": datetime.utcnow().isoformat(),
         "week_start": str(week_start),
         "week_end": str(week_end),
         "engine_version": "ZodiacOracle.LiveTransit.vHybrid",
-        "coverage": coverage,
-        "resolved": len(resolved),
-        "total_targets": len(TARGETS),
-        "missing": missing,
-        "bodies": resolved,
-        "arabic_parts": arabic_parts,
-        "harmonics": harmonics,
+        "coverage": 0.0,
+        "resolved": 0,
+        "total_targets": len(BODY_MAP),
+        "missing": [],
+        "bodies": {},
+        "arabic_parts": {},
+        "harmonics": {},
         "fixed_star_conjunctions": {}
     }
 
-    with open("docs/current_week.json", "w") as f:
+    resolved = 0
+
+    for body, body_id in BODY_MAP.items():
+
+        try:
+
+            if body == "Sun":
+                data = generate_swiss_sun(week_start, week_end)
+                source = "swiss"
+
+            else:
+                step = "1d" if body == "Moon" else "2d"
+                data = fetch_ephemeris(
+                    body_id,
+                    str(week_start),
+                    str(week_end),
+                    step
+                )
+                source = "jpl"
+
+            output["bodies"][body] = {
+                "source": source,
+                "data": data
+            }
+
+            resolved += 1
+
+        except Exception as e:
+            print(f"FAILED {body}: {e}")
+            output["missing"].append(body)
+
+    output["resolved"] = resolved
+    output["coverage"] = round(resolved / output["total_targets"], 4)
+
+    output["fixed_star_conjunctions"] = detect_star_conjunctions(output["bodies"])
+
+    os.makedirs("output", exist_ok=True)
+
+    with open("output/current_week.json", "w") as f:
         json.dump(output, f, indent=2)
 
 
 if __name__ == "__main__":
-    generate_week()
+    main()
