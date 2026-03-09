@@ -3,8 +3,9 @@ import os
 from datetime import datetime, timedelta
 import swisseph as swe
 
-from .horizons_client import fetch_jpl
-from .miriade_client import fetch_miriade
+# CORRECTED IMPORTS (bodies subpackage)
+from .bodies.horizons_client import fetch_jpl
+from .bodies.miriade_client import fetch_miriade
 
 
 BODY_MAP = {
@@ -118,7 +119,7 @@ def main():
                 try:
                     data = fetch_jpl(body_id, str(week_start), str(week_end), "1d")
                     source = "jpl"
-                except:
+                except Exception:
                     data = swiss_body(swe.MOON, week_start, week_end)
                     source = "swiss"
 
@@ -126,11 +127,11 @@ def main():
                 try:
                     data = fetch_jpl(body_id, str(week_start), str(week_end), "2d")
                     source = "jpl"
-                except:
+                except Exception:
                     try:
                         data = fetch_miriade(body, str(week_start), str(week_end), "2d")
                         source = "miriade"
-                    except:
+                    except Exception:
                         data = swiss_body(swe.SUN, week_start, week_end)
                         source = "swiss"
 
