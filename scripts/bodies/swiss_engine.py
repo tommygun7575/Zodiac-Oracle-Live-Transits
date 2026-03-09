@@ -1,7 +1,9 @@
 import swisseph as swe
 from datetime import datetime, timedelta
 
-PLANETS = {
+swe.set_ephe_path(".")
+
+SWISS_MAP = {
     "Sun": swe.SUN,
     "Moon": swe.MOON,
     "Mercury": swe.MERCURY,
@@ -14,36 +16,28 @@ PLANETS = {
     "Pluto": swe.PLUTO
 }
 
+def get_swiss_week(body_name, start_date, stop_date, step_days):
 
-def fetch_swiss(body, start, stop):
+    if body_name not in SWISS_MAP:
+        raise RuntimeError("Swiss does not support this body")
 
-    if body not in PLANETS:
-        raise RuntimeError(f"Swiss unsupported body {body}")
+    body = SWISS_MAP[body_name]
 
-    start_dt = datetime.strptime(start, "%Y-%m-%d")
+    start = datetime.strptime(start_date, "%Y-%m-%d")
+    stop = datetime.strptime(stop_date, "%Y-%m-%d")
 
+    current = start
     results = []
 
-    for i in range(7):
-
-        day = start_dt + timedelta(days=i)
-
-        jd = swe.julday(day.year, day.month, day.day)
-
-        pos, flags = swe.calc_ut(jd, PLANETS[body])
-
-        lon = None
-        lat = None
-
-        try:
-            lon = float(pos[0])
-            lat = float(pos[1])
-        except Exception:
-            pass
+    while current <= stop:
+        jd = swe.julday(current.year, current.month, current.day)
+        lon = swe.calc_ut(jd, body)[0][0]
 
         results.append({
-            "lon": lon,
-            "lat": lat
+            "date": current.strftime("%Y-%m-%d"),
+            "longitude_deg": lon
         })
+
+        current += timedelta(days=step_days)
 
     return results
