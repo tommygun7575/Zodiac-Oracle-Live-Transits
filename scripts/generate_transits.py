@@ -1,216 +1,77 @@
 import json
 from datetime import datetime, timedelta
 
-from scripts.bodies.horizons_engine import get_body_week
-
-try:
-    from scripts.bodies.miriade_engine import get_miriade_week
-except ImportError:
-    get_miriade_week = None
-
-try:
-    from scripts.bodies.mpc_engine import get_mpc_week
-except ImportError:
-    get_mpc_week = None
-
-try:
-    from scripts.bodies.swiss_engine import get_swiss_week
-except ImportError:
-    get_swiss_week = None
-
-
-COVERAGE_THRESHOLD = 0.92
-HARMONIC_MIN = 2
-HARMONIC_MAX = 12
-
-
-ALL_BODIES = {
-    "10": "Sun",
-    "301": "Moon",
-    "199": "Mercury",
-    "299": "Venus",
-    "499": "Mars",
-    "599": "Jupiter",
-    "699": "Saturn",
-    "799": "Uranus",
-    "899": "Neptune",
-    "999": "Pluto",
-    "136199": "Eris",
-    "136108": "Haumea",
-    "136472": "Makemake",
-    "90377": "Sedna",
-    "50000": "Quaoar",
-    "90482": "Orcus",
-    "2060": "Chiron",
-    "10199": "Chariklo",
-    "5145": "Pholus",
-    "1": "Ceres",
-    "2": "Pallas",
-    "3": "Juno",
-    "4": "Vesta",
-    "16": "Psyche",
-    "433": "Eros",
-    "1221": "Amor"
-}
-
-
-FIXED_STARS = {
-    "Regulus": 150.0,
-    "Spica": 204.0,
-    "Aldebaran": 69.0,
-    "Antares": 249.0
-}
-
-ORB = 1.0
-
-
-def compute_arabic_parts(bodies):
-    parts = {}
-    try:
-        sun = float(bodies["Sun"]["data"][0]["longitude_deg"])
-        moon = float(bodies["Moon"]["data"][0]["longitude_deg"])
-        asc = (sun + 90) % 360
-        fortune = (asc + moon - sun) % 360
-        parts["Part_of_Fortune"] = fortune
-    except:
-        pass
-    return parts
-
-
-def compute_harmonics(bodies, h_min, h_max):
-    harmonic_output = {}
-    for h in range(h_min, h_max + 1):
-        harmonic_output[f"H{h}"] = {}
-        for name, obj in bodies.items():
-            try:
-                lon = float(obj["data"][0]["longitude_deg"])
-                harmonic_output[f"H{h}"][name] = (lon * h) % 360
-            except:
-                pass
-    return harmonic_output
-
-
-def compute_fixed_star_conjunctions(bodies):
-    results = {}
-    for body_name, obj in bodies.items():
-        try:
-            lon = float(obj["data"][0]["longitude_deg"])
-            for star, star_lon in FIXED_STARS.items():
-                diff = abs(lon - star_lon)
-                if diff <= ORB or abs(diff - 360) <= ORB:
-                    results.setdefault(body_name, []).append(star)
-        except:
-            pass
-    return results
-
+from scripts.targets import TARGETS
+from scripts.config import (
+    STEP_SIZE_GENERAL,
+    STEP_SIZE_MOON,
+    COVERAGE_THRESHOLD
+)
+from scripts.bodies.horizons_client import fetch_ephemeris
+from scripts.astrology_layers import (
+    compute_arabic_parts_per_date,
+    compute_harmonics_per_date,
+    compute_fixed_star_conjunctions
+)
 
 def generate_week():
 
     today = datetime.utcnow().date()
-    start = today.strftime("%Y-%m-%d")
-    stop = (today + timedelta(days=7)).strftime("%Y-%m-%d")
+    week_start = today
+    week_end = today + timedelta(days=7)
 
-    bodies = {}
-    missing = dict(ALL_BODIES)
+    resolved = {}
+    missing = []
 
-    print("=== JPL PASS ===")
+    for name, body_id in TARGETS.items():
 
-    for body_id, name in ALL_BODIES.items():
         try:
-            key, data = get_body_week(body_id, name, start, stop)
-            bodies[key] = {
-                "source": "jpl",
-                "data": data
+
+            step = STEP_SIZE_MOON if name == "Moon" else STEP_SIZE_GENERAL
+
+            data = fetch_ephemeris(
+                body_id,
+                week_start.strftime("%Y-%m-%d"),
+                week_end.strftime("%Y-%m-%d"),
+                step
+            )
+
+            resolved[name] = {
+                row["date"]: row["longitude_deg"]
+                for row in data
             }
-            missing.pop(body_id, None)
-        except:
-            pass
 
-    print(f"After JPL: {len(bodies)} resolved, {len(missing)} missing")
+        except Exception:
+            missing.append(name)
 
-    if get_miriade_week and missing:
-        print("=== MIRIADE PASS ===")
-        for body_id in list(missing.keys()):
-            name = missing[body_id]
-            try:
-                key, data = get_miriade_week(body_id, name, start, stop)
-                bodies[key] = {
-                    "source": "miriade",
-                    "data": data
-                }
-                missing.pop(body_id, None)
-            except:
-                pass
-        print(f"After Miriade: {len(bodies)} resolved, {len(missing)} missing")
-
-    if get_mpc_week and missing:
-        print("=== MPC PASS ===")
-        for body_id in list(missing.keys()):
-            name = missing[body_id]
-            try:
-                key, data = get_mpc_week(body_id, name, start, stop)
-                bodies[key] = {
-                    "source": "mpc",
-                    "data": data
-                }
-                missing.pop(body_id, None)
-            except:
-                pass
-        print(f"After MPC: {len(bodies)} resolved, {len(missing)} missing")
-
-    if get_swiss_week and missing:
-        print("=== SWISS PASS ===")
-        for body_id in list(missing.keys()):
-            name = missing[body_id]
-            try:
-                key, data = get_swiss_week(body_id, name, start, stop)
-                bodies[key] = {
-                    "source": "swiss",
-                    "data": data
-                }
-                missing.pop(body_id, None)
-            except:
-                pass
-        print(f"After Swiss: {len(bodies)} resolved, {len(missing)} missing")
-
-    total_targets = len(ALL_BODIES)
-    coverage = len(bodies) / total_targets
-
-    print(f"Final coverage: {coverage * 100:.2f}%")
+    coverage = len(resolved) / len(TARGETS)
 
     if coverage < COVERAGE_THRESHOLD:
-        raise RuntimeError(
-            f"Coverage below threshold ({coverage*100:.2f}%). Aborting."
-        )
+        raise RuntimeError("Coverage below threshold")
 
-    arabic_parts = compute_arabic_parts(bodies)
-    harmonics = compute_harmonics(bodies, HARMONIC_MIN, HARMONIC_MAX)
-    fixed_star_hits = compute_fixed_star_conjunctions(bodies)
+    arabic_parts = compute_arabic_parts_per_date(resolved)
+    harmonics = compute_harmonics_per_date(resolved)
+
+    star_catalog = {}
+    fixed_star_hits = compute_fixed_star_conjunctions(resolved, star_catalog)
 
     output = {
         "generated_utc": datetime.utcnow().isoformat(),
-        "week_start": start,
-        "week_end": stop,
-        "engine_version": "ZodiacOracle.LayeredSweep.v1",
+        "week_start": str(week_start),
+        "week_end": str(week_end),
+        "engine_version": "ZodiacOracle.LiveTransit.vFinal",
         "coverage": coverage,
-        "resolved": len(bodies),
-        "total_targets": total_targets,
-        "missing": list(missing.values()),
-        "bodies": bodies,
+        "resolved": len(resolved),
+        "total_targets": len(TARGETS),
+        "missing": missing,
+        "bodies": resolved,
         "arabic_parts": arabic_parts,
         "harmonics": harmonics,
         "fixed_star_conjunctions": fixed_star_hits
     }
 
-    filename = f"docs/current_week_{start}.json"
-
-    with open(filename, "w") as f:
-        json.dump(output, f, indent=2)
-
     with open("docs/current_week.json", "w") as f:
         json.dump(output, f, indent=2)
-
-    print("Weekly overlay generated successfully.")
 
 
 if __name__ == "__main__":
