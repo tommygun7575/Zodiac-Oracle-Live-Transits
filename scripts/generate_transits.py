@@ -1,12 +1,9 @@
 import json
 from datetime import datetime, timedelta
-
 from scripts.bodies.horizons_client import fetch_ephemeris
 
-# TARGET MAP — corrected IDs
 TARGETS = {
 
-    # Major planets
     "Sun": "10",
     "Moon": "301",
     "Mercury": "199",
@@ -18,7 +15,6 @@ TARGETS = {
     "Neptune": "899",
     "Pluto": "999",
 
-    # Dwarfs / TNOs
     "Eris": "136199",
     "Haumea": "136108",
     "Makemake": "136472",
@@ -26,18 +22,15 @@ TARGETS = {
     "Quaoar": "50000",
     "Orcus": "90482",
 
-    # Centaurs
     "Chiron": "2060",
     "Chariklo": "10199",
     "Pholus": "5145",
 
-    # Major asteroids (semicolon required)
     "Ceres": "1;",
     "Pallas": "2;",
     "Juno": "3;",
     "Vesta": "4;",
 
-    # Named
     "Psyche": "16;",
     "Eros": "433;",
     "Amor": "1221;"
@@ -57,11 +50,9 @@ def generate_week():
 
     for name, body_id in TARGETS.items():
 
+        step = "1 d" if name == "Moon" else "2 d"
+
         try:
-
-            # Moon daily, others every 2 days
-            step = "1 d" if name == "Moon" else "2 d"
-
             data = fetch_ephemeris(
                 body_id,
                 week_start.strftime("%Y-%m-%d"),
@@ -74,16 +65,15 @@ def generate_week():
                 for row in data
             }
 
-        except Exception:
+        except Exception as e:
+            print(f"FAILED: {name} -> {e}")
             missing.append(name)
 
     coverage = len(resolved) / len(TARGETS)
 
-    # NEVER FAIL BUILD — only warn
-    if coverage < 0.70:
-        print(f"WARNING: Low coverage ({coverage:.2f}) — continuing build.")
+    print(f"Coverage: {coverage:.2f}")
 
-    # Arabic Parts per date
+    # Arabic Parts
     arabic_parts = {"Part_of_Fortune": {}}
 
     if "Sun" in resolved and "Moon" in resolved:
@@ -98,7 +88,7 @@ def generate_week():
             asc = (sun + 90) % 360
             arabic_parts["Part_of_Fortune"][date] = (asc + moon - sun) % 360
 
-    # Harmonics nested per date
+    # Harmonics
     harmonics = {}
 
     for body, data in resolved.items():
