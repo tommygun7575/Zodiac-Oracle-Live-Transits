@@ -10,6 +10,7 @@ def fetch_ephemeris(body_id, start_date, stop_date, step_size="2d"):
         "format": "text",
         "COMMAND": body_id,
         "MAKE_EPHEM": "YES",
+        "TABLE_TYPE": "OBSERVER",
         "EPHEM_TYPE": "OBSERVER",
         "CENTER": center,
         "START_TIME": start_date,
@@ -21,8 +22,43 @@ def fetch_ephemeris(body_id, start_date, stop_date, step_size="2d"):
 
     response = requests.get(HORIZONS_URL, params=params, timeout=30)
 
-    print("==== RAW RESPONSE BEGIN ====")
-    print(response.text[:2000])
-    print("==== RAW RESPONSE END ====")
+    if response.status_code != 200:
+        raise RuntimeError(f"Horizons HTTP error {response.status_code}")
 
-    raise RuntimeError("Debug stop")
+    text = response.text
+
+    if "$$SOE" not in text:
+        raise RuntimeError("Horizons did not generate ephemeris table")
+
+    lines = text.splitlines()
+
+    ephemeris = []
+    capture = False
+
+    for line in lines:
+
+        if "$$SOE" in line:
+            capture = True
+            continue
+
+        if "$$EOE" in line:
+            break
+
+        if capture:
+            parts = line.split(",")
+
+            if len(parts) >= 2:
+                try:
+                    date = parts[0].strip()
+                    lon = float(parts[1].strip())
+                    ephemeris.append({
+                        "date": date,
+                        "longitude_deg": lon
+                    })
+                except:
+                    continue
+
+    if not ephemeris:
+        raise RuntimeError("Parsed zero ephemeris rows")
+
+    return ephemeris
