@@ -60,10 +60,13 @@ def generate_week():
                 step
             )
 
-            resolved[name] = {
-                row["date"]: row["longitude_deg"]
-                for row in data
-            }
+           resolved[name] = {
+    "source": "jpl",
+    "data": {
+        row["date"]: row["longitude_deg"]
+        for row in data
+    }
+}
 
         except Exception as e:
             print(f"FAILED: {name} -> {e}")
