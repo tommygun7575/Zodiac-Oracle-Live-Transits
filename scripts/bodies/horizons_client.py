@@ -7,7 +7,7 @@ def fetch_ephemeris(body_id, start_date, stop_date, step_size="2d"):
     center = "500@0" if body_id == "10" else "500@399"
 
     params = {
-        "format": "json",
+        "format": "text",
         "COMMAND": body_id,
         "MAKE_EPHEM": "YES",
         "EPHEM_TYPE": "OBSERVER",
@@ -21,46 +21,8 @@ def fetch_ephemeris(body_id, start_date, stop_date, step_size="2d"):
 
     response = requests.get(HORIZONS_URL, params=params, timeout=30)
 
-    if response.status_code != 200:
-        raise RuntimeError(f"Horizons HTTP error {response.status_code}")
+    print("==== RAW RESPONSE BEGIN ====")
+    print(response.text[:2000])
+    print("==== RAW RESPONSE END ====")
 
-    data = response.json()
-
-    if "error" in data:
-        raise RuntimeError(data["error"])
-
-    if "result" not in data:
-        raise RuntimeError("No result block")
-
-    lines = data["result"].splitlines()
-
-    ephemeris = []
-    capture = False
-
-    for line in lines:
-
-        if "$$SOE" in line:
-            capture = True
-            continue
-
-        if "$$EOE" in line:
-            break
-
-        if capture:
-            parts = line.split(",")
-
-            if len(parts) >= 2:
-                try:
-                    date = parts[0].strip()
-                    lon = float(parts[1].strip())
-                    ephemeris.append({
-                        "date": date,
-                        "longitude_deg": lon
-                    })
-                except:
-                    continue
-
-    if not ephemeris:
-        raise RuntimeError("No ephemeris rows parsed")
-
-    return ephemeris
+    raise RuntimeError("Debug stop")
