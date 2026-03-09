@@ -1,6 +1,16 @@
 import requests
+from datetime import datetime, timedelta
 
 HORIZONS_URL = "https://ssd.jpl.nasa.gov/api/horizons.api"
+
+
+def jd_to_iso(jd):
+    jd = float(jd)
+    base = datetime(2000, 1, 1, 12)
+    delta = timedelta(days=jd - 2451545.0)
+    utc_dt = base + delta
+    return utc_dt.strftime("%Y-%m-%d")
+
 
 def fetch_ephemeris(body_id, start_date, stop_date, step_size="2d"):
 
@@ -9,31 +19,31 @@ def fetch_ephemeris(body_id, start_date, stop_date, step_size="2d"):
         "COMMAND": body_id,
         "MAKE_EPHEM": "YES",
         "EPHEM_TYPE": "VECTORS",
-        "CENTER": "@0",
-        "REF_PLANE": "ECLIPTIC",
-        "REF_SYSTEM": "J2000",
+        "CENTER": "500@0",
         "START_TIME": start_date,
         "STOP_TIME": stop_date,
         "STEP_SIZE": step_size,
-        "VEC_TABLE": "3",
         "OUT_UNITS": "AU-D",
-        "CSV_FORMAT": "YES"
+        "REF_PLANE": "ECLIPTIC",
+        "REF_SYSTEM": "J2000"
     }
 
-    response = requests.get(HORIZONS_URL, params=params, timeout=60)
+    r = requests.get(HORIZONS_URL, params=params, timeout=60)
 
-    if response.status_code != 200:
-        raise RuntimeError(f"Horizons HTTP error {response.status_code}")
+    if r.status_code != 200:
+        raise RuntimeError(f"Horizons HTTP error {r.status_code}")
 
-    data = response.json()
+    data = r.json()
 
     if "result" not in data:
-        raise RuntimeError("Horizons did not return result block")
+        raise RuntimeError("Horizons did not generate ephemeris table")
 
     lines = data["result"].splitlines()
 
+    ephemeris = {}
     capture = False
-    ephemeris = []
+    current_jd = None
+    x = y = None
 
     for line in lines:
 
@@ -44,27 +54,29 @@ def fetch_ephemeris(body_id, start_date, stop_date, step_size="2d"):
         if "$$EOE" in line:
             break
 
-        if capture:
+        if not capture:
+            continue
 
-            parts = [p.strip() for p in line.split(",")]
+        parts = line.strip().split()
 
-            if len(parts) >= 5:
-                try:
-                    date = parts[0].split()[0]
-                    x = float(parts[2])
-                    y = float(parts[3])
+        if len(parts) == 2:
+            current_jd = parts[0]
 
-                    # Convert vector to ecliptic longitude
-                    import math
-                    lon = math.degrees(math.atan2(y, x)) % 360
+        if "X =" in line:
+            try:
+                x = float(line.split("X =")[1].split()[0])
+                y = float(line.split("Y =")[1].split()[0])
 
-                    ephemeris.append({
-                        "date": date,
-                        "longitude_deg": lon
-                    })
+                import math
+                lon = math.degrees(math.atan2(y, x))
+                if lon < 0:
+                    lon += 360
 
-                except:
-                    continue
+                iso_date = jd_to_iso(current_jd)
+                ephemeris[iso_date] = lon
+
+            except:
+                continue
 
     if not ephemeris:
         raise RuntimeError("No ephemeris rows parsed")
