@@ -3,7 +3,6 @@ import os
 from datetime import datetime, timedelta
 import swisseph as swe
 
-# Correct package imports (bodies subpackage)
 from .bodies.horizons_client import fetch_jpl
 from .bodies.miriade_client import fetch_miriade
 
@@ -38,10 +37,6 @@ BODY_MAP = {
 }
 
 
-# ------------------------------
-# Fixed Star Handling
-# ------------------------------
-
 def load_fixed_stars():
     with open(os.path.join("data", "fixed_stars.json"), "r") as f:
         return json.load(f)
@@ -60,10 +55,7 @@ def detect_star_conjunctions(bodies, orb=1.0):
                     diff = 360 - diff
 
                 if diff <= orb:
-                    if date not in results:
-                        results[date] = []
-
-                    results[date].append({
+                    results.setdefault(date, []).append({
                         "body": body,
                         "star": star_name,
                         "orb": round(diff, 4)
@@ -72,18 +64,10 @@ def detect_star_conjunctions(bodies, orb=1.0):
     return results
 
 
-# ------------------------------
-# Date Window
-# ------------------------------
-
 def generate_week_dates():
     today = datetime.utcnow().date()
     return today, today + timedelta(days=7)
 
-
-# ------------------------------
-# Swiss Fallback
-# ------------------------------
 
 def swiss_body(body_const, start, end):
     results = {}
@@ -98,9 +82,40 @@ def swiss_body(body_const, start, end):
     return results
 
 
-# ------------------------------
-# Main Generator
-# ------------------------------
+def resolve_body(body, body_id, week_start, week_end):
+
+    if body == "Sun":
+        print("Sun → Swiss primary")
+        return swiss_body(swe.SUN, week_start, week_end), "swiss"
+
+    if body == "Moon":
+        try:
+            print("Moon → JPL primary")
+            data = fetch_jpl(body_id, str(week_start), str(week_end), "1d")
+            return data, "jpl"
+        except Exception as e:
+            print(f"Moon JPL FAILED: {e}")
+            print("Moon → Swiss fallback")
+            return swiss_body(swe.MOON, week_start, week_end), "swiss"
+
+    # Standard hybrid routing
+    try:
+        print(f"{body} → JPL attempt")
+        data = fetch_jpl(body_id, str(week_start), str(week_end), "2d")
+        return data, "jpl"
+    except Exception as e:
+        print(f"{body} JPL FAILED: {e}")
+
+    try:
+        print(f"{body} → Miriade attempt")
+        data = fetch_miriade(body, str(week_start), str(week_end), "2d")
+        return data, "miriade"
+    except Exception as e:
+        print(f"{body} Miriade FAILED: {e}")
+
+    print(f"{body} → Swiss fallback")
+    return swiss_body(swe.SUN, week_start, week_end), "swiss"
+
 
 def main():
 
@@ -116,8 +131,6 @@ def main():
         "total_targets": len(BODY_MAP),
         "missing": [],
         "bodies": {},
-        "arabic_parts": {},
-        "harmonics": {},
         "fixed_star_conjunctions": {}
     }
 
@@ -126,30 +139,7 @@ def main():
     for body, body_id in BODY_MAP.items():
 
         try:
-
-            if body == "Sun":
-                data = swiss_body(swe.SUN, week_start, week_end)
-                source = "swiss"
-
-            elif body == "Moon":
-                try:
-                    data = fetch_jpl(body_id, str(week_start), str(week_end), "1d")
-                    source = "jpl"
-                except Exception:
-                    data = swiss_body(swe.MOON, week_start, week_end)
-                    source = "swiss"
-
-            else:
-                try:
-                    data = fetch_jpl(body_id, str(week_start), str(week_end), "2d")
-                    source = "jpl"
-                except Exception:
-                    try:
-                        data = fetch_miriade(body, str(week_start), str(week_end), "2d")
-                        source = "miriade"
-                    except Exception:
-                        data = swiss_body(swe.SUN, week_start, week_end)
-                        source = "swiss"
+            data, source = resolve_body(body, body_id, week_start, week_end)
 
             output["bodies"][body] = {
                 "source": source,
@@ -159,14 +149,13 @@ def main():
             resolved += 1
 
         except Exception as e:
-            print(f"FAILED {body}: {e}")
+            print(f"TOTAL FAILURE {body}: {e}")
             output["missing"].append(body)
 
     output["resolved"] = resolved
     output["coverage"] = round(resolved / output["total_targets"], 4)
     output["fixed_star_conjunctions"] = detect_star_conjunctions(output["bodies"])
 
-    # IMPORTANT: Match GitHub workflow expectation
     os.makedirs("docs", exist_ok=True)
 
     with open("docs/current_week.json", "w", encoding="utf-8") as f:
