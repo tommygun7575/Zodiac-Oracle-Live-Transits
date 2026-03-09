@@ -1,7 +1,7 @@
 import requests
-from scripts.utils import normalize_longitude
 
 HORIZONS_URL = "https://ssd.jpl.nasa.gov/api/horizons.api"
+
 
 def fetch_ephemeris(body_id, start, stop, step_size):
 
@@ -43,7 +43,9 @@ def parse_ephemeris(text):
         if reading:
             parts = line.split(",")
             date = parts[0].strip()
-            lon = normalize_longitude(parts[3].strip())
+
+            # Normalize longitude immediately
+            lon = float(parts[3].strip()) % 360.0
 
             rows.append({
                 "date": date,
