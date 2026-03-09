@@ -2,6 +2,7 @@ import json
 from datetime import datetime, timedelta
 from scripts.bodies.horizons_client import fetch_ephemeris
 
+
 TARGETS = {
 
     "Sun": "10",
@@ -50,7 +51,7 @@ def generate_week():
 
     for name, body_id in TARGETS.items():
 
-        step = "1d" if name == "Moon" else "2d"
+        step = "1d" if name in ["Sun", "Moon"] else "2d"
 
         try:
             data = fetch_ephemeris(
@@ -69,11 +70,10 @@ def generate_week():
             }
 
         except Exception as e:
-            print(f"FAILED: {name} -> {e}")
+            print(f"FAILED {name}: {e}")
             missing.append(name)
 
     coverage = len(resolved) / len(TARGETS)
-    print(f"Coverage: {coverage:.2f}")
 
     arabic_parts = {"Part_of_Fortune": {}}
 
@@ -83,14 +83,13 @@ def generate_week():
         moon_data = resolved["Moon"]["data"]
 
         for date in sun_data:
-            sun = sun_data[date]
-            moon = moon_data.get(date)
+            if date in moon_data:
 
-            if moon is None:
-                continue
+                sun = sun_data[date]
+                moon = moon_data[date]
+                asc = (sun + 90) % 360
 
-            asc = (sun + 90) % 360
-            arabic_parts["Part_of_Fortune"][date] = (asc + moon - sun) % 360
+                arabic_parts["Part_of_Fortune"][date] = (asc + moon - sun) % 360
 
     harmonics = {}
 
