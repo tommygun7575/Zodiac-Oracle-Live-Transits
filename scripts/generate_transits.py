@@ -50,7 +50,7 @@ def generate_week():
 
     for name, body_id in TARGETS.items():
 
-     step = "1d" if name == "Moon" else "2d"   
+        step = "1d" if name == "Moon" else "2d"
 
         try:
             data = fetch_ephemeris(
@@ -70,14 +70,11 @@ def generate_week():
             missing.append(name)
 
     coverage = len(resolved) / len(TARGETS)
-
     print(f"Coverage: {coverage:.2f}")
 
-    # Arabic Parts
     arabic_parts = {"Part_of_Fortune": {}}
 
     if "Sun" in resolved and "Moon" in resolved:
-
         for date in resolved["Sun"]:
             sun = resolved["Sun"][date]
             moon = resolved["Moon"].get(date)
@@ -88,7 +85,6 @@ def generate_week():
             asc = (sun + 90) % 360
             arabic_parts["Part_of_Fortune"][date] = (asc + moon - sun) % 360
 
-    # Harmonics
     harmonics = {}
 
     for body, data in resolved.items():
