@@ -1,6 +1,8 @@
 import json
 from datetime import datetime, timedelta
+
 from scripts.bodies.horizons_client import fetch_ephemeris
+from scripts.bodies.swiss_engine import get_swiss_week
 
 
 TARGETS = {
@@ -51,26 +53,49 @@ def generate_week():
 
     for name, body_id in TARGETS.items():
 
-        step = "1d" if name in ["Sun", "Moon"] else "2d"
+        step_days = 1 if name in ["Sun", "Moon"] else 2
+        data = None
+        source = None
 
-        try:
-            data = fetch_ephemeris(
-                body_id,
-                week_start.strftime("%Y-%m-%d"),
-                week_end.strftime("%Y-%m-%d"),
-                step
-            )
+        # LAYER 1 — JPL (skip Sun)
+        if name != "Sun":
+            try:
+                jpl_data = fetch_ephemeris(
+                    body_id,
+                    week_start.strftime("%Y-%m-%d"),
+                    week_end.strftime("%Y-%m-%d"),
+                    f"{step_days}d"
+                )
+                if jpl_data:
+                    data = jpl_data
+                    source = "jpl"
+            except:
+                pass
 
+        # LAYER 2 — Swiss fallback
+        if data is None:
+            try:
+                swiss_data = get_swiss_week(
+                    name,
+                    week_start.strftime("%Y-%m-%d"),
+                    week_end.strftime("%Y-%m-%d"),
+                    step_days
+                )
+                if swiss_data:
+                    data = swiss_data
+                    source = "swiss"
+            except:
+                pass
+
+        if data is not None:
             resolved[name] = {
-                "source": "jpl",
+                "source": source,
                 "data": {
                     row["date"]: row["longitude_deg"]
                     for row in data
                 }
             }
-
-        except Exception as e:
-            print(f"FAILED {name}: {e}")
+        else:
             missing.append(name)
 
     coverage = len(resolved) / len(TARGETS)
@@ -84,17 +109,14 @@ def generate_week():
 
         for date in sun_data:
             if date in moon_data:
-
                 sun = sun_data[date]
                 moon = moon_data[date]
                 asc = (sun + 90) % 360
-
                 arabic_parts["Part_of_Fortune"][date] = (asc + moon - sun) % 360
 
     harmonics = {}
 
     for body, payload in resolved.items():
-
         for date, lon in payload["data"].items():
 
             if date not in harmonics:
@@ -113,7 +135,7 @@ def generate_week():
         "generated_utc": datetime.utcnow().isoformat(),
         "week_start": str(week_start),
         "week_end": str(week_end),
-        "engine_version": "ZodiacOracle.LiveTransit.vFinal",
+        "engine_version": "ZodiacOracle.LiveTransit.vHybrid",
         "coverage": coverage,
         "resolved": len(resolved),
         "total_targets": len(TARGETS),
