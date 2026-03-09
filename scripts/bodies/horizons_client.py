@@ -1,63 +1,41 @@
 import requests
+import math
 
 HORIZONS_URL = "https://ssd.jpl.nasa.gov/api/horizons.api"
 
 
-# Map numeric IDs to Horizons-recognized commands
-MAJOR_BODY_NAMES = {
-    "10": "Sun",
-    "301": "Moon",
-    "199": "Mercury",
-    "299": "Venus",
-    "499": "Mars",
-    "599": "Jupiter",
-    "699": "Saturn",
-    "799": "Uranus",
-    "899": "Neptune",
-    "999": "Pluto"
-}
-
-
-def resolve_command(body_id: str) -> str:
-    if body_id in MAJOR_BODY_NAMES:
-        return MAJOR_BODY_NAMES[body_id]
-    else:
-        # Small bodies must use DES format
-        return f"DES={body_id};"
-
-
 def fetch_jpl(body_id, start_date, stop_date, step_size="2d"):
-
-    command = resolve_command(body_id)
 
     params = {
         "format": "json",
-        "COMMAND": command,
-        "OBJ_DATA": "NO",
+        "COMMAND": body_id,
         "MAKE_EPHEM": "YES",
-        "EPHEM_TYPE": "OBSERVER",
-        "CENTER": "500@399",
+        "EPHEM_TYPE": "VECTORS",
+        "CENTER": "@0",
+        "REF_PLANE": "ECLIPTIC",
+        "REF_SYSTEM": "J2000",
         "START_TIME": start_date,
         "STOP_TIME": stop_date,
         "STEP_SIZE": step_size,
-        "QUANTITIES": "2",
+        "VEC_TABLE": "3",
+        "OUT_UNITS": "AU-D",
         "CSV_FORMAT": "YES"
     }
 
-    r = requests.get(HORIZONS_URL, params=params, timeout=60)
+    response = requests.get(HORIZONS_URL, params=params, timeout=60)
 
-    if r.status_code != 200:
-        raise RuntimeError(f"JPL HTTP {r.status_code}")
+    if response.status_code != 200:
+        raise RuntimeError(f"JPL HTTP error {response.status_code}")
 
-    data = r.json()
+    data = response.json()
 
     if "result" not in data:
-        raise RuntimeError("JPL no ephemeris block")
+        raise RuntimeError("JPL did not return result block")
 
     lines = data["result"].splitlines()
 
-    ephemeris = {}
     capture = False
+    ephemeris = {}
 
     for line in lines:
 
@@ -71,24 +49,25 @@ def fetch_jpl(body_id, start_date, stop_date, step_size="2d"):
         if not capture:
             continue
 
-        line = line.strip()
+        parts = [p.strip() for p in line.split(",")]
 
-        if not line:
-            continue
+        # Expecting:
+        # 0 = date
+        # 2 = X
+        # 3 = Y
 
-        parts = line.split(",")
+        if len(parts) >= 4:
+            try:
+                date = parts[0].split()[0]
+                x = float(parts[2])
+                y = float(parts[3])
 
-        if len(parts) < 2:
-            continue
+                lon = math.degrees(math.atan2(y, x)) % 360
 
-        try:
-            date_str = parts[0].strip().split()[0]
-            lon = float(parts[1].strip())
+                ephemeris[date] = lon
 
-            ephemeris[date_str] = lon
-
-        except Exception:
-            continue
+            except Exception:
+                continue
 
     if not ephemeris:
         raise RuntimeError("JPL parsed zero rows")
