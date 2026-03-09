@@ -3,8 +3,8 @@ import os
 from datetime import datetime, timedelta
 import swisseph as swe
 
-from scripts.horizons_client import fetch_jpl
-from scripts.miriade_client import fetch_miriade
+from .horizons_client import fetch_jpl
+from .miriade_client import fetch_miriade
 
 
 BODY_MAP = {
@@ -48,7 +48,6 @@ def detect_star_conjunctions(bodies, orb=1.0):
 
     for body, info in bodies.items():
         for date, lon in info["data"].items():
-
             for star_name, star_lon in stars.items():
 
                 diff = abs(lon - star_lon)
@@ -58,6 +57,7 @@ def detect_star_conjunctions(bodies, orb=1.0):
                 if diff <= orb:
                     if date not in results:
                         results[date] = []
+
                     results[date].append({
                         "body": body,
                         "star": star_name,
