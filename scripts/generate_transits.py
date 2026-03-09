@@ -2,9 +2,9 @@ import json
 from datetime import datetime, timedelta
 from pathlib import Path
 
-from scripts.horizons_client import fetch_jpl
-from scripts.swiss_client import fetch_swiss
-from scripts.miriade_client import fetch_miriade
+from .horizons_client import fetch_jpl
+from .swiss_client import fetch_swiss
+from .miriade_client import fetch_miriade
 
 ENGINE_VERSION = "ZodiacOracle.LiveTransit.vHybrid"
 
@@ -204,7 +204,6 @@ def main():
     output["resolved"] = resolved
     output["coverage"] = round(resolved / len(TARGETS), 3)
 
-    # Daily layer (2-day stepping)
     cursor = week_start
     while cursor <= week_end:
 
