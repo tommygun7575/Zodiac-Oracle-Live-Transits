@@ -3,7 +3,7 @@ import os
 from datetime import datetime, timedelta
 import swisseph as swe
 
-# CORRECTED IMPORTS (bodies subpackage)
+# Correct package imports (bodies subpackage)
 from .bodies.horizons_client import fetch_jpl
 from .bodies.miriade_client import fetch_miriade
 
@@ -38,6 +38,10 @@ BODY_MAP = {
 }
 
 
+# ------------------------------
+# Fixed Star Handling
+# ------------------------------
+
 def load_fixed_stars():
     with open(os.path.join("data", "fixed_stars.json"), "r") as f:
         return json.load(f)
@@ -68,10 +72,18 @@ def detect_star_conjunctions(bodies, orb=1.0):
     return results
 
 
+# ------------------------------
+# Date Window
+# ------------------------------
+
 def generate_week_dates():
     today = datetime.utcnow().date()
     return today, today + timedelta(days=7)
 
+
+# ------------------------------
+# Swiss Fallback
+# ------------------------------
 
 def swiss_body(body_const, start, end):
     results = {}
@@ -85,6 +97,10 @@ def swiss_body(body_const, start, end):
 
     return results
 
+
+# ------------------------------
+# Main Generator
+# ------------------------------
 
 def main():
 
@@ -150,10 +166,13 @@ def main():
     output["coverage"] = round(resolved / output["total_targets"], 4)
     output["fixed_star_conjunctions"] = detect_star_conjunctions(output["bodies"])
 
-    os.makedirs("output", exist_ok=True)
+    # IMPORTANT: Match GitHub workflow expectation
+    os.makedirs("docs", exist_ok=True)
 
-    with open("output/current_week.json", "w") as f:
+    with open("docs/current_week.json", "w", encoding="utf-8") as f:
         json.dump(output, f, indent=2)
+
+    print("Weekly transit file written to docs/current_week.json")
 
 
 if __name__ == "__main__":
