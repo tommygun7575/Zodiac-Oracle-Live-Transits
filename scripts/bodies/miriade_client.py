@@ -1,23 +1,43 @@
 import requests
 
-MIRIADE_URL = "https://ssp.imcce.fr/webservices/miriade/api/ephemcc.php"
+
+MIRADE_URL = "https://ssp.imcce.fr/webservices/miriade/api/ephemcc.php"
 
 
-def fetch_miriade(body):
+def fetch_miriade(body_name, start_date, stop_date, step="2d"):
 
     params = {
-        "name": body,
-        "type": "asteroid",
-        "output": "json"
+        "name": body_name,
+        "type": "object",
+        "ephem": "1",
+        "observer": "500",
+        "epoch": start_date,
+        "step": step,
+        "nbd": "20",
+        "mime": "json"
     }
 
-    r = requests.get(MIRIADE_URL, params=params, timeout=30)
+    r = requests.get(MIRADE_URL, params=params, timeout=60)
 
     if r.status_code != 200:
-        raise RuntimeError("Miriade request failed")
+        raise RuntimeError("Miriade HTTP error")
 
     data = r.json()
 
-    lon = float(data["data"][0]["RA"])
+    if "data" not in data:
+        raise RuntimeError("Miriade no data")
 
-    return {"lon": lon}
+    ephemeris = {}
+
+    for row in data["data"]:
+        try:
+            iso_date = row["date"]
+            lon = float(row["lambda"])
+            ephemeris[iso_date] = lon
+        except:
+            continue
+
+    if not ephemeris:
+        raise RuntimeError("Miriade parsed zero rows")
+
+    return ephemeris
