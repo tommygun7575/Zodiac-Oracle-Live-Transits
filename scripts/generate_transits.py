@@ -1,282 +1,264 @@
 import json
-import os
+import math
 from datetime import datetime, timedelta
-import swisseph as swe
+from pathlib import Path
 
-from .bodies.horizons_client import fetch_jpl
+from .horizons_client import fetch_jpl
+from .swiss_client import fetch_swiss
+from .miriade_client import fetch_miriade
 
-# ─────────────────────────────
-# Expanded Body Map
-# ─────────────────────────────
 
-BODY_MAP = {
+ENGINE_VERSION = "ZodiacOracle.LiveTransit.vHybrid"
 
-    # Luminaries
+
+# =========================================================
+# WEEK ANCHOR LOGIC — ALWAYS SUNDAY START
+# =========================================================
+
+def get_week_range():
+    today = datetime.utcnow().date()
+    weekday = today.weekday()  # Monday = 0, Sunday = 6
+
+    # Move backward to most recent Sunday
+    days_since_sunday = (weekday + 1) % 7
+    week_start = today - timedelta(days=days_since_sunday)
+
+    week_end = week_start + timedelta(days=7)
+
+    return week_start, week_end
+
+
+# =========================================================
+# DATE NORMALIZATION
+# =========================================================
+
+def normalize_keys_to_iso(ephemeris_dict):
+    normalized = {}
+    for k, v in ephemeris_dict.items():
+        # If already ISO
+        if "-" in str(k):
+            normalized[k] = v
+        else:
+            # JD -> ISO
+            jd = float(k)
+            base = datetime(2000, 1, 1, 12)
+            dt = base + timedelta(days=jd - 2451545.0)
+            iso = dt.strftime("%Y-%m-%d")
+            normalized[iso] = v
+    return normalized
+
+
+# =========================================================
+# ARABIC PARTS (12+)
+# =========================================================
+
+def normalize_deg(d):
+    return d % 360
+
+
+def compute_arabic_parts(date, bodies):
+    parts = {}
+
+    if not all(x in bodies for x in ["Sun", "Moon"]):
+        return parts
+
+    sun = bodies["Sun"]
+    moon = bodies["Moon"]
+
+    asc = sun  # Transit chart simplification (solar anchor)
+
+    parts["Fortune"] = normalize_deg(asc + moon - sun)
+    parts["Spirit"] = normalize_deg(asc + sun - moon)
+    parts["Eros"] = normalize_deg(asc + bodies.get("Venus", sun) - parts["Spirit"])
+    parts["Victory"] = normalize_deg(asc + bodies.get("Jupiter", sun) - sun)
+    parts["Necessity"] = normalize_deg(asc + bodies.get("Saturn", sun) - parts["Fortune"])
+    parts["Courage"] = normalize_deg(asc + bodies.get("Mars", sun) - parts["Spirit"])
+    parts["Nemesis"] = normalize_deg(asc + bodies.get("Saturn", sun) - moon)
+    parts["Exaltation"] = normalize_deg(asc + bodies.get("Sun", sun) - bodies.get("Jupiter", sun))
+    parts["Basis"] = normalize_deg(asc + bodies.get("Mercury", sun) - moon)
+    parts["Love"] = normalize_deg(asc + bodies.get("Venus", sun) - moon)
+    parts["Marriage"] = normalize_deg(asc + bodies.get("Venus", sun) - bodies.get("Saturn", sun))
+    parts["Increase"] = normalize_deg(asc + bodies.get("Jupiter", sun) - parts["Spirit"])
+    parts["Commerce"] = normalize_deg(asc + bodies.get("Mercury", sun) - bodies.get("Jupiter", sun))
+    parts["Passion"] = normalize_deg(asc + bodies.get("Mars", sun) - bodies.get("Venus", sun))
+
+    return parts
+
+
+# =========================================================
+# FIXED STAR PRECISION LAYER
+# =========================================================
+
+FIXED_STARS = {
+    "Regulus": 150.000,
+    "Spica": 204.000,
+    "Aldebaran": 69.000,
+    "Antares": 249.000,
+    "Fomalhaut": 333.000,
+    "Algol": 53.000,
+    "Sirius": 104.000,
+    "Arcturus": 213.000,
+    "Vega": 285.000,
+    "Capella": 80.000
+}
+
+STAR_ORB = 1.0
+
+
+def angular_sep(a, b):
+    diff = abs(a - b)
+    return min(diff, 360 - diff)
+
+
+def compute_fixed_star_hits(date, body_positions):
+    hits = []
+
+    for body, lon in body_positions.items():
+        for star, star_lon in FIXED_STARS.items():
+            sep = angular_sep(lon, star_lon)
+            if sep <= STAR_ORB:
+                hits.append({
+                    "body": body,
+                    "star": star,
+                    "orb": round(sep, 4)
+                })
+
+    return hits
+
+
+# =========================================================
+# TARGET LIST
+# =========================================================
+
+TARGETS = {
     "Sun": "10",
     "Moon": "301",
-
-    # Personal
     "Mercury": "199",
     "Venus": "299",
     "Mars": "499",
-
-    # Social / Outer
     "Jupiter": "599",
     "Saturn": "699",
     "Uranus": "799",
     "Neptune": "899",
     "Pluto": "999",
-
-    # Dwarf / TNO
-    "Eris": "136199",
-    "Haumea": "136108",
-    "Makemake": "136472",
+    "Eris": "200136199",
+    "Haumea": "200136108",
+    "Makemake": "200136472",
     "Sedna": "90377",
+    "Quaoar": "50000",
     "Orcus": "90482",
-    "Gonggong": "225088",
-    "Ixion": "28978",
-    "Varuna": "20000",
-
-    # Centaurs
     "Chiron": "2060",
     "Chariklo": "10199",
     "Pholus": "5145",
-    "Nessus": "7066",
-    "Asbolus": "8405",
-
-    # Main Belt
     "Ceres": "1",
     "Pallas": "2",
     "Juno": "3",
     "Vesta": "4",
-    "Hygiea": "10",
     "Psyche": "16",
-
-    # NEO
     "Eros": "433",
-    "Amor": "1221",
-    "Apollo": "1862",
-    "Adonis": "2101"
-}
-
-# Classification tags
-CLASS_TAGS = {
-    "Chiron": "centaur",
-    "Chariklo": "centaur",
-    "Pholus": "centaur",
-    "Nessus": "centaur",
-    "Asbolus": "centaur",
-
-    "Eris": "dwarf",
-    "Haumea": "dwarf",
-    "Makemake": "dwarf",
-    "Sedna": "detached",
-    "Orcus": "plutino",
-    "Gonggong": "scattered",
-    "Ixion": "plutino",
-    "Varuna": "classical",
-
-    "Ceres": "main_belt",
-    "Pallas": "main_belt",
-    "Juno": "main_belt",
-    "Vesta": "main_belt",
-    "Hygiea": "main_belt",
-    "Psyche": "metallic"
+    "Amor": "1221"
 }
 
 
-# ─────────────────────────────
-# Core Utilities
-# ─────────────────────────────
-
-def generate_week_dates():
-    today = datetime.utcnow().date()
-    return today, today + timedelta(days=7)
-
-
-def swiss_body(body_const, start, end):
-    results = {}
-    current = start
-
-    while current <= end:
-        jd = swe.julday(current.year, current.month, current.day)
-        lon = swe.calc_ut(jd, body_const)[0][0] % 360
-        results[current.strftime("%Y-%m-%d")] = lon
-        current += timedelta(days=1)
-
-    return results
-
-
-# ─────────────────────────────
-# Harmonics 1–12
-# ─────────────────────────────
-
-def compute_harmonics(bodies):
-    harmonics = {}
-
-    for order in range(1, 13):
-        harmonics[str(order)] = {}
-
-        for body, info in bodies.items():
-            harmonics[str(order)][body] = {}
-
-            for date, lon in info["data"].items():
-                harmonics[str(order)][body][date] = (lon * order) % 360
-
-    return harmonics
-
-
-# ─────────────────────────────
-# Precision Fixed Stars (Swiss precessed)
-# ─────────────────────────────
-
-FIXED_STARS = [
-    "Regulus",
-    "Spica",
-    "Aldebaran",
-    "Antares",
-    "Fomalhaut",
-    "Algol",
-    "Sirius",
-    "Arcturus",
-    "Capella",
-    "Vega"
-]
-
-
-def compute_fixed_star_conjunctions(bodies, orb=1.0):
-    results = {}
-
-    for body, info in bodies.items():
-        for date, lon in info["data"].items():
-
-            jd = swe.julday(
-                int(date[:4]),
-                int(date[5:7]),
-                int(date[8:10])
-            )
-
-            for star in FIXED_STARS:
-                try:
-                    star_data = swe.fixstar_ut(star, jd)
-                    star_lon = star_data[0][0] % 360
-
-                    diff = abs(lon - star_lon)
-                    if diff > 180:
-                        diff = 360 - diff
-
-                    if diff <= orb:
-                        if date not in results:
-                            results[date] = []
-
-                        results[date].append({
-                            "body": body,
-                            "star": star,
-                            "orb": round(diff, 4)
-                        })
-
-                except Exception:
-                    continue
-
-    return results
-
-
-# ─────────────────────────────
-# Arabic Parts (12+)
-# ─────────────────────────────
-
-def compute_arabic_parts(bodies):
-    parts = {}
-
-    required = ["Sun", "Moon", "Mars", "Venus", "Jupiter", "Saturn"]
-
-    if not all(p in bodies for p in required):
-        return parts
-
-    for date in bodies["Sun"]["data"]:
-
-        try:
-            sun = bodies["Sun"]["data"][date]
-            moon = bodies["Moon"]["data"][date]
-            mars = bodies["Mars"]["data"][date]
-            venus = bodies["Venus"]["data"][date]
-            jupiter = bodies["Jupiter"]["data"][date]
-            saturn = bodies["Saturn"]["data"][date]
-
-            parts[date] = {
-                "Part_of_Fortune": (moon - sun) % 360,
-                "Part_of_Spirit": (sun - moon) % 360,
-                "Part_of_Eros": (venus - sun) % 360,
-                "Part_of_Courage": (mars - saturn) % 360,
-                "Part_of_Victory": (jupiter - mars) % 360,
-                "Part_of_Nemesis": (saturn - sun) % 360,
-                "Part_of_Father": (saturn - sun) % 360,
-                "Part_of_Mother": (moon - venus) % 360,
-                "Part_of_Children": (jupiter - saturn) % 360,
-                "Part_of_Basis": (mars - sun) % 360,
-                "Part_of_Commerce": (mercury := bodies["Mercury"]["data"][date]) - venus % 360,
-                "Part_of_Marriage": (venus - saturn) % 360
-            }
-
-        except Exception:
-            continue
-
-    return parts
-
-
-# ─────────────────────────────
-# Main
-# ─────────────────────────────
+# =========================================================
+# MAIN ENGINE
+# =========================================================
 
 def main():
 
-    week_start, week_end = generate_week_dates()
+    week_start, week_end = get_week_range()
+
+    start_str = week_start.strftime("%Y-%m-%d")
+    stop_str = week_end.strftime("%Y-%m-%d")
 
     output = {
         "generated_utc": datetime.utcnow().isoformat(),
-        "week_start": str(week_start),
-        "week_end": str(week_end),
-        "engine_version": "ZodiacOracle.LiveTransit.vUltimate",
+        "week_start": start_str,
+        "week_end": stop_str,
+        "engine_version": ENGINE_VERSION,
+        "coverage": 0.0,
+        "resolved": 0,
+        "total_targets": len(TARGETS),
+        "missing": [],
         "bodies": {},
-        "harmonics": {},
         "arabic_parts": {},
         "fixed_star_conjunctions": {}
     }
 
-    for body, body_id in BODY_MAP.items():
+    resolved = 0
+
+    for name, code in TARGETS.items():
 
         try:
-
-            if body == "Sun":
-                data = swiss_body(swe.SUN, week_start, week_end)
+            if name == "Sun":
+                data = fetch_swiss(name, start_str, stop_str, "2d")
                 source = "swiss"
             else:
-                data = fetch_jpl(body_id, str(week_start), str(week_end), "2d")
+                data = fetch_jpl(code, start_str, stop_str, "2d")
                 source = "jpl"
 
-            output["bodies"][body] = {
-                "source": source,
-                "class": CLASS_TAGS.get(body, "planetary"),
-                "data": data
-            }
+        except:
+            try:
+                data = fetch_miriade(code, start_str, stop_str)
+                source = "miriade"
+            except:
+                data = fetch_swiss(name, start_str, stop_str, "2d")
+                source = "swiss"
 
-        except Exception:
-            output["bodies"][body] = {
-                "source": "missing",
-                "class": CLASS_TAGS.get(body, "unknown"),
-                "data": {}
-            }
+        data = normalize_keys_to_iso(data)
 
-    output["harmonics"] = compute_harmonics(output["bodies"])
-    output["arabic_parts"] = compute_arabic_parts(output["bodies"])
-    output["fixed_star_conjunctions"] = compute_fixed_star_conjunctions(output["bodies"])
+        output["bodies"][name] = {
+            "source": source,
+            "data": data
+        }
 
-    os.makedirs("docs", exist_ok=True)
+        resolved += 1
 
-    with open("docs/current_week.json", "w") as f:
+    output["resolved"] = resolved
+    output["coverage"] = round(resolved / len(TARGETS), 3)
+
+    # ============================================
+    # Daily Layer Processing
+    # ============================================
+
+    date_cursor = week_start
+    while date_cursor <= week_end:
+
+        date_iso = date_cursor.strftime("%Y-%m-%d")
+
+        daily_positions = {}
+
+        for body in output["bodies"]:
+            body_data = output["bodies"][body]["data"]
+            if date_iso in body_data:
+                daily_positions[body] = body_data[date_iso]
+
+        if daily_positions:
+
+            # Arabic Parts
+            output["arabic_parts"][date_iso] = compute_arabic_parts(
+                date_iso,
+                daily_positions
+            )
+
+            # Fixed Star Hits
+            hits = compute_fixed_star_hits(date_iso, daily_positions)
+            if hits:
+                output["fixed_star_conjunctions"][date_iso] = hits
+
+        date_cursor += timedelta(days=2)
+
+    # ============================================
+    # WRITE FILE
+    # ============================================
+
+    out_path = Path("docs/current_week.json")
+    out_path.parent.mkdir(exist_ok=True)
+
+    with open(out_path, "w") as f:
         json.dump(output, f, indent=2)
 
-    print("Ultimate weekly transit file written to docs/current_week.json")
+    print("Weekly transit file written to docs/current_week.json")
 
 
 if __name__ == "__main__":
