@@ -3,18 +3,44 @@ import requests
 HORIZONS_URL = "https://ssd.jpl.nasa.gov/api/horizons.api"
 
 
+# Map numeric IDs to Horizons-recognized commands
+MAJOR_BODY_NAMES = {
+    "10": "Sun",
+    "301": "Moon",
+    "199": "Mercury",
+    "299": "Venus",
+    "499": "Mars",
+    "599": "Jupiter",
+    "699": "Saturn",
+    "799": "Uranus",
+    "899": "Neptune",
+    "999": "Pluto"
+}
+
+
+def resolve_command(body_id: str) -> str:
+    if body_id in MAJOR_BODY_NAMES:
+        return MAJOR_BODY_NAMES[body_id]
+    else:
+        # Small bodies must use DES format
+        return f"DES={body_id};"
+
+
 def fetch_jpl(body_id, start_date, stop_date, step_size="2d"):
+
+    command = resolve_command(body_id)
 
     params = {
         "format": "json",
-        "COMMAND": body_id,
+        "COMMAND": command,
+        "OBJ_DATA": "NO",
         "MAKE_EPHEM": "YES",
         "EPHEM_TYPE": "OBSERVER",
-        "CENTER": "500@399",          # Earth center
+        "CENTER": "500@399",
         "START_TIME": start_date,
         "STOP_TIME": stop_date,
         "STEP_SIZE": step_size,
-        "QUANTITIES": "2",            # Ecliptic longitude
+        "QUANTITIES": "2",
         "CSV_FORMAT": "YES"
     }
 
@@ -50,8 +76,6 @@ def fetch_jpl(body_id, start_date, stop_date, step_size="2d"):
         if not line:
             continue
 
-        # CSV row format example:
-        # 2026-Mar-09 00:00, 123.4567
         parts = line.split(",")
 
         if len(parts) < 2:
