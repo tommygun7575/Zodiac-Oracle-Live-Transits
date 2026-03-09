@@ -1,43 +1,31 @@
 import requests
 
 
-MIRADE_URL = "https://ssp.imcce.fr/webservices/miriade/api/ephemcc.php"
+MIRIADE_URL = "https://ssp.imcce.fr/webservices/miriade/api/ephemcc.php"
 
 
-def fetch_miriade(body_name, start_date, stop_date, step="2d"):
+def fetch_miriade(body_name):
+    """Fetch the current-epoch Miriade ephemeris entry for a body.
 
+    Returns {"lon": float} where the value is taken from the 'RA' field
+    (right ascension in degrees, used here as a proxy longitude for single-day
+    transit lookups — callers that need true ecliptic longitude should use the
+    miriade_engine week fetcher which returns EclLon).
+    Raises RuntimeError("Miriade request failed") for non-200 responses.
+    """
     params = {
         "name": body_name,
         "type": "object",
         "ephem": "1",
         "observer": "500",
-        "epoch": start_date,
-        "step": step,
-        "nbd": "20",
-        "mime": "json"
+        "mime": "json",
     }
 
-    r = requests.get(MIRADE_URL, params=params, timeout=60)
+    r = requests.get(MIRIADE_URL, params=params, timeout=60)
 
     if r.status_code != 200:
-        raise RuntimeError("Miriade HTTP error")
+        raise RuntimeError("Miriade request failed")
 
     data = r.json()
 
-    if "data" not in data:
-        raise RuntimeError("Miriade no data")
-
-    ephemeris = {}
-
-    for row in data["data"]:
-        try:
-            iso_date = row["date"]
-            lon = float(row["lambda"])
-            ephemeris[iso_date] = lon
-        except:
-            continue
-
-    if not ephemeris:
-        raise RuntimeError("Miriade parsed zero rows")
-
-    return ephemeris
+    return {"lon": float(data["data"][0]["RA"])}
