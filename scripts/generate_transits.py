@@ -50,7 +50,7 @@ def generate_week():
 
     for name, body_id in TARGETS.items():
 
-        step = "1 d" if name == "Moon" else "2 d"
+     step = "1d" if name == "Moon" else "2d"   
 
         try:
             data = fetch_ephemeris(
