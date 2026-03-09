@@ -1,27 +1,27 @@
 import requests
 
-
 HORIZONS_URL = "https://ssd.jpl.nasa.gov/api/horizons.api"
-
 
 def fetch_ephemeris(body_id, start_date, stop_date, step_size="2d"):
     """
-    Fetch heliocentric ecliptic longitude from JPL Horizons.
+    Fetch geocentric ecliptic longitude from JPL Horizons.
     """
 
-    # Sun must use barycenter as center
+    # Sun must use barycenter
     center = "500@0" if body_id == "10" else "500@399"
 
     params = {
         "format": "json",
         "COMMAND": body_id,
+        "MAKE_EPHEM": "YES",
         "EPHEM_TYPE": "OBSERVER",
         "CENTER": center,
         "START_TIME": start_date,
         "STOP_TIME": stop_date,
         "STEP_SIZE": step_size,
-        "QUANTITIES": "1",   # Ecliptic longitude
-        "ANG_FORMAT": "DEG",
+        "QUANTITIES": "4",      # ecliptic longitude
+        "REF_SYSTEM": "ECLIPTIC",
+        "OUT_UNITS": "DEG",
         "CSV_FORMAT": "YES"
     }
 
@@ -29,10 +29,10 @@ def fetch_ephemeris(body_id, start_date, stop_date, step_size="2d"):
     data = response.json()
 
     if "error" in data:
-        raise RuntimeError(f"Horizons API error: {data['error']}")
+        raise RuntimeError(data["error"])
 
     if "result" not in data:
-        raise RuntimeError("Horizons returned no result block")
+        raise RuntimeError("No result block from Horizons")
 
     lines = data["result"].splitlines()
 
@@ -51,18 +51,18 @@ def fetch_ephemeris(body_id, start_date, stop_date, step_size="2d"):
         if capture:
             parts = [p.strip() for p in line.split(",")]
 
-            if len(parts) >= 2:
+            if len(parts) >= 5:
                 try:
                     date = parts[0]
-                    lon = float(parts[1])
+                    lon = float(parts[4])
                     ephemeris.append({
                         "date": date,
                         "longitude_deg": lon
                     })
-                except ValueError:
+                except:
                     continue
 
     if not ephemeris:
-        raise RuntimeError("No ephemeris rows parsed from Horizons")
+        raise RuntimeError("No ephemeris rows parsed")
 
     return ephemeris
