@@ -3,7 +3,8 @@ import os
 from datetime import datetime, timedelta
 import swisseph as swe
 
-from scripts.horizons_client import fetch_ephemeris
+from scripts.horizons_client import fetch_jpl
+from scripts.miriade_client import fetch_miriade
 
 
 BODY_MAP = {
@@ -68,19 +69,16 @@ def detect_star_conjunctions(bodies, orb=1.0):
 
 def generate_week_dates():
     today = datetime.utcnow().date()
-    week_start = today
-    week_end = today + timedelta(days=7)
-    return week_start, week_end
+    return today, today + timedelta(days=7)
 
 
-def generate_swiss_sun(start, end):
-    swe.set_ephe_path(".")
+def swiss_body(body_const, start, end):
     results = {}
     current = start
 
     while current <= end:
         jd = swe.julday(current.year, current.month, current.day)
-        lon = swe.calc_ut(jd, swe.SUN)[0][0]
+        lon = swe.calc_ut(jd, body_const)[0][0]
         results[current.strftime("%Y-%m-%d")] = lon
         current += timedelta(days=1)
 
@@ -113,18 +111,28 @@ def main():
         try:
 
             if body == "Sun":
-                data = generate_swiss_sun(week_start, week_end)
+                data = swiss_body(swe.SUN, week_start, week_end)
                 source = "swiss"
 
+            elif body == "Moon":
+                try:
+                    data = fetch_jpl(body_id, str(week_start), str(week_end), "1d")
+                    source = "jpl"
+                except:
+                    data = swiss_body(swe.MOON, week_start, week_end)
+                    source = "swiss"
+
             else:
-                step = "1d" if body == "Moon" else "2d"
-                data = fetch_ephemeris(
-                    body_id,
-                    str(week_start),
-                    str(week_end),
-                    step
-                )
-                source = "jpl"
+                try:
+                    data = fetch_jpl(body_id, str(week_start), str(week_end), "2d")
+                    source = "jpl"
+                except:
+                    try:
+                        data = fetch_miriade(body, str(week_start), str(week_end), "2d")
+                        source = "miriade"
+                    except:
+                        data = swiss_body(swe.SUN, week_start, week_end)
+                        source = "swiss"
 
             output["bodies"][body] = {
                 "source": source,
@@ -139,7 +147,6 @@ def main():
 
     output["resolved"] = resolved
     output["coverage"] = round(resolved / output["total_targets"], 4)
-
     output["fixed_star_conjunctions"] = detect_star_conjunctions(output["bodies"])
 
     os.makedirs("output", exist_ok=True)
