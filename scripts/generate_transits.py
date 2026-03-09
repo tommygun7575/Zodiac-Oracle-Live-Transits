@@ -2,10 +2,9 @@ import json
 from datetime import datetime, timedelta
 from pathlib import Path
 
-from .horizons_client import fetch_jpl
-from .swiss_client import fetch_swiss
-from .miriade_client import fetch_miriade
-
+from scripts.horizons_client import fetch_jpl
+from scripts.swiss_client import fetch_swiss
+from scripts.miriade_client import fetch_miriade
 
 ENGINE_VERSION = "ZodiacOracle.LiveTransit.vHybrid"
 
