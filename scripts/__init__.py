@@ -1,1 +1,1 @@
-
+# Zodiac Oracle scripts package
