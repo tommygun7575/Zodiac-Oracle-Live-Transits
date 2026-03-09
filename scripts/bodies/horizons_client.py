@@ -1,26 +1,26 @@
 import requests
 
-HORIZONS_URL = "https://ssd.jpl.nasa.gov/api/horizons.api"
+HORIZONS_URL = "https://ssd.jpl.nasa.gov/horizons_batch.cgi"
 
 def fetch_ephemeris(body_id, start_date, stop_date, step_size="2d"):
 
     center = "500@0" if body_id == "10" else "500@399"
 
-    params = {
-        "format": "text",
-        "COMMAND": body_id,
-        "MAKE_EPHEM": "YES",
-        "TABLE_TYPE": "OBSERVER",
-        "EPHEM_TYPE": "OBSERVER",
-        "CENTER": center,
-        "START_TIME": start_date,
-        "STOP_TIME": stop_date,
-        "STEP_SIZE": step_size,
-        "QUANTITIES": "1",
-        "CSV_FORMAT": "YES"
-    }
+    payload = f"""
+!$$SOF
+COMMAND='{body_id}'
+CENTER='{center}'
+MAKE_EPHEM='YES'
+EPHEM_TYPE='OBSERVER'
+START_TIME='{start_date}'
+STOP_TIME='{stop_date}'
+STEP_SIZE='{step_size}'
+QUANTITIES='1'
+CSV_FORMAT='YES'
+!$$EOF
+"""
 
-    response = requests.get(HORIZONS_URL, params=params, timeout=30)
+    response = requests.post(HORIZONS_URL, data={"batch": payload}, timeout=30)
 
     if response.status_code != 200:
         raise RuntimeError(f"Horizons HTTP error {response.status_code}")
