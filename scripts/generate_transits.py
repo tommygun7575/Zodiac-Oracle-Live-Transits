@@ -4,7 +4,7 @@ from scripts.bodies.horizons_client import fetch_ephemeris
 
 TARGETS = {
 
-    "Sun": "'10'",
+    "Sun": "10",
     "Moon": "301",
     "Mercury": "199",
     "Venus": "299",
