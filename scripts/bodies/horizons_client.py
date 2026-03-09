@@ -16,7 +16,6 @@ def fetch_ephemeris(body_id, start_date, stop_date, step_size="2d"):
         "STOP_TIME": stop_date,
         "STEP_SIZE": step_size,
         "QUANTITIES": "1",
-        "ANG_FORMAT": "DEG",
         "CSV_FORMAT": "YES"
     }
 
@@ -35,27 +34,9 @@ def fetch_ephemeris(body_id, start_date, stop_date, step_size="2d"):
 
     lines = data["result"].splitlines()
 
-    header_index = None
-    lon_index = None
     ephemeris = []
     capture = False
 
-    # Find header row
-    for i, line in enumerate(lines):
-        if "Date__(UT)__HR:MN" in line:
-            header_index = i
-            headers = [h.strip() for h in line.split(",")]
-
-            for idx, col in enumerate(headers):
-                if "EclLon" in col or "ObsEcLon" in col:
-                    lon_index = idx
-                    break
-            break
-
-    if lon_index is None:
-        raise RuntimeError("Longitude column not found in Horizons output")
-
-    # Parse data rows
     for line in lines:
 
         if "$$SOE" in line:
@@ -66,12 +47,12 @@ def fetch_ephemeris(body_id, start_date, stop_date, step_size="2d"):
             break
 
         if capture:
-            parts = [p.strip() for p in line.split(",")]
+            parts = line.split(",")
 
-            if len(parts) > lon_index:
+            if len(parts) >= 2:
                 try:
-                    date = parts[0]
-                    lon = float(parts[lon_index])
+                    date = parts[0].strip()
+                    lon = float(parts[1].strip())
                     ephemeris.append({
                         "date": date,
                         "longitude_deg": lon
@@ -80,6 +61,6 @@ def fetch_ephemeris(body_id, start_date, stop_date, step_size="2d"):
                     continue
 
     if not ephemeris:
-        raise RuntimeError("Parsed zero rows from Horizons response")
+        raise RuntimeError("No ephemeris rows parsed")
 
     return ephemeris
