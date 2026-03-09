@@ -3,26 +3,20 @@ import requests
 HORIZONS_URL = "https://ssd.jpl.nasa.gov/api/horizons.api"
 
 def fetch_ephemeris(body_id, start_date, stop_date, step_size="2d"):
-    """
-    Fetch geocentric ecliptic longitude from JPL Horizons.
-    """
 
-    # Sun must use barycenter
     center = "500@0" if body_id == "10" else "500@399"
 
     params = {
         "format": "json",
         "COMMAND": body_id,
-        "MAKE_EPHEM": "YES",
         "EPHEM_TYPE": "OBSERVER",
         "CENTER": center,
         "START_TIME": start_date,
         "STOP_TIME": stop_date,
         "STEP_SIZE": step_size,
-        "QUANTITIES": "4",      # ecliptic longitude
-        "REF_SYSTEM": "ECLIPTIC",
-        "OUT_UNITS": "DEG",
-        "CSV_FORMAT": "YES"
+        "QUANTITIES": "1",
+        "CSV_FORMAT": "YES",
+        "ANG_FORMAT": "DEG"
     }
 
     response = requests.get(HORIZONS_URL, params=params)
@@ -51,10 +45,10 @@ def fetch_ephemeris(body_id, start_date, stop_date, step_size="2d"):
         if capture:
             parts = [p.strip() for p in line.split(",")]
 
-            if len(parts) >= 5:
+            if len(parts) >= 2:
                 try:
                     date = parts[0]
-                    lon = float(parts[4])
+                    lon = float(parts[1])
                     ephemeris.append({
                         "date": date,
                         "longitude_deg": lon
