@@ -1,9 +1,10 @@
 import requests
+from scripts.utils import normalize_longitude
 
 HORIZONS_URL = "https://ssd.jpl.nasa.gov/api/horizons.api"
 
+def fetch_ephemeris(body_id, start, stop, step_size):
 
-def fetch_ephemeris(body_id: str, start: str, stop: str) -> str:
     params = {
         "format": "json",
         "COMMAND": body_id,
@@ -11,21 +12,42 @@ def fetch_ephemeris(body_id: str, start: str, stop: str) -> str:
         "CENTER": "500@399",
         "START_TIME": start,
         "STOP_TIME": stop,
-        "STEP_SIZE": "1d",
-        "ANG_FORMAT": "DEG"
+        "STEP_SIZE": step_size,
+        "QUANTITIES": "18",
+        "CSV_FORMAT": "YES"
     }
 
     response = requests.get(HORIZONS_URL, params=params, timeout=60)
-
-    if response.status_code != 200:
-        raise RuntimeError(f"Horizons HTTP error {response.status_code}")
-
     data = response.json()
 
     if "error" in data:
-        raise RuntimeError(f"Horizons API error: {data['error']}")
+        raise RuntimeError(data["error"])
 
-    if "result" not in data:
-        raise RuntimeError("Malformed Horizons response")
+    return parse_ephemeris(data["result"])
 
-    return data["result"]
+
+def parse_ephemeris(text):
+
+    rows = []
+    reading = False
+
+    for line in text.splitlines():
+
+        if "$$SOE" in line:
+            reading = True
+            continue
+
+        if "$$EOE" in line:
+            break
+
+        if reading:
+            parts = line.split(",")
+            date = parts[0].strip()
+            lon = normalize_longitude(parts[3].strip())
+
+            rows.append({
+                "date": date,
+                "longitude_deg": lon
+            })
+
+    return rows
