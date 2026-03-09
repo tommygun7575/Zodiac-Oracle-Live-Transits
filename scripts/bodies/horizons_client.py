@@ -2,7 +2,6 @@ import requests
 
 HORIZONS_URL = "https://ssd.jpl.nasa.gov/api/horizons.api"
 
-
 def fetch_ephemeris(body_id, start, stop, step_size):
 
     params = {
@@ -18,10 +17,17 @@ def fetch_ephemeris(body_id, start, stop, step_size):
     }
 
     response = requests.get(HORIZONS_URL, params=params, timeout=60)
+
+    if response.status_code != 200:
+        raise RuntimeError(f"Horizons HTTP error {response.status_code}")
+
     data = response.json()
 
     if "error" in data:
-        raise RuntimeError(data["error"])
+        raise RuntimeError(f"Horizons API error: {data['error']}")
+
+    if "result" not in data:
+        raise RuntimeError("Horizons malformed response")
 
     return parse_ephemeris(data["result"])
 
@@ -44,12 +50,15 @@ def parse_ephemeris(text):
             parts = line.split(",")
             date = parts[0].strip()
 
-            # Normalize longitude immediately
+            # Normalize longitude
             lon = float(parts[3].strip()) % 360.0
 
             rows.append({
                 "date": date,
                 "longitude_deg": lon
             })
+
+    if not rows:
+        raise RuntimeError("No ephemeris rows returned")
 
     return rows
