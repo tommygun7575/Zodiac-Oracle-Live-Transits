@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 
 swe.set_ephe_path(".")
 
-SWISS_MAP = {
+SWISS_BODY_MAP = {
     "Sun": swe.SUN,
     "Moon": swe.MOON,
     "Mercury": swe.MERCURY,
@@ -18,10 +18,10 @@ SWISS_MAP = {
 
 def get_swiss_week(body_name, start_date, stop_date, step_days):
 
-    if body_name not in SWISS_MAP:
+    if body_name not in SWISS_BODY_MAP:
         raise RuntimeError("Swiss does not support this body")
 
-    body = SWISS_MAP[body_name]
+    body = SWISS_BODY_MAP[body_name]
 
     start = datetime.strptime(start_date, "%Y-%m-%d")
     stop = datetime.strptime(stop_date, "%Y-%m-%d")
