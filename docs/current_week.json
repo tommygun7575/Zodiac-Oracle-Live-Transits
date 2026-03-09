@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-03-09T03:15:53.588665",
+  "generated_utc": "2026-03-09T03:23:43.673080",
   "week_start": "2026-03-09",
   "week_end": "2026-03-16",
   "engine_version": "ZodiacOracle.LiveTransit.vHybrid",
@@ -347,8 +347,6 @@
       }
     }
   },
-  "arabic_parts": {},
-  "harmonics": {},
   "fixed_star_conjunctions": {
     "2026-03-10": [
       {
