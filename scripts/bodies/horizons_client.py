@@ -6,8 +6,7 @@ def fetch_ephemeris(body_id, start_date, stop_date, step_size="2d"):
 
     center = "500@0" if body_id == "10" else "500@399"
 
-    payload = f"""
-!$$SOF
+    batch_payload = f"""
 COMMAND='{body_id}'
 CENTER='{center}'
 MAKE_EPHEM='YES'
@@ -17,10 +16,16 @@ STOP_TIME='{stop_date}'
 STEP_SIZE='{step_size}'
 QUANTITIES='1'
 CSV_FORMAT='YES'
-!$$EOF
 """
 
-    response = requests.post(HORIZONS_URL, data={"batch": payload}, timeout=30)
+    response = requests.post(
+        HORIZONS_URL,
+        data={
+            "batch": batch_payload,
+            "format": "text"
+        },
+        timeout=30
+    )
 
     if response.status_code != 200:
         raise RuntimeError(f"Horizons HTTP error {response.status_code}")
