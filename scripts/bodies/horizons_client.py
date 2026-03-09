@@ -1,4 +1,5 @@
 import requests
+import math
 from datetime import datetime, timedelta
 
 HORIZONS_URL = "https://ssd.jpl.nasa.gov/api/horizons.api"
@@ -8,11 +9,11 @@ def jd_to_iso(jd):
     jd = float(jd)
     base = datetime(2000, 1, 1, 12)
     delta = timedelta(days=jd - 2451545.0)
-    utc_dt = base + delta
-    return utc_dt.strftime("%Y-%m-%d")
+    dt = base + timedelta(days=jd - 2451545.0)
+    return dt.strftime("%Y-%m-%d")
 
 
-def fetch_ephemeris(body_id, start_date, stop_date, step_size="2d"):
+def fetch_jpl(body_id, start_date, stop_date, step_size="2d"):
 
     params = {
         "format": "json",
@@ -31,19 +32,18 @@ def fetch_ephemeris(body_id, start_date, stop_date, step_size="2d"):
     r = requests.get(HORIZONS_URL, params=params, timeout=60)
 
     if r.status_code != 200:
-        raise RuntimeError(f"Horizons HTTP error {r.status_code}")
+        raise RuntimeError(f"JPL HTTP {r.status_code}")
 
     data = r.json()
 
     if "result" not in data:
-        raise RuntimeError("Horizons did not generate ephemeris table")
+        raise RuntimeError("JPL no ephemeris")
 
     lines = data["result"].splitlines()
 
     ephemeris = {}
     capture = False
     current_jd = None
-    x = y = None
 
     for line in lines:
 
@@ -62,12 +62,11 @@ def fetch_ephemeris(body_id, start_date, stop_date, step_size="2d"):
         if len(parts) == 2:
             current_jd = parts[0]
 
-        if "X =" in line:
+        if "X =" in line and "Y =" in line:
             try:
                 x = float(line.split("X =")[1].split()[0])
                 y = float(line.split("Y =")[1].split()[0])
 
-                import math
                 lon = math.degrees(math.atan2(y, x))
                 if lon < 0:
                     lon += 360
@@ -79,6 +78,6 @@ def fetch_ephemeris(body_id, start_date, stop_date, step_size="2d"):
                 continue
 
     if not ephemeris:
-        raise RuntimeError("No ephemeris rows parsed")
+        raise RuntimeError("JPL parsed zero rows")
 
     return ephemeris
