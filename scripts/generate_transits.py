@@ -1,4 +1,5 @@
 import json
+import math
 from datetime import datetime, timedelta
 from pathlib import Path
 
@@ -9,6 +10,7 @@ from .bodies.mpc_client import fetch_mpc
 from .bodies.swiss_engine import get_swiss_week
 
 ENGINE_VERSION = "ZodiacOracle.LiveTransit.vHybrid"
+OUTPUT_PATH = Path("docs/current_week.json")
 
 
 # =====================================================
@@ -96,6 +98,10 @@ def fetch_swiss(body_name, date):
     return (results[0]["longitude_deg"], 0.0)
 
 
+def _is_valid_number(value):
+    return isinstance(value, (int, float)) and math.isfinite(value)
+
+
 # =====================================================
 # SINGLE-BODY FETCH (fetch_body fallback chain)
 # =====================================================
@@ -141,7 +147,7 @@ def resolve_body(body_name, start_date):
                 if i >= 7:
                     break
                 lon, lat = entry
-                if lon is not None:
+                if _is_valid_number(lon):
                     result[i] = {"lon": lon, "lat": lat, "source": "JPL"}
         except Exception:
             pass
@@ -155,7 +161,7 @@ def resolve_body(body_name, start_date):
                     break
                 if result[i] is None:
                     lon, lat = entry
-                    if lon is not None:
+                    if _is_valid_number(lon):
                         result[i] = {"lon": lon, "lat": lat, "source": "Miriade"}
         except Exception:
             pass
@@ -166,7 +172,11 @@ def resolve_body(body_name, start_date):
             day = start_date + timedelta(days=i)
             try:
                 lon, lat = fetch_swiss(body_name, day)
-                result[i] = {"lon": lon, "lat": lat, "source": "Swiss"}
+                result[i] = {
+                    "lon": lon if _is_valid_number(lon) else None,
+                    "lat": lat if _is_valid_number(lat) else None,
+                    "source": "Swiss",
+                }
             except Exception:
                 result[i] = {"lon": None, "lat": None, "source": "none"}
 
@@ -265,13 +275,8 @@ def compute_star_hits(positions):
 # MAIN ENGINE
 # =====================================================
 
-def main():
-
-    week_start, week_end = get_week_range()
-    start_str = week_start.strftime("%Y-%m-%d")
-    stop_str = week_end.strftime("%Y-%m-%d")
-
-    output = {
+def _new_output_template(start_str, stop_str):
+    return {
         "generated_utc": datetime.utcnow().isoformat(),
         "week_start": start_str,
         "week_end": stop_str,
@@ -285,56 +290,99 @@ def main():
         "fixed_star_conjunctions": {},
     }
 
-    week_start_dt = datetime.strptime(start_str, "%Y-%m-%d")
-    resolved = 0
 
-    for name in BODIES:
-        daily = resolve_body(name, week_start_dt)
+def _is_valid_output_payload(payload):
+    required = {
+        "generated_utc",
+        "week_start",
+        "week_end",
+        "engine_version",
+        "coverage",
+        "resolved",
+        "total_targets",
+        "missing",
+        "bodies",
+        "arabic_parts",
+        "fixed_star_conjunctions",
+    }
+    if not isinstance(payload, dict):
+        return False
+    if not required.issubset(payload):
+        return False
+    return isinstance(payload["bodies"], dict) and isinstance(payload["missing"], list)
 
-        output["bodies"][name] = {
-            "source": daily[0]["source"] if daily else "none",
-            "data": {
-                (week_start_dt + timedelta(days=i)).strftime("%Y-%m-%d"): entry["lon"]
-                for i, entry in enumerate(daily)
-                if entry["lon"] is not None
-            },
-        }
 
-        if any(e["lon"] is not None for e in daily):
-            resolved += 1
-        else:
-            output["missing"].append(name)
+def _write_json_atomic(path, payload):
+    tmp_path = path.with_suffix(path.suffix + ".tmp")
+    with open(tmp_path, "w") as f:
+        json.dump(payload, f, indent=2)
+    tmp_path.replace(path)
 
-    output["resolved"] = resolved
-    output["coverage"] = round(resolved / len(BODIES), 3)
 
-    cursor = week_start_dt
-    while cursor.date() <= week_end:
+def main(output_path=OUTPUT_PATH):
 
-        iso = cursor.strftime("%Y-%m-%d")
-        daily_positions = {}
+    week_start, week_end = get_week_range()
+    start_str = week_start.strftime("%Y-%m-%d")
+    stop_str = week_end.strftime("%Y-%m-%d")
 
-        for body in output["bodies"]:
-            body_data = output["bodies"][body]["data"]
-            if iso in body_data and body_data[iso] is not None:
-                daily_positions[body] = body_data[iso]
+    output_path = Path(output_path)
+    output_path.parent.mkdir(exist_ok=True)
+    output = _new_output_template(start_str, stop_str)
 
-        if daily_positions:
-            output["arabic_parts"][iso] = compute_arabic_parts(daily_positions)
+    try:
+        week_start_dt = datetime.strptime(start_str, "%Y-%m-%d")
+        resolved = 0
 
-            star_hits = compute_star_hits(daily_positions)
-            if star_hits:
-                output["fixed_star_conjunctions"][iso] = star_hits
+        for name in BODIES:
+            daily = resolve_body(name, week_start_dt)
 
-        cursor += timedelta(days=1)
+            output["bodies"][name] = {
+                "source": daily[0]["source"] if daily else "none",
+                "data": {
+                    (week_start_dt + timedelta(days=i)).strftime("%Y-%m-%d"): entry["lon"]
+                    for i, entry in enumerate(daily)
+                    if _is_valid_number(entry["lon"])
+                },
+            }
 
-    out_path = Path("docs/current_week.json")
-    out_path.parent.mkdir(exist_ok=True)
+            if any(_is_valid_number(e["lon"]) for e in daily):
+                resolved += 1
+            else:
+                output["missing"].append(name)
 
-    with open(out_path, "w") as f:
-        json.dump(output, f, indent=2)
+        output["resolved"] = resolved
+        output["coverage"] = round(resolved / len(BODIES), 3)
 
-    print("Weekly transit file written to docs/current_week.json")
+        cursor = week_start_dt
+        while cursor.date() <= week_end:
+
+            iso = cursor.strftime("%Y-%m-%d")
+            daily_positions = {}
+
+            for body in output["bodies"]:
+                body_data = output["bodies"][body]["data"]
+                if iso in body_data and _is_valid_number(body_data[iso]):
+                    daily_positions[body] = body_data[iso]
+
+            if daily_positions:
+                output["arabic_parts"][iso] = compute_arabic_parts(daily_positions)
+
+                star_hits = compute_star_hits(daily_positions)
+                if star_hits:
+                    output["fixed_star_conjunctions"][iso] = star_hits
+
+            cursor += timedelta(days=1)
+
+        if not _is_valid_output_payload(output):
+            raise RuntimeError("Generated payload failed validation")
+
+    except Exception as exc:
+        output = _new_output_template(start_str, stop_str)
+        output["generation_warning"] = str(exc)
+
+    _write_json_atomic(output_path, output)
+
+    print(f"Weekly transit file written to {output_path}")
 
 
 if __name__ == "__main__":
