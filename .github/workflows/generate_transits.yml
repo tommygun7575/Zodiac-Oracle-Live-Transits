@@ -94,6 +94,12 @@ jobs:
               print("docs/current_week.json is valid")
           PY
 
+      - name: Archive dated snapshot
+        run: |
+          mkdir -p docs/archive
+          WEEK_START=$(python3 -c "import json; print(json.load(open('docs/current_week.json'))['week_start'])")
+          cp docs/current_week.json "docs/archive/current_week_${WEEK_START}.json"
+
       - name: Verify output
         run: |
           if [ ! -f docs/current_week.json ]; then
@@ -107,7 +113,7 @@ jobs:
           git config user.name "transit-bot"
           git config user.email "bot@github.com"
 
-          git add docs/current_week.json
+          git add docs/current_week.json docs/archive/
 
           git diff --cached --quiet || git commit -m "update weekly transits"
 
