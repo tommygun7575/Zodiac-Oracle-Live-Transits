@@ -187,6 +187,7 @@ class ResolveBodyOrderTests(unittest.TestCase):
                     "Salacia": "120347;",
                     "2002 AW197": "55565;",
                     "2003 VS2": "84922;",
+                    "Asbolus": "8405;",
         }
         for body, expected_id in small_bodies.items():
             self.assertEqual(
