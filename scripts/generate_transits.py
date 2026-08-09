@@ -8,6 +8,7 @@ from .bodies.miriade_client import fetch_miriade as _fetch_miriade_single
 from .bodies.miriade_engine import fetch_miriade as _fetch_miriade_week
 from .bodies.mpc_client import fetch_mpc
 from .bodies.swiss_engine import get_swiss_week
+from .bodies.fixed_star_engine import get_fixed_star_week
 
 ENGINE_VERSION = "ZodiacOracle.LiveTransit.vHybrid"
 OUTPUT_PATH = Path("docs/current_week.json")
@@ -248,18 +249,7 @@ def compute_arabic_parts(positions):
 # FIXED STAR PRECISION
 # =====================================================
 
-FIXED_STARS = {
-    "Regulus": 150.0,
-    "Spica": 204.0,
-    "Aldebaran": 69.0,
-    "Antares": 249.0,
-    "Fomalhaut": 333.0,
-    "Algol": 53.0,
-    "Sirius": 104.0,
-    "Arcturus": 213.0,
-    "Vega": 285.0,
-    "Capella": 80.0,
-}
+FIXED_STARS = ["Aboras", "Ainalrami", "Al Krikab", "Al Nitham", "Al Sadr al Ketus", "Alagemin", "Alathfar", "Aldafirah", "Aldhibain", "Alifa Al Farkadain", "Alioth", "Alkalurops", "Alminhar", "Alrischa", "Alsephina", "Alshain", "Alsharasif", "Altawk", "Aludra", "Alzirr", "Anunitum", "Arkab Posterior", "Ascella", "Asellus Australis", "Asterope", "Atik", "Atirsagne", "Auva", "Beemim", "Beid", "Bered", "Betelgeuse", "Botein", "Canopus", "Celaeno", "Cervantes", "Edasich", "Electra", "Enif", "Fornacis", "Gorgona Quatra", "Haedi", "Hydrobius", "Izar", "Jabbah", "Jih", "Kaht", "Kang", "Kaus Australis", "Libertas", "Maaz", "Maia", "Menkar", "Merak", "Mirfak", "Mizar", "Mufrid", "Nanto", "Nekkar", "Nodus II", "Nunki", "Pollux", "Ras Elased Australis", "Ruc", "Rukbat", "Segin", "Sheratan", "Sirius", "Skat", "Taiyi", "Taygeta", "Tegmen", "Terebellium", "Torcularis Septentrionalis", "Tse Tseng", "Tseen Foo", "Unukalhai", "Unurgunite", "Urodelus", "Vindemiatrix", "Vishakha"]
 
 STAR_ORB = 1.0
 
@@ -269,10 +259,10 @@ def ang_sep(a, b):
     return min(diff, 360 - diff)
 
 
-def compute_star_hits(positions):
+def compute_star_hits(positions, star_positions_for_day):
     hits = []
     for body, lon in positions.items():
-        for star, star_lon in FIXED_STARS.items():
+        for star, star_lon in star_positions_for_day.items():
             sep = ang_sep(lon, star_lon)
             if sep <= STAR_ORB:
                 hits.append({
@@ -345,6 +335,15 @@ def main(output_path=OUTPUT_PATH):
         week_start_dt = datetime.strptime(start_str, "%Y-%m-%d")
         resolved = 0
 
+        star_positions = {}
+        for star_name in FIXED_STARS:
+            try:
+                star_rows = get_fixed_star_week(star_name, start_str, stop_str)
+            except Exception:
+                continue
+            for row in star_rows:
+                star_positions.setdefault(row["date"], {})[star_name] = row["longitude_deg"]
+
         for name in BODIES:
             daily = resolve_body(name, week_start_dt)
 
@@ -379,7 +378,7 @@ def main(output_path=OUTPUT_PATH):
             if daily_positions:
                 output["arabic_parts"][iso] = compute_arabic_parts(daily_positions)
 
-                star_hits = compute_star_hits(daily_positions)
+                star_hits = compute_star_hits(daily_positions, star_positions.get(iso, {}))
                 if star_hits:
                     output["fixed_star_conjunctions"][iso] = star_hits
 
