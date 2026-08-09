@@ -1,7 +1,8 @@
 import swisseph as swe
 from datetime import datetime, timedelta
+from pathlib import Path
 
-swe.set_ephe_path(".")
+swe.set_ephe_path(str(Path(__file__).parents[2]))
 
 EXCLUDED_CATALOG_ENTRIES = {"Test"}
 
