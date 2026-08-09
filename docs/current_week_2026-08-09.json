@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-08-09T15:47:18.287853",
+  "generated_utc": "2026-08-09T16:08:54.416372",
   "week_start": "2026-08-09",
   "week_end": "2026-08-15",
   "engine_version": "ZodiacOracle.LiveTransit.vHybrid",
@@ -594,86 +594,786 @@
   "fixed_star_conjunctions": {
     "2026-08-09": [
       {
+        "body": "Moon",
+        "star": "Ruc",
+        "orb": 0.7206
+      },
+      {
+        "body": "Mars",
+        "star": "Gorgona Quatra",
+        "orb": 0.8923
+      },
+      {
+        "body": "Uranus",
+        "star": "Atik",
+        "orb": 0.5288
+      },
+      {
+        "body": "Uranus",
+        "star": "Mirfak",
+        "orb": 0.4082
+      },
+      {
+        "body": "Pluto",
+        "star": "Libertas",
+        "orb": 0.9453
+      },
+      {
+        "body": "Juno",
+        "star": "Tseen Foo",
+        "orb": 0.6472
+      },
+      {
+        "body": "Eros",
+        "star": "Jabbah",
+        "orb": 0.8359
+      },
+      {
+        "body": "Amor",
+        "star": "Al Nitham",
+        "orb": 0.9471
+      },
+      {
+        "body": "Chiron",
+        "star": "Torcularis Septentrionalis",
+        "orb": 0.7139
+      },
+      {
+        "body": "Pholus",
+        "star": "Alathfar",
+        "orb": 0.5936
+      },
+      {
+        "body": "Pholus",
+        "star": "Nanto",
+        "orb": 0.651
+      },
+      {
+        "body": "Quaoar",
+        "star": "Alathfar",
+        "orb": 0.8182
+      },
+      {
+        "body": "Quaoar",
+        "star": "Nanto",
+        "orb": 0.8757
+      },
+      {
+        "body": "Sedna",
+        "star": "Atik",
+        "orb": 0.1356
+      },
+      {
+        "body": "Orcus",
+        "star": "Tse Tseng",
+        "orb": 0.5182
+      },
+      {
         "body": "Haumea",
-        "star": "Arcturus",
-        "orb": 0.1669
+        "star": "Alkalurops",
+        "orb": 0.3845
+      },
+      {
+        "body": "Makemake",
+        "star": "Auva",
+        "orb": 0.1144
+      },
+      {
+        "body": "Astraea",
+        "star": "Aboras",
+        "orb": 0.7152
+      },
+      {
+        "body": "Astraea",
+        "star": "Enif",
+        "orb": 0.4023
+      },
+      {
+        "body": "2002 AW197",
+        "star": "Alioth",
+        "orb": 0.8001
       }
     ],
     "2026-08-10": [
       {
+        "body": "Moon",
+        "star": "Ruc",
+        "orb": 0.2126
+      },
+      {
+        "body": "Uranus",
+        "star": "Atik",
+        "orb": 0.54
+      },
+      {
+        "body": "Uranus",
+        "star": "Mirfak",
+        "orb": 0.397
+      },
+      {
+        "body": "Pluto",
+        "star": "Libertas",
+        "orb": 0.9498
+      },
+      {
+        "body": "Juno",
+        "star": "Tseen Foo",
+        "orb": 0.8505
+      },
+      {
+        "body": "Eros",
+        "star": "Jabbah",
+        "orb": 0.3589
+      },
+      {
+        "body": "Chiron",
+        "star": "Torcularis Septentrionalis",
+        "orb": 0.7041
+      },
+      {
+        "body": "Pholus",
+        "star": "Alathfar",
+        "orb": 0.5972
+      },
+      {
+        "body": "Pholus",
+        "star": "Nanto",
+        "orb": 0.6546
+      },
+      {
+        "body": "Quaoar",
+        "star": "Alathfar",
+        "orb": 0.8219
+      },
+      {
+        "body": "Quaoar",
+        "star": "Nanto",
+        "orb": 0.8793
+      },
+      {
+        "body": "Sedna",
+        "star": "Atik",
+        "orb": 0.1341
+      },
+      {
+        "body": "Orcus",
+        "star": "Tse Tseng",
+        "orb": 0.5155
+      },
+      {
         "body": "Haumea",
-        "star": "Arcturus",
-        "orb": 0.1698
+        "star": "Alkalurops",
+        "orb": 0.3815
+      },
+      {
+        "body": "Makemake",
+        "star": "Auva",
+        "orb": 0.1118
       },
       {
         "body": "Astraea",
-        "star": "Fomalhaut",
-        "orb": 0.9716
+        "star": "Aboras",
+        "orb": 0.5485
+      },
+      {
+        "body": "Astraea",
+        "star": "Enif",
+        "orb": 0.2357
+      },
+      {
+        "body": "2002 AW197",
+        "star": "Alioth",
+        "orb": 0.8035
       }
     ],
     "2026-08-11": [
       {
+        "body": "Sun",
+        "star": "Merak",
+        "orb": 0.9562
+      },
+      {
+        "body": "Mercury",
+        "star": "Beemim",
+        "orb": 0.9547
+      },
+      {
+        "body": "Mercury",
+        "star": "Gorgona Quatra",
+        "orb": 0.9156
+      },
+      {
+        "body": "Mercury",
+        "star": "Segin",
+        "orb": 0.6834
+      },
+      {
+        "body": "Uranus",
+        "star": "Atik",
+        "orb": 0.5513
+      },
+      {
+        "body": "Uranus",
+        "star": "Mirfak",
+        "orb": 0.3858
+      },
+      {
+        "body": "Pluto",
+        "star": "Libertas",
+        "orb": 0.9543
+      },
+      {
+        "body": "Eros",
+        "star": "Jabbah",
+        "orb": 0.1164
+      },
+      {
+        "body": "Chiron",
+        "star": "Torcularis Septentrionalis",
+        "orb": 0.6942
+      },
+      {
+        "body": "Pholus",
+        "star": "Alathfar",
+        "orb": 0.6009
+      },
+      {
+        "body": "Pholus",
+        "star": "Nanto",
+        "orb": 0.6582
+      },
+      {
+        "body": "Quaoar",
+        "star": "Alathfar",
+        "orb": 0.8256
+      },
+      {
+        "body": "Quaoar",
+        "star": "Nanto",
+        "orb": 0.8829
+      },
+      {
+        "body": "Sedna",
+        "star": "Atik",
+        "orb": 0.1325
+      },
+      {
+        "body": "Orcus",
+        "star": "Tse Tseng",
+        "orb": 0.5127
+      },
+      {
         "body": "Haumea",
-        "star": "Arcturus",
-        "orb": 0.1728
+        "star": "Alkalurops",
+        "orb": 0.3785
+      },
+      {
+        "body": "Makemake",
+        "star": "Auva",
+        "orb": 0.1091
       },
       {
         "body": "Astraea",
-        "star": "Fomalhaut",
-        "orb": 0.8048
+        "star": "Aboras",
+        "orb": 0.3818
+      },
+      {
+        "body": "Astraea",
+        "star": "Enif",
+        "orb": 0.069
+      },
+      {
+        "body": "2002 AW197",
+        "star": "Alioth",
+        "orb": 0.8068
       }
     ],
     "2026-08-12": [
       {
+        "body": "Sun",
+        "star": "Merak",
+        "orb": 0.0038
+      },
+      {
+        "body": "Mercury",
+        "star": "Atik",
+        "orb": 0.6028
+      },
+      {
+        "body": "Mercury",
+        "star": "Mirfak",
+        "orb": 0.3343
+      },
+      {
+        "body": "Mars",
+        "star": "Asterope",
+        "orb": 0.8495
+      },
+      {
+        "body": "Mars",
+        "star": "Beid",
+        "orb": 0.5434
+      },
+      {
+        "body": "Mars",
+        "star": "Celaeno",
+        "orb": 0.5448
+      },
+      {
+        "body": "Mars",
+        "star": "Electra",
+        "orb": 0.5217
+      },
+      {
+        "body": "Mars",
+        "star": "Maia",
+        "orb": 0.7901
+      },
+      {
+        "body": "Mars",
+        "star": "Taygeta",
+        "orb": 0.6745
+      },
+      {
+        "body": "Uranus",
+        "star": "Atik",
+        "orb": 0.5626
+      },
+      {
+        "body": "Uranus",
+        "star": "Mirfak",
+        "orb": 0.3745
+      },
+      {
+        "body": "Pluto",
+        "star": "Libertas",
+        "orb": 0.9588
+      },
+      {
+        "body": "Eros",
+        "star": "Jabbah",
+        "orb": 0.5898
+      },
+      {
+        "body": "Chiron",
+        "star": "Torcularis Septentrionalis",
+        "orb": 0.6844
+      },
+      {
+        "body": "Pholus",
+        "star": "Alathfar",
+        "orb": 0.6045
+      },
+      {
+        "body": "Pholus",
+        "star": "Nanto",
+        "orb": 0.6618
+      },
+      {
+        "body": "Quaoar",
+        "star": "Alathfar",
+        "orb": 0.8293
+      },
+      {
+        "body": "Quaoar",
+        "star": "Nanto",
+        "orb": 0.8865
+      },
+      {
+        "body": "Sedna",
+        "star": "Atik",
+        "orb": 0.1309
+      },
+      {
+        "body": "Orcus",
+        "star": "Tse Tseng",
+        "orb": 0.5099
+      },
+      {
         "body": "Haumea",
-        "star": "Arcturus",
-        "orb": 0.1757
+        "star": "Alkalurops",
+        "orb": 0.3755
+      },
+      {
+        "body": "Makemake",
+        "star": "Auva",
+        "orb": 0.1065
       },
       {
         "body": "Astraea",
-        "star": "Fomalhaut",
-        "orb": 0.6379
+        "star": "Aboras",
+        "orb": 0.215
+      },
+      {
+        "body": "Astraea",
+        "star": "Enif",
+        "orb": 0.0978
+      },
+      {
+        "body": "2002 AW197",
+        "star": "Alioth",
+        "orb": 0.8102
       }
     ],
     "2026-08-13": [
       {
-        "body": "Mercury",
-        "star": "Aldebaran",
-        "orb": 0.5101
+        "body": "Sun",
+        "star": "Merak",
+        "orb": 0.9641
+      },
+      {
+        "body": "Sun",
+        "star": "Ras Elased Australis",
+        "orb": 0.3052
+      },
+      {
+        "body": "Venus",
+        "star": "Kaus Australis",
+        "orb": 0.2928
+      },
+      {
+        "body": "Mars",
+        "star": "Asterope",
+        "orb": 0.3057
+      },
+      {
+        "body": "Mars",
+        "star": "Beid",
+        "orb": 0.0003
+      },
+      {
+        "body": "Mars",
+        "star": "Celaeno",
+        "orb": 0.0011
+      },
+      {
+        "body": "Mars",
+        "star": "Electra",
+        "orb": 0.022
+      },
+      {
+        "body": "Mars",
+        "star": "Maia",
+        "orb": 0.2464
+      },
+      {
+        "body": "Mars",
+        "star": "Taygeta",
+        "orb": 0.1307
+      },
+      {
+        "body": "Uranus",
+        "star": "Atik",
+        "orb": 0.5738
+      },
+      {
+        "body": "Uranus",
+        "star": "Mirfak",
+        "orb": 0.3632
+      },
+      {
+        "body": "Pluto",
+        "star": "Libertas",
+        "orb": 0.9634
+      },
+      {
+        "body": "Pallas",
+        "star": "Alagemin",
+        "orb": 0.9108
+      },
+      {
+        "body": "Chiron",
+        "star": "Torcularis Septentrionalis",
+        "orb": 0.6745
+      },
+      {
+        "body": "Pholus",
+        "star": "Alathfar",
+        "orb": 0.6082
+      },
+      {
+        "body": "Pholus",
+        "star": "Nanto",
+        "orb": 0.6655
+      },
+      {
+        "body": "Quaoar",
+        "star": "Alathfar",
+        "orb": 0.833
+      },
+      {
+        "body": "Quaoar",
+        "star": "Nanto",
+        "orb": 0.8902
+      },
+      {
+        "body": "Sedna",
+        "star": "Atik",
+        "orb": 0.1293
+      },
+      {
+        "body": "Orcus",
+        "star": "Tse Tseng",
+        "orb": 0.5071
       },
       {
         "body": "Haumea",
-        "star": "Arcturus",
-        "orb": 0.1786
+        "star": "Alkalurops",
+        "orb": 0.3725
+      },
+      {
+        "body": "Makemake",
+        "star": "Auva",
+        "orb": 0.1039
       },
       {
         "body": "Astraea",
-        "star": "Fomalhaut",
-        "orb": 0.471
+        "star": "Aboras",
+        "orb": 0.0482
+      },
+      {
+        "body": "Astraea",
+        "star": "Enif",
+        "orb": 0.2647
+      },
+      {
+        "body": "2002 AW197",
+        "star": "Alioth",
+        "orb": 0.8136
       }
     ],
     "2026-08-14": [
       {
+        "body": "Sun",
+        "star": "Ras Elased Australis",
+        "orb": 0.6555
+      },
+      {
+        "body": "Mars",
+        "star": "Asterope",
+        "orb": 0.2371
+      },
+      {
+        "body": "Mars",
+        "star": "Beid",
+        "orb": 0.5431
+      },
+      {
+        "body": "Mars",
+        "star": "Celaeno",
+        "orb": 0.5417
+      },
+      {
+        "body": "Mars",
+        "star": "Electra",
+        "orb": 0.5649
+      },
+      {
+        "body": "Mars",
+        "star": "Maia",
+        "orb": 0.2964
+      },
+      {
+        "body": "Mars",
+        "star": "Taygeta",
+        "orb": 0.4121
+      },
+      {
+        "body": "Uranus",
+        "star": "Atik",
+        "orb": 0.5851
+      },
+      {
+        "body": "Uranus",
+        "star": "Mirfak",
+        "orb": 0.352
+      },
+      {
+        "body": "Pluto",
+        "star": "Libertas",
+        "orb": 0.968
+      },
+      {
+        "body": "Pallas",
+        "star": "Alagemin",
+        "orb": 0.7556
+      },
+      {
+        "body": "Chiron",
+        "star": "Torcularis Septentrionalis",
+        "orb": 0.6646
+      },
+      {
+        "body": "Pholus",
+        "star": "Alathfar",
+        "orb": 0.612
+      },
+      {
+        "body": "Pholus",
+        "star": "Nanto",
+        "orb": 0.6691
+      },
+      {
+        "body": "Quaoar",
+        "star": "Alathfar",
+        "orb": 0.8367
+      },
+      {
+        "body": "Quaoar",
+        "star": "Nanto",
+        "orb": 0.8938
+      },
+      {
+        "body": "Sedna",
+        "star": "Atik",
+        "orb": 0.1276
+      },
+      {
+        "body": "Orcus",
+        "star": "Tse Tseng",
+        "orb": 0.5043
+      },
+      {
         "body": "Haumea",
-        "star": "Arcturus",
-        "orb": 0.1815
+        "star": "Alkalurops",
+        "orb": 0.3694
+      },
+      {
+        "body": "Makemake",
+        "star": "Auva",
+        "orb": 0.1012
       },
       {
         "body": "Astraea",
-        "star": "Fomalhaut",
-        "orb": 0.3041
+        "star": "Aboras",
+        "orb": 0.1187
+      },
+      {
+        "body": "Astraea",
+        "star": "Enif",
+        "orb": 0.4316
+      },
+      {
+        "body": "2002 AW197",
+        "star": "Alioth",
+        "orb": 0.817
       }
     ],
     "2026-08-15": [
       {
+        "body": "Mars",
+        "star": "Asterope",
+        "orb": 0.7789
+      },
+      {
+        "body": "Mars",
+        "star": "Atik",
+        "orb": 0.6242
+      },
+      {
+        "body": "Mars",
+        "star": "Maia",
+        "orb": 0.8383
+      },
+      {
+        "body": "Mars",
+        "star": "Taygeta",
+        "orb": 0.954
+      },
+      {
+        "body": "Uranus",
+        "star": "Atik",
+        "orb": 0.5965
+      },
+      {
+        "body": "Uranus",
+        "star": "Mirfak",
+        "orb": 0.3407
+      },
+      {
+        "body": "Pluto",
+        "star": "Libertas",
+        "orb": 0.9726
+      },
+      {
+        "body": "Pallas",
+        "star": "Alagemin",
+        "orb": 0.6001
+      },
+      {
+        "body": "Vesta",
+        "star": "Alagemin",
+        "orb": 0.7435
+      },
+      {
+        "body": "Psyche",
+        "star": "Asellus Australis",
+        "orb": 0.8739
+      },
+      {
+        "body": "Chiron",
+        "star": "Torcularis Septentrionalis",
+        "orb": 0.6546
+      },
+      {
+        "body": "Pholus",
+        "star": "Alathfar",
+        "orb": 0.6157
+      },
+      {
+        "body": "Pholus",
+        "star": "Nanto",
+        "orb": 0.6728
+      },
+      {
+        "body": "Quaoar",
+        "star": "Alathfar",
+        "orb": 0.8404
+      },
+      {
+        "body": "Quaoar",
+        "star": "Nanto",
+        "orb": 0.8975
+      },
+      {
+        "body": "Sedna",
+        "star": "Atik",
+        "orb": 0.126
+      },
+      {
+        "body": "Orcus",
+        "star": "Tse Tseng",
+        "orb": 0.5015
+      },
+      {
         "body": "Haumea",
-        "star": "Arcturus",
-        "orb": 0.1844
+        "star": "Alkalurops",
+        "orb": 0.3664
+      },
+      {
+        "body": "Makemake",
+        "star": "Auva",
+        "orb": 0.0985
       },
       {
         "body": "Astraea",
-        "star": "Fomalhaut",
-        "orb": 0.1371
+        "star": "Aboras",
+        "orb": 0.2857
+      },
+      {
+        "body": "Astraea",
+        "star": "Enif",
+        "orb": 0.5986
+      },
+      {
+        "body": "Sappho",
+        "star": "Taiyi",
+        "orb": 0.8624
+      },
+      {
+        "body": "2002 AW197",
+        "star": "Alioth",
+        "orb": 0.8205
       }
     ]
   }
