@@ -66,6 +66,11 @@ BODIES = {
     "Haumea": "136108;",
     "Makemake": "136472;",
     "Ixion": "28978;",
+    "Astraea": "5;",
+    "Sappho": "80;",
+    "Karma": "3811;",
+    "Bacchus": "2063;",
+    "Hygiea": "10;",
 }
 
 

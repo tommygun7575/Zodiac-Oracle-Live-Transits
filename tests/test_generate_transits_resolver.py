@@ -176,6 +176,11 @@ class ResolveBodyOrderTests(unittest.TestCase):
             "Haumea": "136108;",
             "Quaoar": "50000;",
             "Ixion": "28978;",
+                    "Astraea": "5;",
+                    "Sappho": "80;",
+                    "Karma": "3811;",
+                    "Bacchus": "2063;",
+                    "Hygiea": "10;",
         }
         for body, expected_id in small_bodies.items():
             self.assertEqual(
