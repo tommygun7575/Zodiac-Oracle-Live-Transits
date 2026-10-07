@@ -94,6 +94,11 @@ jobs:
               print("docs/current_week.json is valid")
           PY
 
+      - name: Assert geocentric of-date frame (regression)
+        run: |
+          python -m unittest tests.test_frame_regression -v
+          python scripts/check_feed_frames.py docs/current_week.json
+
       - name: Archive dated snapshot
         run: |
           WEEK_START=$(python3 -c "import json; print(json.load(open('docs/current_week.json'))['week_start'])")
