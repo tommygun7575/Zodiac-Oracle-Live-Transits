@@ -58,6 +58,7 @@ def main(path):
         return 0
     stamps = sorted({ts for b in bodies.values() for ts in (b.get("snapshots") or {})})
     errors = []
+    skipped = set()
     for ts in stamps:
         lons = {n: (b.get("snapshots") or {}).get(ts) for n, b in bodies.items()}
         sun = lons.get("Sun")
@@ -69,13 +70,19 @@ def main(path):
         for body, code in SWISS_CHECK.items():
             if lons.get(body) is None:
                 continue
-            ref = swe.calc_ut(jd, code)[0][0]
+            try:
+                ref = swe.calc_ut(jd, code)[0][0]
+            except Exception as exc:  # e.g. asteroid file absent in CI (ephe/ is untracked)
+                skipped.add(f"{body}: {exc}")
+                continue
             if arc(lons[body], ref) > TOL_DEG:
                 errors.append(f"{ts}: {body} {lons[body]:.4f} vs Swiss of-date {ref:.4f} (diff {arc(lons[body], ref):.4f})")
         if ts == JPL_REFERENCE_TS:
             for body, ref in JPL_REFERENCE.items():
                 if lons.get(body) is not None and arc(lons[body], ref) > TOL_DEG:
                     errors.append(f"{ts}: {body} {lons[body]:.4f} vs JPL q31 {ref} (diff {arc(lons[body], ref):.4f})")
+    for note in sorted(skipped):
+        print(f"[WARN] Swiss cross-check skipped for {note}")
     if errors:
         print(f"[FAIL] frame regression in {path} ({len(errors)} problems):")
         for e in errors[:50]:
