@@ -1,6 +1,5 @@
+"""Legacy Horizons id map — kept for tooling. Authoritative list is generate_transits.BODIES."""
 TARGETS = {
-
-    # Major planets
     "Sun": "10",
     "Moon": "301",
     "Mercury": "199",
@@ -11,28 +10,25 @@ TARGETS = {
     "Uranus": "799",
     "Neptune": "899",
     "Pluto": "999",
-
-    # Major dwarfs / TNOs
-    "Eris": "136199",
-    "Haumea": "136108",
-    "Makemake": "136472",
-    "Sedna": "90377",
-    "Quaoar": "50000",
-    "Orcus": "90482",
-
-    # Centaurs
-    "Chiron": "2060",
-    "Chariklo": "10199",
-    "Pholus": "5145",
-
-    # Major asteroids (semicolon required)
+    "Eris": "136199;",
+    "Haumea": "136108;",
+    "Makemake": "136472;",
+    "Sedna": "90377;",
+    "Quaoar": "50000;",
+    "Orcus": "90482;",
+    "Gonggong": "225088;",
+    "Chiron": "2060;",
+    "Chariklo": "10199;",
+    "Pholus": "5145;",
+    "Nessus": "7066;",
+    "Asbolus": "8405;",
+    "Hylonome": "10370;",
     "Ceres": "1;",
     "Pallas": "2;",
     "Juno": "3;",
     "Vesta": "4;",
-
-    # Named
+    "Hygiea": "10;",
     "Psyche": "16;",
     "Eros": "433;",
-    "Amor": "1221;"
+    "Amor": "1221;",
 }

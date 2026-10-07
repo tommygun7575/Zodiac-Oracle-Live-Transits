@@ -1,1 +1,7 @@
 __pycache__
+.venv/
+ephe/
+*.pyc
+__pycache__/
+.pytest_cache/
+ephe

@@ -1,40 +1,32 @@
 {
   "planets": [
-    "Sun",
-    "Moon",
-    "Mercury",
-    "Venus",
-    "Mars",
-    "Jupiter",
-    "Saturn",
-    "Uranus",
-    "Neptune",
-    "Pluto"
+    "Sun", "Moon", "Mercury", "Venus", "Mars",
+    "Jupiter", "Saturn", "Uranus", "Neptune", "Pluto"
   ],
+  "lunar_nodes": ["True_Node", "Mean_Node", "South_Node"],
   "asteroids": [
-    "Ceres",
-    "Pallas",
-    "Juno",
-    "Vesta",
-    "Chiron"
+    "Ceres", "Pallas", "Juno", "Vesta", "Hygiea", "Astraea", "Psyche",
+    "Amphitrite", "Euphrosyne", "Sappho", "Hekate", "Nemesis", "Eros",
+    "Cupido", "Hidalgo", "Amor", "Aphrodite", "Aura", "Bacchus",
+    "Merlin", "Panacea", "Karma", "Destinn"
+  ],
+  "centaurs": [
+    "Chiron", "Pholus", "Nessus", "Asbolus", "Chariklo", "Hylonome"
   ],
   "tnos": [
-    "Eris",
-    "Haumea",
-    "Makemake",
-    "Sedna",
-    "Orcus",
-    "Quaoar"
-  ],
-  "minor_bodies": [
-    "Pholus",
-    "Nessus",
-    "Ixion"
+    "Varuna", "Ixion", "Huya", "Typhon", "Quaoar", "2002 AW197",
+    "2003 VS2", "Sedna", "Orcus", "Salacia", "Haumea", "Eris",
+    "Makemake", "Gonggong"
   ],
   "fixed_stars": [
-    "Regulus",
-    "Spica",
-    "Aldebaran",
-    "Antares"
+    "Aldebaran", "Algol", "Altair", "Antares", "Arcturus", "Betelgeuse",
+    "Canopus", "Capella", "Deneb", "Fomalhaut", "Pollux", "Procyon",
+    "Regulus", "Rigel", "Sirius", "Spica", "Vega", "Zubenelgenubi",
+    "Zubeneschamali"
+  ],
+  "aether_points": [
+    "Aetheric_SunMoon_Midpoint",
+    "Aetheric_Jovian_Arc",
+    "Aetheric_Elemental_Balance"
   ]
 }

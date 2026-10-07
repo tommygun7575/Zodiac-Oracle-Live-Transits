@@ -1,13 +1,17 @@
 
 """
-Dual House System Engine:
-- Whole Sign Houses
-- Placidus Houses
+House System Engine (on-device / natal use).
+
+Preferred system for Zodiac Oracle: Placidus.
+Whole Sign helpers remain available for comparison only.
+
+The universal weekly feed (docs/current_week.json) does NOT emit personal
+house assignments — houses require user lat/lon and are computed on-device.
 
 Supports:
 - True Ascendant from Local Sidereal Time (LST)
 - MC / IC calculation
-- 12 house cusps for both systems
+- 12 house cusps (Placidus primary; whole-sign optional)
 """
 
 import math

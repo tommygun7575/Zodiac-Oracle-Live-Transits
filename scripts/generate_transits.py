@@ -1,3 +1,17 @@
+"""Zodiac Oracle weekly live-transit generator.
+
+Android contract (PRESERVE — additive only):
+  docs/current_week.json top-level keys:
+    generated_utc, week_start, week_end, engine_version, coverage, resolved,
+    total_targets, missing, bodies, arabic_parts, fixed_star_conjunctions
+  bodies[name] = { "source": str, "data": { "YYYY-MM-DD": lon, ... } }
+  fixed_star_conjunctions[date] = [ {body, star, orb}, ... ]
+  arabic_parts may be date→parts OR status unavailable (no ASC on universal feed)
+
+Additive (safe for old parsers):
+  bodies[name]["snapshots"] = { "YYYY-MM-DDTHH:MM:SSZ": lon, ... }  # 4×/day UTC
+  snapshot_schedule_utc, houses (on-device Placidus policy), aether in bodies
+"""
 import json
 import math
 from datetime import datetime, timedelta
@@ -9,14 +23,19 @@ from .bodies.miriade_engine import fetch_miriade as _fetch_miriade_week
 from .bodies.mpc_client import fetch_mpc
 from .bodies.swiss_engine import get_swiss_week
 from .bodies.fixed_star_engine import get_fixed_star_week
+from .bodies.aether_engine import (
+    VERIFIED_AETHER,
+    compute_aether_from_positions,
+)
 
-ENGINE_VERSION = "ZodiacOracle.LiveTransit.vHybrid"
+ENGINE_VERSION = "ZodiacOracle.LiveTransit.vHybrid.multiSnap6h"
 OUTPUT_PATH = Path("docs/current_week.json")
 
-
-# =====================================================
-# ZODIAC SIGN HELPER
-# =====================================================
+# 4 UTC snapshots per day × 7 days (Sunday→Saturday)
+SNAPSHOT_HOURS_UTC = (0, 6, 12, 18)
+SNAPSHOTS_PER_DAY = len(SNAPSHOT_HOURS_UTC)
+SLOTS_PER_WEEK = 7 * SNAPSHOTS_PER_DAY  # 28
+STEP_SIZE = "6h"
 
 ZODIAC_SIGNS = [
     "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
@@ -32,15 +51,13 @@ def zodiac(lon):
 
 
 # =====================================================
-# BODY REGISTRY
+# BODY REGISTRY (expanded; IDs borrowed from Black-Zodiac)
+# Small-body IDs use trailing semicolon for Horizons MPC lookup.
 # =====================================================
 
-# Small-body IDs use a trailing semicolon so that JPL Horizons resolves
-# them via the Minor Planet Center (MPC) catalog rather than treating the
-# numeric value as a NAIF planet-system barycenter ID (e.g. "1" is Mercury
-# barycenter without the semicolon, but "1;" is Ceres via the MPC).
 BODIES = {
-    "Sun": None,
+    # Core planets / luminaries
+    "Sun": "10",
     "Moon": "301",
     "Mercury": "199",
     "Venus": "299",
@@ -50,81 +67,151 @@ BODIES = {
     "Uranus": "799",
     "Neptune": "899",
     "Pluto": "999",
+    # Lunar nodes (Swiss primary; no Horizons small-body id)
+    "True_Node": None,
+    "Mean_Node": None,
+    # Dwarfs / major asteroids
     "Ceres": "1;",
     "Pallas": "2;",
     "Juno": "3;",
     "Vesta": "4;",
+    "Hygiea": "10;",
+    # Expanded asteroids
+    "Astraea": "5;",
     "Psyche": "16;",
+    "Amphitrite": "29;",
+    "Euphrosyne": "31;",
+    "Sappho": "80;",
+    "Hekate": "100;",
+    "Nemesis": "128;",
     "Eros": "433;",
+    "Cupido": "763;",
+    "Hidalgo": "944;",
     "Amor": "1221;",
+    "Aphrodite": "1388;",
+    "Aura": "1488;",
+    "Bacchus": "2063;",
+    "Merlin": "2598;",
+    "Panacea": "2878;",
+    "Karma": "3811;",
+    "Destinn": "6583;",
+    # Centaurs
     "Chiron": "2060;",
     "Pholus": "5145;",
-    "Chariklo": "10199;",
-    "Quaoar": "50000;",
-    "Sedna": "90377;",
-    "Orcus": "90482;",
-    "Eris": "136199;",
-    "Haumea": "136108;",
-    "Makemake": "136472;",
-    "Ixion": "28978;",
-    "Astraea": "5;",
-    "Sappho": "80;",
-    "Karma": "3811;",
-    "Bacchus": "2063;",
-    "Hygiea": "10;",
     "Nessus": "7066;",
+    "Asbolus": "8405;",
+    "Chariklo": "10199;",
+    "Hylonome": "10370;",
+    # TNOs / dwarfs
     "Varuna": "20000;",
+    "Ixion": "28978;",
+    "Huya": "38628;",
     "Typhon": "42355;",
-    "Salacia": "120347;",
+    "Quaoar": "50000;",
     "2002 AW197": "55565;",
     "2003 VS2": "84922;",
-    "Asbolus": "8405;",
+    "Sedna": "90377;",
+    "Orcus": "90482;",
+    "Salacia": "120347;",
+    "Haumea": "136108;",
+    "Eris": "136199;",
+    "Makemake": "136472;",
+    "Gonggong": "225088;",
+}
+
+# Fixed stars emitted as body positions (Black-Zodiac major set + Oracle set)
+FIXED_STAR_BODIES = [
+    "Aldebaran", "Algol", "Altair", "Antares", "Arcturus", "Betelgeuse",
+    "Canopus", "Capella", "Deneb", "Fomalhaut", "Pollux", "Procyon",
+    "Regulus", "Rigel", "Sirius", "Spica", "Vega", "Zubenelgenubi",
+    "Zubeneschamali",
+]
+
+# Broader star list for conjunction hits only (existing Oracle set, additive)
+FIXED_STARS = sorted(set(FIXED_STAR_BODIES + [
+    "Aboras", "Ainalrami", "Al Krikab", "Al Nitham", "Al Sadr al Ketus",
+    "Alagemin", "Alathfar", "Aldafirah", "Aldhibain", "Alifa Al Farkadain",
+    "Alioth", "Alkalurops", "Alminhar", "Alrischa", "Alsephina", "Alshain",
+    "Alsharasif", "Altawk", "Aludra", "Alzirr", "Anunitum", "Arkab Posterior",
+    "Ascella", "Asellus Australis", "Asterope", "Atik", "Atirsagne", "Auva",
+    "Beemim", "Beid", "Bered", "Botein", "Celaeno", "Cervantes", "Edasich",
+    "Electra", "Enif", "Fornacis", "Gorgona Quatra", "Haedi", "Hydrobius",
+    "Izar", "Jabbah", "Jih", "Kaht", "Kang", "Kaus Australis", "Libertas",
+    "Maaz", "Maia", "Menkar", "Merak", "Mirfak", "Mizar", "Mufrid", "Nanto",
+    "Nekkar", "Nodus II", "Nunki", "Ras Elased Australis", "Ruc", "Rukbat",
+    "Segin", "Sheratan", "Skat", "Taiyi", "Taygeta", "Tegmen", "Terebellium",
+    "Torcularis Septentrionalis", "Tse Tseng", "Tseen Foo", "Unukalhai",
+    "Unurgunite", "Urodelus", "Vindemiatrix", "Vishakha",
+]))
+
+STAR_ORB = 1.0
+
+HOUSES_POLICY = {
+    "status": "on_device",
+    "system": "Placidus",
+    "reason": (
+        "Universal weekly feed is geocentric and location-independent. "
+        "House cusps, ASC, and MC require the user's lat/lon and must be "
+        "computed on-device (Placidus). No whole-sign house fields are "
+        "emitted here; ASC is never approximated as the Sun."
+    ),
+}
+
+ARABIC_PARTS_UNAVAILABLE = {
+    "status": "unavailable",
+    "reason": (
+        "Arabic parts require a true Ascendant from observer lat/lon. "
+        "This universal feed does not invent ASC=Sun. Compute parts "
+        "on-device with Placidus ASC/MC."
+    ),
 }
 
 
-# =====================================================
-# SOURCE FETCHERS (importable names used by resolve_body / fetch_body)
-# =====================================================
-
-def fetch_miriade(body_name, start_date=None):
+def fetch_miriade(body_name, start_date=None, nbd=None, step=None):
     """Miriade lookup.
 
     Single-value mode (start_date omitted): returns {"lon": float}.
-    Weekly mode (start_date provided as datetime): returns list of (lon, lat)
-    tuples, one per day for 7 days starting from start_date.
+    Weekly/multi-slot mode (start_date provided): returns list of (lon, lat).
     """
     if start_date is None:
         return _fetch_miriade_single(body_name)
 
-    start_str = start_date.strftime("%Y-%m-%d")
-    stop_str = (start_date + timedelta(days=6)).strftime("%Y-%m-%d")
-    rows = _fetch_miriade_week(body_name, start_str, stop_str)
+    if nbd is None:
+        nbd = SLOTS_PER_WEEK
+    if step is None:
+        step = STEP_SIZE
+
+    if hasattr(start_date, "strftime"):
+        start_str = start_date.strftime("%Y-%m-%dT%H:%M:%S")
+        stop_str = (start_date + timedelta(days=6, hours=18)).strftime("%Y-%m-%dT%H:%M:%S")
+    else:
+        start_str = str(start_date)
+        stop_str = start_str
+
+    rows = _fetch_miriade_week(body_name, start_str, stop_str, nbd=nbd, step=step)
     return [(r["lon"], r["lat"]) for r in rows]
 
 
 def fetch_swiss(body_name, date):
-    """Swiss ephemeris lookup for a single day. Returns (lon, lat) tuple."""
-    date_str = date.strftime("%Y-%m-%d") if hasattr(date, "strftime") else str(date)
-    results = get_swiss_week(body_name, date_str, date_str, 1)
+    """Swiss ephemeris lookup for a single instant. Returns (lon, lat)."""
+    if hasattr(date, "strftime"):
+        date_str = date.strftime("%Y-%m-%dT%H:%M:%S")
+        results = get_swiss_week(body_name, date_str, date_str, snapshots=[date])
+    else:
+        date_str = str(date)
+        results = get_swiss_week(body_name, date_str, date_str, 1)
     if not results:
         raise RuntimeError(f"Swiss: no data for {body_name} on {date_str}")
-    return (results[0]["longitude_deg"], 0.0)
+    lat = results[0].get("latitude_deg", 0.0)
+    return (results[0]["longitude_deg"], lat if lat is not None else 0.0)
 
 
 def _is_valid_number(value):
     return isinstance(value, (int, float)) and math.isfinite(value)
 
 
-# =====================================================
-# SINGLE-BODY FETCH (fetch_body fallback chain)
-# =====================================================
-
 def fetch_body(body_name):
-    """Fetch current-day position for a body, trying multiple sources.
-
-    Fallback order: Horizons → Miriade → MPC.
-    Returns {"lon": float}.
-    """
+    """Fetch current-day position. Order: Horizons → Miriade → MPC."""
     try:
         return fetch_horizons(body_name)
     except Exception:
@@ -136,69 +223,94 @@ def fetch_body(body_name):
     return fetch_mpc(body_name)
 
 
-# =====================================================
-# WEEKLY RESOLVER
-# =====================================================
+def week_snapshot_datetimes(week_start):
+    """Return 28 datetimes: each day of the week at 00/06/12/18 UTC."""
+    if isinstance(week_start, datetime):
+        base = week_start.replace(hour=0, minute=0, second=0, microsecond=0)
+    else:
+        base = datetime.strptime(str(week_start)[:10], "%Y-%m-%d")
+    stamps = []
+    for day in range(7):
+        d = base + timedelta(days=day)
+        for hour in SNAPSHOT_HOURS_UTC:
+            stamps.append(d.replace(hour=hour, minute=0, second=0, microsecond=0))
+    return stamps
 
-def resolve_body(body_name, start_date):
-    """Resolve 7-day ephemeris for a body using JPL → Miriade → Swiss fallback.
 
-    Per-day gap filling: JPL fills known slots; Miriade fills remaining None
-    slots; Swiss fills any still-None slots.  Never raises; always returns
-    exactly 7 entries with keys lon, lat, source.
+def snapshot_iso(dt):
+    return dt.strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def resolve_body(body_name, start_date, snapshots=None):
+    """Resolve ephemeris for a body: JPL → Miriade → Swiss.
+
+    Returns a list aligned to ``snapshots`` (default: 28 week slots).
+    Each entry: {lon, lat, source, timestamp}. Never raises.
     """
-    result = [None] * 7
-    start_str = start_date.strftime("%Y-%m-%d")
-    stop_str = (start_date + timedelta(days=6)).strftime("%Y-%m-%d")
+    if snapshots is None:
+        snapshots = week_snapshot_datetimes(start_date)
+    n = len(snapshots)
+    result = [None] * n
+    start_str = snapshot_iso(snapshots[0])
+    # Horizons stop is exclusive of final step in some modes; pad +6h
+    stop_str = snapshot_iso(snapshots[-1] + timedelta(hours=6))
 
-    # Step 1: Try JPL if the body has a mapped ID
     jpl_id = BODIES.get(body_name)
     if jpl_id is not None:
         try:
-            jpl_data = fetch_jpl(jpl_id, start_str, stop_str)
+            jpl_data = fetch_jpl(jpl_id, start_str, stop_str, step_size=STEP_SIZE)
             for i, entry in enumerate(jpl_data):
-                if i >= 7:
+                if i >= n:
                     break
                 lon, lat = entry
                 if _is_valid_number(lon):
-                    result[i] = {"lon": lon, "lat": lat, "source": "JPL"}
+                    result[i] = {
+                        "lon": lon,
+                        "lat": lat,
+                        "source": "JPL",
+                        "timestamp": snapshot_iso(snapshots[i]),
+                    }
         except Exception:
             pass
 
-    # Step 2: Fill gaps with Miriade
     if any(r is None for r in result):
         try:
-            miriade_data = fetch_miriade(body_name, start_date)
+            miriade_data = fetch_miriade(body_name, snapshots[0], nbd=n, step=STEP_SIZE)
             for i, entry in enumerate(miriade_data):
-                if i >= 7:
+                if i >= n:
                     break
                 if result[i] is None:
                     lon, lat = entry
                     if _is_valid_number(lon):
-                        result[i] = {"lon": lon, "lat": lat, "source": "Miriade"}
+                        result[i] = {
+                            "lon": lon,
+                            "lat": lat,
+                            "source": "Miriade",
+                            "timestamp": snapshot_iso(snapshots[i]),
+                        }
         except Exception:
             pass
 
-    # Step 3: Fill remaining gaps with Swiss (per day)
-    for i in range(7):
+    for i in range(n):
         if result[i] is None:
-            day = start_date + timedelta(days=i)
             try:
-                lon, lat = fetch_swiss(body_name, day)
+                lon, lat = fetch_swiss(body_name, snapshots[i])
                 result[i] = {
                     "lon": lon if _is_valid_number(lon) else None,
                     "lat": lat if _is_valid_number(lat) else None,
                     "source": "Swiss",
+                    "timestamp": snapshot_iso(snapshots[i]),
                 }
             except Exception:
-                result[i] = {"lon": None, "lat": None, "source": "none"}
+                result[i] = {
+                    "lon": None,
+                    "lat": None,
+                    "source": "none",
+                    "timestamp": snapshot_iso(snapshots[i]),
+                }
 
     return result
 
-
-# =====================================================
-# SUNDAY ANCHOR LOGIC
-# =====================================================
 
 def get_week_range():
     today = datetime.utcnow().date()
@@ -209,49 +321,40 @@ def get_week_range():
     return week_start, week_end
 
 
-# =====================================================
-# ARABIC PARTS (14)
-# =====================================================
-
 def norm(d):
     return d % 360
 
 
 def compute_arabic_parts(positions):
+    """Deprecated for universal feed — requires true ASC.
+
+    Kept as a callable for tests/tools; main() does NOT emit ASC=Sun parts.
+    """
     if "Sun" not in positions or "Moon" not in positions:
         return {}
-
+    # Intentionally refuse without an explicit Ascendant key.
+    if "Ascendant" not in positions and "ASC" not in positions:
+        return dict(ARABIC_PARTS_UNAVAILABLE)
+    asc = positions.get("Ascendant", positions.get("ASC"))
     sun = positions["Sun"]
     moon = positions["Moon"]
-    asc = sun  # Transit simplification
-
-    parts = {}
-
-    parts["Fortune"] = norm(asc + moon - sun)
-    parts["Spirit"] = norm(asc + sun - moon)
-    parts["Eros"] = norm(asc + positions.get("Venus", sun) - parts["Spirit"])
-    parts["Victory"] = norm(asc + positions.get("Jupiter", sun) - sun)
-    parts["Necessity"] = norm(asc + positions.get("Saturn", sun) - parts["Fortune"])
-    parts["Courage"] = norm(asc + positions.get("Mars", sun) - parts["Spirit"])
-    parts["Nemesis"] = norm(asc + positions.get("Saturn", sun) - moon)
-    parts["Exaltation"] = norm(asc + sun - positions.get("Jupiter", sun))
-    parts["Basis"] = norm(asc + positions.get("Mercury", sun) - moon)
-    parts["Love"] = norm(asc + positions.get("Venus", sun) - moon)
-    parts["Marriage"] = norm(asc + positions.get("Venus", sun) - positions.get("Saturn", sun))
-    parts["Increase"] = norm(asc + positions.get("Jupiter", sun) - parts["Spirit"])
-    parts["Commerce"] = norm(asc + positions.get("Mercury", sun) - positions.get("Jupiter", sun))
-    parts["Passion"] = norm(asc + positions.get("Mars", sun) - positions.get("Venus", sun))
-
+    parts = {
+        "Fortune": norm(asc + moon - sun),
+        "Spirit": norm(asc + sun - moon),
+        "Eros": norm(asc + positions.get("Venus", sun) - norm(asc + sun - moon)),
+        "Victory": norm(asc + positions.get("Jupiter", sun) - sun),
+        "Necessity": norm(asc + positions.get("Saturn", sun) - norm(asc + moon - sun)),
+        "Courage": norm(asc + positions.get("Mars", sun) - norm(asc + sun - moon)),
+        "Nemesis": norm(asc + positions.get("Saturn", sun) - moon),
+        "Exaltation": norm(asc + sun - positions.get("Jupiter", sun)),
+        "Basis": norm(asc + positions.get("Mercury", sun) - moon),
+        "Love": norm(asc + positions.get("Venus", sun) - moon),
+        "Marriage": norm(asc + positions.get("Venus", sun) - positions.get("Saturn", sun)),
+        "Increase": norm(asc + positions.get("Jupiter", sun) - norm(asc + sun - moon)),
+        "Commerce": norm(asc + positions.get("Mercury", sun) - positions.get("Jupiter", sun)),
+        "Passion": norm(asc + positions.get("Mars", sun) - positions.get("Venus", sun)),
+    }
     return parts
-
-
-# =====================================================
-# FIXED STAR PRECISION
-# =====================================================
-
-FIXED_STARS = ["Aboras", "Ainalrami", "Al Krikab", "Al Nitham", "Al Sadr al Ketus", "Alagemin", "Alathfar", "Aldafirah", "Aldhibain", "Alifa Al Farkadain", "Alioth", "Alkalurops", "Alminhar", "Alrischa", "Alsephina", "Alshain", "Alsharasif", "Altawk", "Aludra", "Alzirr", "Anunitum", "Arkab Posterior", "Ascella", "Asellus Australis", "Asterope", "Atik", "Atirsagne", "Auva", "Beemim", "Beid", "Bered", "Betelgeuse", "Botein", "Canopus", "Celaeno", "Cervantes", "Edasich", "Electra", "Enif", "Fornacis", "Gorgona Quatra", "Haedi", "Hydrobius", "Izar", "Jabbah", "Jih", "Kaht", "Kang", "Kaus Australis", "Libertas", "Maaz", "Maia", "Menkar", "Merak", "Mirfak", "Mizar", "Mufrid", "Nanto", "Nekkar", "Nodus II", "Nunki", "Pollux", "Ras Elased Australis", "Ruc", "Rukbat", "Segin", "Sheratan", "Sirius", "Skat", "Taiyi", "Taygeta", "Tegmen", "Terebellium", "Torcularis Septentrionalis", "Tse Tseng", "Tseen Foo", "Unukalhai", "Unurgunite", "Urodelus", "Vindemiatrix", "Vishakha"]
-
-STAR_ORB = 1.0
 
 
 def ang_sep(a, b):
@@ -259,10 +362,12 @@ def ang_sep(a, b):
     return min(diff, 360 - diff)
 
 
-def compute_star_hits(positions, star_positions_for_day):
+def compute_star_hits(positions, star_positions_for_slot):
     hits = []
     for body, lon in positions.items():
-        for star, star_lon in star_positions_for_day.items():
+        if body in star_positions_for_slot:
+            continue  # skip star-star
+        for star, star_lon in star_positions_for_slot.items():
             sep = ang_sep(lon, star_lon)
             if sep <= STAR_ORB:
                 hits.append({
@@ -273,9 +378,35 @@ def compute_star_hits(positions, star_positions_for_day):
     return hits
 
 
-# =====================================================
-# MAIN ENGINE
-# =====================================================
+def _pack_body_series(daily_entries, snapshots):
+    """Build Android-compatible data (date→lon) + additive snapshots (iso→lon)."""
+    data = {}
+    snap = {}
+    for i, entry in enumerate(daily_entries):
+        if not _is_valid_number(entry.get("lon")):
+            continue
+        ts = entry.get("timestamp") or snapshot_iso(snapshots[i])
+        snap[ts] = entry["lon"]
+        # Daily key = 00:00 UTC slot for that calendar day (legacy Android path)
+        if ts.endswith("T00:00:00Z") or (i % SNAPSHOTS_PER_DAY == 0):
+            day_key = ts[:10]
+            # Prefer exact 00:00; otherwise first available slot that day
+            if day_key not in data or ts.endswith("T00:00:00Z"):
+                data[day_key] = entry["lon"]
+    # Ensure every day with any slot gets a daily key (fallback to first slot)
+    for i, entry in enumerate(daily_entries):
+        if not _is_valid_number(entry.get("lon")):
+            continue
+        day_key = snapshots[i].strftime("%Y-%m-%d")
+        if day_key not in data:
+            data[day_key] = entry["lon"]
+    source = "none"
+    for entry in daily_entries:
+        if _is_valid_number(entry.get("lon")):
+            source = entry.get("source", "none")
+            break
+    return {"source": source, "data": data, "snapshots": snap}
+
 
 def _new_output_template(start_str, stop_str):
     return {
@@ -285,15 +416,26 @@ def _new_output_template(start_str, stop_str):
         "engine_version": ENGINE_VERSION,
         "coverage": 0.0,
         "resolved": 0,
-        "total_targets": len(BODIES),
+        "total_targets": len(BODIES) + len(FIXED_STAR_BODIES) + len(VERIFIED_AETHER),
         "missing": [],
         "bodies": {},
-        "arabic_parts": {},
+        "arabic_parts": dict(ARABIC_PARTS_UNAVAILABLE),
         "fixed_star_conjunctions": {},
+        # Additive metadata (ignored by old Android parsers)
+        "snapshot_schedule_utc": {
+            "hours": list(SNAPSHOT_HOURS_UTC),
+            "interval_hours": 6,
+            "slots_per_day": SNAPSHOTS_PER_DAY,
+            "slots_per_week": SLOTS_PER_WEEK,
+            "note": "App may pick nearest ISO timestamp in bodies[*].snapshots",
+        },
+        "houses": dict(HOUSES_POLICY),
+        "aether_formulas": list(VERIFIED_AETHER),
     }
 
 
 def _is_valid_output_payload(payload):
+    """Android / CI contract: required keys must exist; bodies must be a dict."""
     required = {
         "generated_utc",
         "week_start",
@@ -311,7 +453,41 @@ def _is_valid_output_payload(payload):
         return False
     if not required.issubset(payload):
         return False
-    return isinstance(payload["bodies"], dict) and isinstance(payload["missing"], list)
+    if not isinstance(payload["bodies"], dict) or not isinstance(payload["missing"], list):
+        return False
+    # Backward-compat shape: each body has source + data with YYYY-MM-DD keys
+    for name, body in payload["bodies"].items():
+        if not isinstance(body, dict):
+            return False
+        if "source" not in body or "data" not in body:
+            return False
+        if not isinstance(body["data"], dict):
+            return False
+        for key in body["data"]:
+            # Daily keys must remain YYYY-MM-DD for TransitParser
+            if len(key) == 10 and key[4] == "-" and key[7] == "-":
+                continue
+            # Allow only date keys inside data (snapshots live separately)
+            return False
+    return True
+
+
+def _android_can_read(payload):
+    """Simulate TransitParser date selection: today or max date key."""
+    bodies = payload.get("bodies") or {}
+    if not bodies:
+        return False
+    today = datetime.utcnow().strftime("%Y-%m-%d")
+    readable = 0
+    for name, body in bodies.items():
+        data = body.get("data") or {}
+        if not data:
+            continue
+        active = today if today in data else max(data.keys())
+        lon = data.get(active)
+        if _is_valid_number(lon):
+            readable += 1
+    return readable > 0
 
 
 def _write_json_atomic(path, payload):
@@ -322,7 +498,6 @@ def _write_json_atomic(path, payload):
 
 
 def main(output_path=OUTPUT_PATH):
-
     week_start, week_end = get_week_range()
     start_str = week_start.strftime("%Y-%m-%d")
     stop_str = week_end.strftime("%Y-%m-%d")
@@ -333,67 +508,133 @@ def main(output_path=OUTPUT_PATH):
 
     try:
         week_start_dt = datetime.strptime(start_str, "%Y-%m-%d")
+        snapshots = week_snapshot_datetimes(week_start_dt)
         resolved = 0
 
-        star_positions = {}
+        # Fixed-star longitudes per snapshot (for conjunctions + body emission)
+        star_by_ts = {snapshot_iso(s): {} for s in snapshots}
         for star_name in FIXED_STARS:
             try:
-                star_rows = get_fixed_star_week(star_name, start_str, stop_str)
+                star_rows = get_fixed_star_week(
+                    star_name, start_str, stop_str, snapshots=snapshots
+                )
             except Exception:
                 continue
             for row in star_rows:
-                star_positions.setdefault(row["date"], {})[star_name] = row["longitude_deg"]
+                ts = row.get("timestamp") or f"{row['date']}T00:00:00Z"
+                star_by_ts.setdefault(ts, {})[star_name] = row["longitude_deg"]
 
+        # Moving bodies
         for name in BODIES:
-            daily = resolve_body(name, week_start_dt)
-
-            output["bodies"][name] = {
-                "source": daily[0]["source"] if daily else "none",
-                "data": {
-                    (week_start_dt + timedelta(days=i)).strftime("%Y-%m-%d"): entry["lon"]
-                    for i, entry in enumerate(daily)
-                    if _is_valid_number(entry["lon"])
-                },
-            }
-
-            if any(_is_valid_number(e["lon"]) for e in daily):
+            daily = resolve_body(name, week_start_dt, snapshots=snapshots)
+            packed = _pack_body_series(daily, snapshots)
+            output["bodies"][name] = packed
+            if packed["data"]:
                 resolved += 1
             else:
                 output["missing"].append(name)
 
+        # South Node (True Node + 180) — calculated, no fabricated provider coords
+        if "True_Node" in output["bodies"] and output["bodies"]["True_Node"]["data"]:
+            tn = output["bodies"]["True_Node"]
+            south_data = {d: (lon + 180.0) % 360.0 for d, lon in tn["data"].items()}
+            south_snap = {t: (lon + 180.0) % 360.0 for t, lon in tn.get("snapshots", {}).items()}
+            output["bodies"]["South_Node"] = {
+                "source": "calculated",
+                "data": south_data,
+                "snapshots": south_snap,
+            }
+            resolved += 1
+
+        # Fixed-star bodies (positions)
+        for star_name in FIXED_STAR_BODIES:
+            entries = []
+            for i, snap in enumerate(snapshots):
+                ts = snapshot_iso(snap)
+                lon = star_by_ts.get(ts, {}).get(star_name)
+                entries.append({
+                    "lon": lon,
+                    "lat": None,
+                    "source": "Swiss" if _is_valid_number(lon) else "none",
+                    "timestamp": ts,
+                })
+            packed = _pack_body_series(entries, snapshots)
+            if packed["data"]:
+                output["bodies"][star_name] = packed
+                resolved += 1
+            else:
+                output["missing"].append(star_name)
+
+        # Aether (3 verified formulas) per snapshot → daily data + snapshots
+        aether_series = {name: [] for name in VERIFIED_AETHER}
+        for i, snap in enumerate(snapshots):
+            day_key = snap.strftime("%Y-%m-%d")
+            ts = snapshot_iso(snap)
+            # Prefer this slot's longitude from body snapshots; fall back to daily
+            pos = {}
+            for bname, bobj in output["bodies"].items():
+                lon = (bobj.get("snapshots") or {}).get(ts)
+                if lon is None:
+                    lon = (bobj.get("data") or {}).get(day_key)
+                if _is_valid_number(lon):
+                    pos[bname] = lon
+            aether_vals = compute_aether_from_positions(pos)
+            for aname, alon in aether_vals.items():
+                aether_series[aname].append({
+                    "lon": alon,
+                    "lat": 0.0,
+                    "source": "calculated",
+                    "timestamp": ts,
+                })
+        for aname, entries in aether_series.items():
+            packed = _pack_body_series(entries, snapshots)
+            if packed["data"]:
+                output["bodies"][aname] = packed
+                resolved += 1
+            else:
+                output["missing"].append(aname)
+
+        moving_and_calc_targets = (
+            len(BODIES) + 1 + len(FIXED_STAR_BODIES) + len(VERIFIED_AETHER)
+        )  # +1 South_Node
+        output["total_targets"] = moving_and_calc_targets
         output["resolved"] = resolved
-        output["coverage"] = round(resolved / len(BODIES), 3)
+        output["coverage"] = round(resolved / max(moving_and_calc_targets, 1), 3)
 
-        cursor = week_start_dt
-        while cursor.date() <= week_end:
+        # Arabic parts: unavailable on universal feed (no natal ASC)
+        output["arabic_parts"] = dict(ARABIC_PARTS_UNAVAILABLE)
 
-            iso = cursor.strftime("%Y-%m-%d")
+        # Fixed-star conjunctions keyed by YYYY-MM-DD (Android contract)
+        # Use 00:00 UTC slot positions for the daily hit list.
+        for day in range(7):
+            day_dt = week_start_dt + timedelta(days=day)
+            iso_day = day_dt.strftime("%Y-%m-%d")
+            ts0 = f"{iso_day}T00:00:00Z"
             daily_positions = {}
-
-            for body in output["bodies"]:
-                body_data = output["bodies"][body]["data"]
-                if iso in body_data and _is_valid_number(body_data[iso]):
-                    daily_positions[body] = body_data[iso]
-
-            if daily_positions:
-                output["arabic_parts"][iso] = compute_arabic_parts(daily_positions)
-
-                star_hits = compute_star_hits(daily_positions, star_positions.get(iso, {}))
-                if star_hits:
-                    output["fixed_star_conjunctions"][iso] = star_hits
-
-            cursor += timedelta(days=1)
+            for body, bobj in output["bodies"].items():
+                if body in FIXED_STAR_BODIES or body in VERIFIED_AETHER:
+                    continue
+                lon = (bobj.get("snapshots") or {}).get(ts0)
+                if lon is None:
+                    lon = (bobj.get("data") or {}).get(iso_day)
+                if _is_valid_number(lon):
+                    daily_positions[body] = lon
+            star_hits = compute_star_hits(daily_positions, star_by_ts.get(ts0, {}))
+            if star_hits:
+                output["fixed_star_conjunctions"][iso_day] = star_hits
 
         if not _is_valid_output_payload(output):
             raise RuntimeError("Generated payload failed validation")
+        if not _android_can_read(output):
+            raise RuntimeError("Generated payload not readable by Android date parser")
 
     except Exception as exc:
         output = _new_output_template(start_str, stop_str)
         output["generation_warning"] = str(exc)
 
     _write_json_atomic(output_path, output)
-
     print(f"Weekly transit file written to {output_path}")
+    return output
 
 
 if __name__ == "__main__":

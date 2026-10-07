@@ -1,220 +1,80 @@
-ZODIAC ORACLE — LIVE TRANSITS ENGINE
+# ZODIAC ORACLE — LIVE TRANSITS ENGINE
 
-Version: ephemeris-v1.0
+Version: ephemeris-v1.0 (multi-snapshot 6h UTC)
 Updated automatically via GitHub Actions
 
-The Zodiac Oracle Live Transits Engine generates astronomy-accurate planetary, asteroid, TNO, and fixed-star ephemeris feeds for consumption by the Zodiac Oracle mobile app and any external services requiring precise daily and weekly transit data.
+Generates astronomy-accurate planetary, asteroid, TNO, fixed-star, and Aether
+ephemeris for the Zodiac Oracle Android app and compatible clients.
 
-This repository produces four public JSON feeds:
+## Android feed contract (do not break)
 
-feed_now.json — real-time snapshot
+**Primary URL:**
+`https://raw.githubusercontent.com/tommygun7575/Zodiac-Oracle-Live-Transits/main/docs/current_week.json`
 
-feed_daily.json — next 7 days
+Also archived as `docs/current_week_YYYY-MM-DD.json` (week_start date).
 
-current_week.json — structured week block (Sunday → Saturday)
+### Required shape (legacy + current)
 
-_meta.json — metadata, versioning, and generation timestamp
-
-All feeds are automatically regenerated weekly and made accessible via GitHub’s raw CDN endpoints.
-
-Ephemeris Sources
-
-Data is resolved through a cascading multi-engine pipeline:
-
-NASA JPL Horizons — primary
-
-IMCCE Miriade — secondary (covers objects Horizons cannot resolve, including many TNOs)
-
-Swiss-style fallback — sparse emergency resolver
-
-This ensures maximal coverage across:
-
-Planets
-
-Moon
-
-Dwarf planets
-
-Centaurs
-
-Asteroids
-
-TNOs
-
-Deep objects
-
-Major fixed stars
-
-Each body includes:
-
-Ecliptic longitude
-
-Latitude
-
-Retrograde flag
-
-Velocity estimate
-
-Zodiac sign
-
-Degree within sign
-
-Whole-sign house
-
-Harmonic signature
-
-Fixed Stars
-
-The feed also includes the dominant stars used by the Zodiac Oracle system:
-
-Regulus
-
-Spica
-
-Aldebaran
-
-Antares
-
-Algol
-
-Arcturus
-
-Betelgeuse
-
-Canopus
-
-Capella
-
-Deneb
-
-Fomalhaut
-
-Pollux
-
-Procyon
-
-Rigel
-
-Sirius
-
-Vega
-
-Zubenelgenubi
-
-Zubeneschamali
-
-These are resolved as static longitudes with house assignment applied at generation time.
-
-Houses & Location
-
-House system: Whole Sign
-Observer reference: Greenwich Observatory
-
-Latitude: 51.4769°
-Longitude: 0.0000°
-
-
-This provides a globally neutral baseline for apps using universal, location-independent broadcasts.
-
-Aspect Engine
-
-The system automatically computes aspects between all bodies and fixed stars:
-
-0° conjunction
-
-60° sextile
-
-90° square
-
-120° trine
-
-180° opposition
-
-Each entry includes:
-
-type
-
-orb
-
-exact angle
-
-actual angle
-
-These are consumed by downstream applications for interpretive overlays.
-
-JSON Feed Structure
-
-Example structure:
-
+```json
 {
-  "version": "ephemeris-v1.0",
-  "week_start": "2026-02-22T00:00:00Z",
-  "days": [
-    {
-      "timestamp": "2026-02-22T00:00:00Z",
-      "transits": {
-        "positions": {
-          "Sun": {
-            "lon": 5.0,
-            "lat": 0.0,
-            "retrograde": false,
-            "speed": 0.0,
-            "sign": "Aries",
-            "deg": 5.0,
-            "house": 5,
-            "harmonics": 5.0
-          }
-        },
-        "aspects": {
-          "Sun-Saturn": {
-            "type": "trine",
-            "orb": 3.0,
-            "exact": 120,
-            "angle": 117.0
-          }
-        }
-      }
+  "generated_utc": "...",
+  "week_start": "YYYY-MM-DD",
+  "week_end": "YYYY-MM-DD",
+  "engine_version": "ZodiacOracle.LiveTransit.vHybrid.multiSnap6h",
+  "coverage": 1.0,
+  "resolved": 0,
+  "total_targets": 0,
+  "missing": [],
+  "bodies": {
+    "Sun": {
+      "source": "JPL|Miriade|Swiss|calculated",
+      "data": { "YYYY-MM-DD": 191.28 },
+      "snapshots": { "YYYY-MM-DDTHH:MM:SSZ": 191.28 }
     }
-  ]
+  },
+  "arabic_parts": { "status": "unavailable", "reason": "..." },
+  "fixed_star_conjunctions": {
+    "YYYY-MM-DD": [ { "body": "Sun", "star": "Auva", "orb": 0.5 } ]
+  }
 }
+```
 
-Feed Locations
+- **`bodies[*].data`**: daily `YYYY-MM-DD` → longitude (00:00 UTC slot).  
+  Existing Android `TransitParser` continues to select **today** or **max date**.
+- **`bodies[*].snapshots`** *(additive)*: 4 UTC slots/day × 7 days  
+  (`00:00`, `06:00`, `12:00`, `18:00` UTC). Clients may pick the nearest ISO key to now.
+- **`arabic_parts`**: not fabricated with ASC=Sun on this universal feed; compute on-device with Placidus ASC.
+- **Houses**: not emitted per body. System for on-device use is **Placidus** (`houses` metadata).
 
-All feeds are written to:
+## Providers (order preserved)
 
-/docs/feed_now.json
-/docs/feed_daily.json
-/docs/current_week.json
-/docs/_meta.json
+1. NASA JPL Horizons (geocentric)
+2. IMCCE Miriade
+3. Swiss Ephemeris fallback
 
+No fabricated coordinates. Unresolved bodies appear in `missing`.
 
-These files are intended for direct pull via the GitHub CDN, for example:
+## Bodies
 
-https://raw.githubusercontent.com/<USERNAME>/<REPO>/main/docs/current_week.json
+Planets, lunar nodes, dwarfs, centaurs, asteroids, TNOs, major fixed stars, and
+exactly three verified Aether formulas:
 
+- `Aetheric_SunMoon_Midpoint` = normalize(Sun + Moon)
+- `Aetheric_Jovian_Arc` = normalize(Jupiter − Saturn)
+- `Aetheric_Elemental_Balance` = normalize((Moon + Venus + Mars) / 3)
 
-Replace <USERNAME> and <REPO> with your repository details.
+Catalog IDs aligned with Black-Zodiac-Live-Transits where helpful.
 
-Automation (GitHub Actions)
+## Automation
 
-The workflow executes automatically:
+GitHub Actions: Sunday 04:00 UTC + workflow_dispatch → regenerates
+`docs/current_week.json` and dated archive, then commits.
 
-Every Sunday @ 00:00 UTC
+## Local run
 
-On manual dispatch
-
-On push to main
-
-This guarantees the app always receives:
-
-Fresh weekly transits
-
-Up-to-date aspect grids
-
-Accurate planetary + fixed star positions
-
-Intended Use
-
-This repository exists to supply deterministic, astronomy-accurate transit data for the Zodiac Oracle ecosystem and any compatible downstream engines.
-
-Not licensed for redistribution or repackaging.
+```bash
+python -m venv .venv && .venv/bin/pip install numpy requests pyswisseph python-dateutil
+# Provide Swiss ephemeris files under ./ephe (or symlink)
+PYTHONPATH=. .venv/bin/python -m scripts.generate_transits
+PYTHONPATH=. .venv/bin/python -m pytest tests/ -q
+```

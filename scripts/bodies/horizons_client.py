@@ -70,7 +70,7 @@ def fetch_horizons(body_name):
 
 
 def fetch_jpl(body_id, start_date, stop_date, step_size="1d"):
-    """Fetch weekly ecliptic positions from JPL Horizons VECTORS table.
+    """Fetch geocentric ecliptic positions from JPL Horizons VECTORS (CENTER=Earth).
 
     Returns a list of (lon, lat) tuples, one per step in the date range.
     """
@@ -79,7 +79,7 @@ def fetch_jpl(body_id, start_date, stop_date, step_size="1d"):
         "COMMAND": body_id,
         "MAKE_EPHEM": "YES",
         "EPHEM_TYPE": "VECTORS",
-        "CENTER": "@0",
+        "CENTER": "500@399",
         "REF_PLANE": "ECLIPTIC",
         "REF_SYSTEM": "J2000",
         "START_TIME": start_date,
