@@ -104,6 +104,12 @@ jobs:
           WEEK_START=$(python3 -c "import json; print(json.load(open('docs/current_week.json'))['week_start'])")
           cp docs/current_week.json "docs/current_week_${WEEK_START}.json"
 
+      - name: Derived 6h-difference speed layer + validation (raw snapshots untouched)
+        run: |
+          DATE_TAG=$(TZ=America/Los_Angeles date +'%Y_%m_%d')
+          python scripts/derive_weekly_speed.py \
+            --daily "https://raw.githubusercontent.com/tommygun7575/Black-Zodiac-Live-Transits/main/docs/feed_overlay_${DATE_TAG}.json"
+
       - name: Verify output
         run: |
           if [ ! -f docs/current_week.json ]; then
@@ -118,6 +124,7 @@ jobs:
           git config user.email "bot@github.com"
 
           git add docs/current_week.json docs/current_week_*.json
+          git add docs/derived/current_week_speed*.json 2>/dev/null || true
 
           git diff --cached --quiet || git commit -m "update weekly transits"
 

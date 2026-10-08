@@ -1,0 +1,52 @@
+name: Weekly Derived Speed Layer
+
+# Builds docs/derived/current_week_speed_<week_start>.json from the EXISTING
+# docs/current_week.json without regenerating or modifying raw snapshots.
+
+on:
+  workflow_dispatch:
+    inputs:
+      daily_date:
+        description: "Black-Zodiac daily feed date tag YYYY_MM_DD for the direction cross-check (default: today, Pacific)"
+        required: false
+        default: ""
+
+permissions:
+  contents: write
+
+jobs:
+  derive:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+
+      - name: Unit tests (derived layer)
+        run: |
+          PYTHONPATH=. python -m unittest tests.test_derive_weekly_speed -v
+
+      - name: Record raw snapshot hashes (must not change)
+        run: sha256sum docs/current_week.json docs/current_week_*.json | tee /tmp/raw.sha256
+
+      - name: Derive speed layer and validate
+        run: |
+          DATE_TAG="${{ github.event.inputs.daily_date }}"
+          if [ -z "$DATE_TAG" ]; then DATE_TAG=$(TZ=America/Los_Angeles date +'%Y_%m_%d'); fi
+          python scripts/derive_weekly_speed.py \
+            --daily "https://raw.githubusercontent.com/tommygun7575/Black-Zodiac-Live-Transits/main/docs/feed_overlay_${DATE_TAG}.json"
+          sha256sum -c /tmp/raw.sha256
+
+      - name: Commit derived files
+        run: |
+          git config user.name "transit-bot"
+          git config user.email "bot@github.com"
+          git add docs/derived/current_week_speed*.json
+          if git diff --cached --quiet; then echo "No derived changes"; exit 0; fi
+          git commit -m "Derived weekly 6h speed layer"
+          git pull --rebase origin "${GITHUB_REF_NAME}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
