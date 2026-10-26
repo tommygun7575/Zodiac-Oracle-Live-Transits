@@ -273,6 +273,8 @@ def main() -> int:
     (OUT_DIR / "current_week_speed.json").write_text(text, encoding="utf-8")
     for c in out["checks"]:
         print(f"[{c['result']}] {c['check']}")
+        if c["result"] == "FAIL":
+            print("    detail: " + json.dumps(c.get("detail"), default=str)[:2000])
     return 0 if out["all_passed"] else 1
 
 
