@@ -5,11 +5,6 @@ name: Weekly Derived Speed Layer
 
 on:
   workflow_dispatch:
-    inputs:
-      daily_date:
-        description: "Black-Zodiac daily feed date tag YYYY_MM_DD for the direction cross-check (default: today, Pacific)"
-        required: false
-        default: ""
 
 permissions:
   contents: write
@@ -35,10 +30,8 @@ jobs:
 
       - name: Derive speed layer and validate
         run: |
-          DATE_TAG="${{ github.event.inputs.daily_date }}"
-          if [ -z "$DATE_TAG" ]; then DATE_TAG=$(TZ=America/Los_Angeles date +'%Y_%m_%d'); fi
-          python scripts/derive_weekly_speed.py \
-            --daily "https://raw.githubusercontent.com/tommygun7575/Black-Zodiac-Live-Transits/main/docs/feed_overlay_${DATE_TAG}.json"
+          # Self-contained: no external daily feed; direction cross-check is SKIPPED.
+          python scripts/derive_weekly_speed.py
           sha256sum -c /tmp/raw.sha256
 
       - name: Commit derived files

@@ -42,7 +42,7 @@ jobs:
 
       - name: Run weekly transit generator
         run: |
-          python -m scripts.generate_transits || echo "Generator failed, continuing to validation fallback"
+          python -m scripts.generate_transits
 
       - name: Validate or rebuild weekly JSON
         run: |
@@ -88,8 +88,7 @@ jobs:
 
           if not valid:
               out.parent.mkdir(parents=True, exist_ok=True)
-              out.write_text(json.dumps(minimal_payload(), indent=2))
-              print("Wrote fallback docs/current_week.json")
+              raise SystemExit("ERROR: docs/current_week.json missing or invalid; refusing to publish a placeholder")
           else:
               print("docs/current_week.json is valid")
           PY
@@ -106,9 +105,8 @@ jobs:
 
       - name: Derived 6h-difference speed layer + validation (raw snapshots untouched)
         run: |
-          DATE_TAG=$(TZ=America/Los_Angeles date +'%Y_%m_%d')
-          python scripts/derive_weekly_speed.py \
-            --daily "https://raw.githubusercontent.com/tommygun7575/Black-Zodiac-Live-Transits/main/docs/feed_overlay_${DATE_TAG}.json"
+          # Self-contained: no external daily feed; direction cross-check is SKIPPED.
+          python scripts/derive_weekly_speed.py
 
       - name: Verify output
         run: |
